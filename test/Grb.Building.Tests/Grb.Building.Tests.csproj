@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Grb.Building.Api\Grb.Building.Api.csproj" />
+    <ProjectReference Include="..\..\src\Grb\Grb.csproj" />
+    <ProjectReference Include="..\..\src\Grb.Building.Processor.Job\Grb.Building.Processor.Job.csproj" />
+    <ProjectReference Include="..\..\src\Grb.Building.Processor.Upload\Grb.Building.Processor.Upload.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Grb\Upload\gebouw_ALL.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Grb\Upload\gebouw_dbf_missing.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="UploadProcessor\gebouw_ALL.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="UploadProcessor\gebouw_dbf_missing.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
