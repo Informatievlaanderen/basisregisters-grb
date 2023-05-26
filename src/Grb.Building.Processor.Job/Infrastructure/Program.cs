@@ -84,6 +84,22 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         {
                             client.BaseAddress = new Uri(hostContext.Configuration["BackOfficeApiUrl"]);
                         });
+
+                    services
+                        .AddSingleton<IBlobClient>(_ => new S3BlobClient(
+                            new AmazonS3Client(new AmazonS3Config
+                            {
+                                RegionEndpoint = hostContext.Configuration.GetAWSOptions().Region
+                            }),
+                            hostContext.Configuration["BucketName"]))
+                        .AddSingleton<IBackOfficeApiProxy, BackOfficeApiProxy>()
+                        .AddSingleton<IJobRecordsProcessor, JobRecordsProcessor>()
+                        .AddSingleton<IJobRecordsMonitor, JobRecordsMonitor>()
+                        .AddSingleton<IJobResultUploader, JobResultUploader>()
+                        .AddSingleton<IJobRecordsArchiver>(_
+                            => new JobRecordsArchiver(hostContext.Configuration.GetConnectionString("BuildingGrb"), loggerFactory));
+
+                    services.AddHostedService<JobProcessor>();
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
@@ -95,43 +111,6 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         .RegisterModule(new DataDogModule(hostContext.Configuration))
                         .RegisterModule(new BuildingGrbModule(hostContext.Configuration, services, loggerFactory))
                         .RegisterModule(new TicketingModule(hostContext.Configuration, services));
-
-                    builder.RegisterType<BackOfficeApiProxy>()
-                        .As<IBackOfficeApiProxy>()
-                        .SingleInstance();
-
-                    builder.RegisterType<JobRecordsProcessor>()
-                        .As<IJobRecordsProcessor>()
-                        .SingleInstance();
-
-                    builder.RegisterType<JobRecordsMonitor>()
-                        .As<IJobRecordsMonitor>()
-                        .SingleInstance();
-
-                    builder.RegisterType<JobResultUploader>()
-                        .As<IJobResultUploader>()
-                        .SingleInstance();
-
-                    builder
-                        .Register(_ =>
-                            new S3BlobClient(
-                                new AmazonS3Client(new AmazonS3Config
-                                {
-                                    RegionEndpoint = hostContext.Configuration.GetAWSOptions().Region,
-                                }),
-                                hostContext.Configuration["BucketName"]))
-                        .As<IBlobClient>()
-                        .SingleInstance();
-
-                    builder
-                        .Register(_ => new JobRecordsArchiver(hostContext.Configuration.GetConnectionString("BuildingGrb"), loggerFactory))
-                        .As<IJobRecordsArchiver>()
-                        .SingleInstance();
-
-                    builder
-                        .RegisterType<JobProcessor>()
-                        .As<IHostedService>()
-                        .SingleInstance();
 
                     builder.Populate(services);
                 })
