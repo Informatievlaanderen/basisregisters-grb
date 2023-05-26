@@ -80,8 +80,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
                             .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingGrbContext>>(),
                                 sqlServerOptions => sqlServerOptions
                                     .EnableRetryOnFailure()
-                                    .MigrationsHistoryTable(BuildingGrbContext.MigrationsTableName,
-                                        BuildingGrbContext.Schema)
+                                    .MigrationsHistoryTable(BuildingGrbContext.MigrationsTableName, BuildingGrbContext.Schema)
                             ))
                         .Configure<EcsTaskOptions>(hostContext.Configuration.GetSection("ECSTaskOptions"));
                 })

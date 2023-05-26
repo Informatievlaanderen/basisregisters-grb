@@ -20,7 +20,7 @@ namespace Grb
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(projectionsConnectionString,
                         sqlServerOptions => sqlServerOptions
-                            .MigrationsHistoryTable(BuildingGrbContext.Schema, BuildingGrbContext.Schema)
+                            .MigrationsHistoryTable(BuildingGrbContext.MigrationsTableName, BuildingGrbContext.Schema)
                             .UseNetTopologySuite()
                     ));
         }
