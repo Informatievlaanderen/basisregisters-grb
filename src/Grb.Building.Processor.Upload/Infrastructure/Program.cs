@@ -92,7 +92,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
                             }),
                             hostContext.Configuration["BucketName"]))
                         .AddSingleton<IAmazonECS, AmazonECSClient>();
-                    
+
                     services.AddHostedService<UploadProcessor>();
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
