@@ -96,7 +96,12 @@ namespace Grb.Building.Processor.Upload.Infrastructure
 
                     builder
                         .Register(c =>
-                        new S3BlobClient(new AmazonS3Client(), hostContext.Configuration["BucketName"]))
+                            new S3BlobClient(
+                                new AmazonS3Client(new AmazonS3Config
+                                {
+                                    RegionEndpoint = hostContext.Configuration.GetAWSOptions().Region,
+                                }),
+                                hostContext.Configuration["BucketName"]))
                         .As<IBlobClient>()
                         .SingleInstance();
 
