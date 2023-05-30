@@ -85,6 +85,8 @@ namespace Grb.Building.Processor.Job.Infrastructure
                             client.BaseAddress = new Uri(hostContext.Configuration["BackOfficeApiUrl"]);
                         });
 
+                    services.Configure<GrbApiOptions>(hostContext.Configuration);
+
                     services
                         .AddSingleton<IBlobClient>(_ => new S3BlobClient(
                             new AmazonS3Client(new AmazonS3Config
