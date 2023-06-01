@@ -37,6 +37,7 @@
             var metadata = Metadata.None.Add(
                 new KeyValuePair<MetadataKey, string>(new MetadataKey("filename"), jobResultsZipArchive.Name));
 
+            stream.Seek(0, SeekOrigin.Begin);
             await _blobClient.CreateBlobAsync(
                 new BlobName(Grb.Job.JobResultsBlobName(jobId)),
                 metadata,
@@ -79,14 +80,14 @@
                 .ToListAsync(ct);
 
             return jobRecords
-                .Select(jobRecord =>
-                    new JobResult
-                    {
-                        JobId = jobRecord.JobId,
-                        BuildingPersistentLocalId = jobRecord.BuildingPersistentLocalId ?? jobRecord.GrId,
-                        GrbIdn = (int)jobRecord.Idn,
-                        IsBuildingCreated = jobRecord.EventType == GrbEventType.DefineBuilding
-                    }).ToList();
+                .Select(jobRecord => new JobResult
+                {
+                    JobId = jobRecord.JobId,
+                    BuildingPersistentLocalId = jobRecord.BuildingPersistentLocalId ?? jobRecord.GrId,
+                    GrbIdn = (int)jobRecord.Idn,
+                    IsBuildingCreated = jobRecord.EventType == GrbEventType.DefineBuilding
+                })
+                .ToList();
         }
     }
 }
