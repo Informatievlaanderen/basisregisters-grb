@@ -36,7 +36,7 @@
                 jobResultsUploader.Object,
                 jobRecordsArchiver.Object,
                 ticketing.Object,
-                new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { GrbApiUrl = grbApiBaseUrl }),
+                new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = grbApiBaseUrl }),
                 hostApplicationLifetime.Object,
                 new NullLoggerFactory());
 
@@ -59,7 +59,7 @@
 
             var expectedTicketResultAsJson = new TicketResult(new
             {
-                JobResultLocation = new Uri(new Uri(grbApiBaseUrl), $"/uploads/jobs/{job.Id:D}/results").ToString()
+                JobResultLocation = new Uri(new Uri(grbApiBaseUrl), $"/v2/gebouwen/uploads/jobs/{job.Id:D}/results").ToString()
             }).ResultAsJson;
 
             ticketing.Verify(x => x.Complete(
@@ -91,7 +91,7 @@
                 jobRecordsArchiver.Object,
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions
-                    { GrbApiUrl = "https://api-vlaanderen.be/gebouwen/uploads" }),
+                    { PublicApiUrl = "https://api-vlaanderen.be/gebouwen/uploads" }),
                 hostApplicationLifetime.Object,
                 new NullLoggerFactory());
 
