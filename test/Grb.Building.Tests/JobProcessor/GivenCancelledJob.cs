@@ -31,7 +31,7 @@
                 mockJobResultsUploader.Object,
                 mockJobRecordsArchiver.Object,
                 Mock.Of<ITicketing>(),
-                new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be/gebouwen/uploads"}),
+                new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
                 hostApplicationLifetime.Object,
                 new NullLoggerFactory());
 
