@@ -2,6 +2,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
 {
     using System;
     using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
     using Amazon.S3;
     using Autofac;
@@ -68,6 +69,8 @@ namespace Grb.Building.Processor.Job.Infrastructure
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     services
