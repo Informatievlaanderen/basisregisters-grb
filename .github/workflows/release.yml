@@ -59,7 +59,7 @@ jobs:
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: basisregisters-grb
+      registry: building-registry
       build-target: Containerize_ApiGrb
       image-file: br-api-grb-image.tar
       image-name: api-grb
@@ -74,7 +74,7 @@ jobs:
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: basisregisters-grb
+      registry: building-registry
       build-target: Containerize_GrbProcessorUpload
       image-file: br-grb-processor-upload-image.tar
       image-name: grb-processor-upload
@@ -89,7 +89,7 @@ jobs:
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: basisregisters-grb
+      registry: building-registry
       build-target: Containerize_GrbProcessorJob
       image-file: br-grb-processor-job-image.tar
       image-name: grb-processor-job
