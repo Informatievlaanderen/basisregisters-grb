@@ -5,7 +5,6 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Be.Vlaanderen.Basisregisters.Shaperon;
 
-
     public class GrbDbaseRecordsTranslator : IZipArchiveDbaseRecordsTranslator
     {
         public IDictionary<RecordNumber, JobRecord> Translate(IDbaseRecordEnumerator<GrbDbaseRecord> records)
