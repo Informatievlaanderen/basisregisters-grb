@@ -430,7 +430,7 @@ jobs:
     strategy:
       matrix:
         services: [
-          'building-registry-api-grb',
+          'building-registry-grb-api',
           'building-registry-grb-processor-upload',
           'building-registry-grb-processor-job'
         ]
@@ -508,7 +508,7 @@ jobs:
     strategy:
       matrix:
         services: [
-            'building-registry-api-grb',
+            'building-registry-grb-api',
             'building-registry-grb-processor-upload',
             'building-registry-grb-processor-job'
           ]
@@ -586,7 +586,7 @@ jobs:
     strategy:
       matrix:
         services: [
-            'building-registry-api-grb',
+            'building-registry-grb-api',
             'building-registry-grb-processor-upload',
             'building-registry-grb-processor-job'
           ]
