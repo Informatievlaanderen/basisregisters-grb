@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.1...v1.0.2) (2023-06-02)
+
+
+### Bug Fixes
+
+* ci/cd prd pipeline ([9601019](https://github.com/informatievlaanderen/basisregisters-grb/commit/9601019ef23c7bbcb9f172d70cd6e39526facf65))
+
 ## [1.0.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.0...v1.0.1) (2023-06-02)
 
 
