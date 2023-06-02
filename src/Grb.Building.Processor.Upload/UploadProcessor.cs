@@ -132,19 +132,31 @@
 
         private async Task StartJobProcessor(CancellationToken stoppingToken)
         {
-            var taskResponse = await _amazonEcs.StartTaskAsync(new StartTaskRequest()
-            {
-                TaskDefinition = _ecsTaskOptions.TaskDefinition,
-                Cluster = _ecsTaskOptions.Cluster
-            }, stoppingToken);
+            var taskResponse = await _amazonEcs.RunTaskAsync(
+                new RunTaskRequest
+                {
+                    Cluster = _ecsTaskOptions.Cluster,
+                    TaskDefinition = _ecsTaskOptions.TaskDefinition,
+                    LaunchType = LaunchType.FARGATE,
+                    Count = 1,
+                    NetworkConfiguration = new NetworkConfiguration
+                    {
+                        AwsvpcConfiguration = new AwsVpcConfiguration
+                        {
+                            Subnets = _ecsTaskOptions.Subnets.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                            SecurityGroups = _ecsTaskOptions.SecurityGroups.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                            AssignPublicIp = AssignPublicIp.DISABLED
+                        }
+                    }
+                },
+                stoppingToken);
 
             if (taskResponse.HttpStatusCode != HttpStatusCode.OK)
             {
-                _logger.LogError($"Starting ECS Task return HttpStatusCode:{taskResponse.HttpStatusCode.ToString()}");
+                _logger.LogError($"Starting ECS Task return HttpStatusCode: {taskResponse.HttpStatusCode.ToString()}");
             }
 
-            string FailureToString(Failure failure) =>
-                $"Reason: {failure.Reason}{Environment.NewLine}Failure:{failure.Detail}";
+            string FailureToString(Failure failure) => $"Reason: {failure.Reason}{Environment.NewLine}Failure: {failure.Detail}";
 
             if (taskResponse.Failures.Any())
             {
