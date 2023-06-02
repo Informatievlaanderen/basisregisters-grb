@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.2...v1.0.3) (2023-06-02)
+
+
+### Bug Fixes
+
+* grp api deploy pipeline ([0d481bd](https://github.com/informatievlaanderen/basisregisters-grb/commit/0d481bde15977b933d3f7cf34d6d52b60da58aa8))
+
 ## [1.0.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.1...v1.0.2) (2023-06-02)
 
 
