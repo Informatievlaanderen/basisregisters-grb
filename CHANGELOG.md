@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.0...v1.0.1) (2023-06-02)
+
+
+### Bug Fixes
+
+* use correct ecr registry ([baf1ab0](https://github.com/informatievlaanderen/basisregisters-grb/commit/baf1ab0648ab43a463cca717046e3dbac82b952c))
+
 # 1.0.0 (2023-06-02)
 
 
