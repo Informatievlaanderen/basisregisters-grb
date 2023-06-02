@@ -26,6 +26,8 @@ nuget AWSSDK.ECS 3.7.108
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 8.0.0
+
 nuget Be.Vlaanderen.Basisregisters.Api 20.0.0
 
 nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 1.4.0
