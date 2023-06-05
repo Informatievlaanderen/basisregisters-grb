@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.3...v1.0.4) (2023-06-05)
+
+
+### Bug Fixes
+
+* reference Be.Vlaanderen.Basisregisters.GrAr.Provenance in job processor ([051df13](https://github.com/informatievlaanderen/basisregisters-grb/commit/051df1318003f3195f55a122214c491d3754c69e))
+
 ## [1.0.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.2...v1.0.3) (2023-06-02)
 
 
