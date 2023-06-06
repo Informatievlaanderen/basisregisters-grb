@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.4...v1.0.5) (2023-06-06)
+
+
+### Bug Fixes
+
+* ensure job records are processed in order ([2c31655](https://github.com/informatievlaanderen/basisregisters-grb/commit/2c316555044ba8fea7f5de199c53cd57dede186f))
+
 ## [1.0.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.3...v1.0.4) (2023-06-05)
 
 
