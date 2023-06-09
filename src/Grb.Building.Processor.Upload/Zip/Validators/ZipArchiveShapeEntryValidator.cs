@@ -28,7 +28,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             using var stream = entry.Open();
             using var reader = new BinaryReader(stream, _encoding);
 
-            ShapeFileHeader? header = null;
+            ShapeFileHeader? header;
 
             try
             {

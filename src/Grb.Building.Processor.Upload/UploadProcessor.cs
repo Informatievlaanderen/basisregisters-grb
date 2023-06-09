@@ -23,7 +23,7 @@
     using Zip.Validators;
     using Task = System.Threading.Tasks.Task;
 
- public sealed class UploadProcessor : BackgroundService
+    public sealed class UploadProcessor : BackgroundService
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly ITicketing _ticketing;
@@ -111,7 +111,11 @@
                 catch (Exception ex)
                 {
                     _logger.LogError($"Unexpected exception for job '{job.Id}'", ex);
-                    await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", string.Empty), stoppingToken);
+                    await _ticketing.Error(
+                        job.TicketId!.Value,
+                        new TicketError("Er deed zich een onverwachte fout voor bij de verwerking van het zip-bestand.",
+                            string.Empty),
+                        stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
                 }
             }
@@ -156,7 +160,8 @@
                 _logger.LogError($"Starting ECS Task return HttpStatusCode: {taskResponse.HttpStatusCode.ToString()}");
             }
 
-            string FailureToString(Failure failure) => $"Reason: {failure.Reason}{Environment.NewLine}Failure: {failure.Detail}";
+            string FailureToString(Failure failure) =>
+                $"Reason: {failure.Reason}{Environment.NewLine}Failure: {failure.Detail}";
 
             if (taskResponse.Failures.Any())
             {
