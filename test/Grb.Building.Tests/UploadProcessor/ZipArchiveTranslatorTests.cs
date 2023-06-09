@@ -5,7 +5,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Grb.Building.Processor.Upload.Zip.Translators;
+    using Processor.Upload.Zip.Translators;
     using Xunit;
 
     [Collection(ZipArchiveCollectionFixture.COLLECTION)]
@@ -31,6 +31,7 @@
             jobRecords.Should().HaveCount(10);
 
             var jobRecord = jobRecords.First();
+            jobRecord.RecordNumber.Should().Be(1);
             jobRecord.Idn.Should().Be(2857440);
             jobRecord.IdnVersion.Should().Be(1);
             jobRecord.VersionDate.Should().Be(new DateTimeOffset(new DateTime(2011,12,20)));

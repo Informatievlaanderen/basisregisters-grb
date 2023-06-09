@@ -10,6 +10,8 @@ namespace Grb
         public long Id { get; set; }
         public Guid JobId { get; set; }
 
+        public int RecordNumber { get; set; }
+
         public long Idn { get; set; }
         public int IdnVersion { get; set; }
         public DateTimeOffset VersionDate { get; set; }
@@ -43,6 +45,8 @@ namespace Grb
                 .UseIdentityColumn();
 
             builder.Property(x => x.JobId);
+
+            builder.Property(x => x.RecordNumber);
 
             builder.Property(x => x.Idn);
             builder.Property(x => x.IdnVersion);

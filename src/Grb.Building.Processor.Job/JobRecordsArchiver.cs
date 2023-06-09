@@ -64,6 +64,7 @@
 INSERT INTO [{BuildingGrbContext.Schema}].[{JobRecordConfiguration.ArchiveTableName}]
     ([Id]
     ,[JobId]
+    ,[RecordNumber]
     ,[Idn]
     ,[IdnVersion]
     ,[VersionDate]
@@ -80,6 +81,7 @@ INSERT INTO [{BuildingGrbContext.Schema}].[{JobRecordConfiguration.ArchiveTableN
     ,[TicketId])
 SELECT [Id]
     ,[JobId]
+    ,[RecordNumber]
     ,[Idn]
     ,[IdnVersion]
     ,[VersionDate]

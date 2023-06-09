@@ -30,7 +30,7 @@
         {
             var jobRecords = await _buildingGrbContext.JobRecords
                 .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Created)
-                .OrderBy(x => x.Id)
+                .OrderBy(x => x.RecordNumber)
                 .ToListAsync(ct);
 
             foreach (var jobRecord in jobRecords)
