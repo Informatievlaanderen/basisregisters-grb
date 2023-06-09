@@ -18,6 +18,7 @@
                 var record = records.Current;
                 jobRecords.Add(recordNumber, new JobRecord
                 {
+                    RecordNumber = recordNumber.ToInt32(),
                     Idn = record.IDN.Value,
                     IdnVersion = record.IDNV.Value,
                     VersionDate = new DateTimeOffset(record.GVDV.Value!.Value),

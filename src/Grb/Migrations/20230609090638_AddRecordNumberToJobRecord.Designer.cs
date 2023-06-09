@@ -4,6 +4,7 @@ using Grb;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,10 @@ using NetTopologySuite.Geometries;
 namespace Grb.Migrations
 {
     [DbContext(typeof(BuildingGrbContext))]
-    partial class BuildingGrbContextModelSnapshot : ModelSnapshot
+    [Migration("20230609090638_AddRecordNumberToJobRecord")]
+    partial class AddRecordNumberToJobRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
