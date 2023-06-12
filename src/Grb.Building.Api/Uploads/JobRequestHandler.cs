@@ -9,10 +9,16 @@
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
+    using TicketingService.Abstractions;
 
-    public sealed record JobRecordsRequest(Guid JobId) : IRequest<JobRecordsResponse>;
+    public sealed record JobRequest(Guid JobId) : IRequest<JobResponse>;
 
-    public sealed record JobRecordsResponse(IEnumerable<JobRecordResponse> JobRecords);
+    public sealed record JobResponse(
+        Guid JobId,
+        DateTimeOffset Created,
+        JobStatus Status,
+        string? TicketUrl,
+        IEnumerable<JobRecordResponse> JobRecords);
 
     public sealed record JobRecordResponse(
         long JobRecordId,
@@ -21,19 +27,22 @@
         JobRecordStatus Status,
         string? ErrorMessage);
 
-    public sealed class JobResultsRequestHandler
-        : IRequestHandler<JobRecordsRequest, JobRecordsResponse>
+    public sealed class JobRequestHandler
+        : IRequestHandler<JobRequest, JobResponse>
     {
         private readonly BuildingGrbContext _buildingGrbContext;
+        private readonly ITicketingUrl _ticketingUrl;
 
-        public JobResultsRequestHandler(
-            BuildingGrbContext buildingGrbContext)
+        public JobRequestHandler(
+            BuildingGrbContext buildingGrbContext,
+            ITicketingUrl ticketingUrl)
         {
             _buildingGrbContext = buildingGrbContext;
+            _ticketingUrl = ticketingUrl;
         }
 
-        public async Task<JobRecordsResponse> Handle(
-            JobRecordsRequest request,
+        public async Task<JobResponse> Handle(
+            JobRequest request,
             CancellationToken cancellationToken)
         {
             var job = await _buildingGrbContext.FindJob(request.JobId, cancellationToken);
@@ -41,15 +50,6 @@
             if (job is null)
             {
                 throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
-            }
-
-            // For job status
-            //  Cancelled (cancellation can only occur when job was not yet being prepared)
-            //  Completed (job records are archived)
-            // we are returning an empty list.
-            if (job.Status is JobStatus.Created or JobStatus.Preparing)
-            {
-                throw new ApiException($"Upload job '{request.JobId}' heeft nog geen bescikbare job records.", StatusCodes.Status400BadRequest);
             }
 
             var jobResults = await _buildingGrbContext.JobRecords
@@ -63,7 +63,12 @@
                     x.ErrorMessage))
                 .ToListAsync(cancellationToken);
 
-            return new JobRecordsResponse(jobResults);
+            return new JobResponse(
+                job.Id,
+                job.Created,
+                job.Status,
+                job.TicketId.HasValue ? _ticketingUrl.For(job.TicketId.Value).ToString() : null,
+                jobResults);
         }
     }
 }

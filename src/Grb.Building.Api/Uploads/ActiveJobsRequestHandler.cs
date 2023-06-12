@@ -11,9 +11,9 @@
 
     public sealed record ActiveJobsRequest() : IRequest<ActiveJobsResponse>;
 
-    public sealed record ActiveJobsResponse(IEnumerable<JobResponse> Jobs);
+    public sealed record ActiveJobsResponse(IEnumerable<ActiveJobResponse> Jobs);
 
-    public sealed record JobResponse(
+    public sealed record ActiveJobResponse(
         Guid JobId,
         DateTimeOffset Created,
         JobStatus Status,
@@ -40,7 +40,7 @@
             var jobs = await _buildingGrbContext
                 .Jobs
                 .Where(x => x.Status != JobStatus.Cancelled && x.Status != JobStatus.Completed)
-                .Select(x => new JobResponse(
+                .Select(x => new ActiveJobResponse(
                     x.Id,
                     x.Created,
                     x.Status,
