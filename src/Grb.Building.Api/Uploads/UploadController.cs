@@ -51,5 +51,13 @@ namespace Grb.Building.Api.Uploads
             await _mediator.Send(new CancelJobRequest(jobId), cancellationToken);
             return NoContent();
         }
+
+        [HttpDelete("jobs/{jobId:guid}/jobrecords/{jobRecordId:long}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
+        public async Task<IActionResult> ResolveJobRecordError(Guid jobId, long jobRecordId, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new ResolveJobRecordErrorRequest(jobId, jobRecordId), cancellationToken);
+            return NoContent();
+        }
     }
 }

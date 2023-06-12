@@ -27,6 +27,11 @@
             return await Jobs.FindAsync(new object[] { jobId }, cancellationToken);
         }
 
+        public async Task<JobRecord?> FindJobRecord(long jobRecordId, CancellationToken cancellationToken)
+        {
+            return await JobRecords.FindAsync(new object[] { jobRecordId }, cancellationToken);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
