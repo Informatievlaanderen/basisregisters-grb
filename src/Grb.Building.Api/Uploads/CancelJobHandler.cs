@@ -26,7 +26,7 @@
 
         public async Task Handle(CancelJobRequest request, CancellationToken cancellationToken)
         {
-            var job = await _buildingGrbContext.Jobs.FindAsync(new object[] { request.JobId }, cancellationToken);
+            var job = await _buildingGrbContext.FindJob(request.JobId, cancellationToken);
 
             if (job is null)
             {

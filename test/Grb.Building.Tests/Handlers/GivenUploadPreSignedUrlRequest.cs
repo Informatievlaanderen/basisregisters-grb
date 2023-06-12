@@ -15,7 +15,7 @@
     using TicketingService.Abstractions;
     using Xunit;
 
-    public class GivenGetPreSignedUrlRequest
+    public class GivenUploadPreSignedUrlRequest
     {
         private readonly Fixture _fixture;
 
@@ -23,7 +23,7 @@
         private readonly Mock<ITicketing> _ticketing;
         private readonly Mock<IAmazonS3Extended> _s3Extended;
 
-        public GivenGetPreSignedUrlRequest()
+        public GivenUploadPreSignedUrlRequest()
         {
             _fixture = new Fixture();
 
