@@ -60,7 +60,7 @@ namespace Grb.Building.Api.Uploads
         }
 
         [HttpDelete("jobs/{jobId:guid}/jobrecords/{jobRecordId:long}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.InterneBijwerker)]
         public async Task<IActionResult> ResolveJobRecordError(Guid jobId, long jobRecordId, CancellationToken cancellationToken)
         {
             await _mediator.Send(new ResolveJobRecordErrorRequest(jobId, jobRecordId), cancellationToken);
