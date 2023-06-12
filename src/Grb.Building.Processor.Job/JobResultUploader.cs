@@ -81,7 +81,7 @@
                 .AsNoTracking()
                 .Where(x =>
                     x.JobId == jobId
-                    && (x.Status == JobRecordStatus.Complete || x.Status == JobRecordStatus.Warning)
+                    && (x.Status == JobRecordStatus.Completed || x.Status == JobRecordStatus.Warning)
                     && x.EventType == GrbEventType.DefineBuilding)
                 .ToListAsync(ct);
 

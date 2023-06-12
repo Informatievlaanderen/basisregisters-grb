@@ -41,7 +41,7 @@
 
             //assert
             var jobRecordEntity = buildingGrbContext.JobRecords.First(x => x.Id == jobRecord.Id);
-            jobRecordEntity.Status.Should().Be(JobRecordStatus.Complete);
+            jobRecordEntity.Status.Should().Be(JobRecordStatus.Completed);
             jobRecordEntity.BuildingPersistentLocalId.Should().Be(buildingPersistentLocalId);
         }
 
@@ -77,7 +77,7 @@
 
             //assert
             var jobRecordEntity = buildingGrbContext.JobRecords.First(x => x.Id == jobRecord.Id);
-            jobRecordEntity.Status.Should().Be(JobRecordStatus.Complete);
+            jobRecordEntity.Status.Should().Be(JobRecordStatus.Completed);
             jobRecordEntity.BuildingPersistentLocalId.Should().Be(buildingPersistentLocalId);
 
             ticketing.Verify(x => x.Get(jobRecord.TicketId!.Value, It.IsAny<CancellationToken>()), Times.Exactly(3));
