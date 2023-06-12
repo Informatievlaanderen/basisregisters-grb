@@ -39,7 +39,7 @@ namespace Grb.Building.Api.Uploads
 
         [HttpGet("jobs/{jobId:guid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
-        public async Task<IActionResult> GetJobRecords(Guid jobId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetJob(Guid jobId, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new JobRequest(jobId), cancellationToken));
         }
