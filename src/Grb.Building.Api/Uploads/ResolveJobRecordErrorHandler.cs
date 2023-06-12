@@ -32,14 +32,14 @@
 
             if (job is null)
             {
-                throw new ApiException($"Upload job with id {request.JobId} not found.", StatusCodes.Status404NotFound);
+                throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
 
             var jobRecord = await _buildingGrbContext.FindJobRecord(request.JobRecordId, cancellationToken);
 
             if (jobRecord is null)
             {
-                throw new ApiException($"Upload job record with id {request.JobRecordId} not found.", StatusCodes.Status404NotFound);
+                throw new ApiException("Onbestaande upload job record.", StatusCodes.Status404NotFound);
             }
 
             jobRecord.ResolveError();

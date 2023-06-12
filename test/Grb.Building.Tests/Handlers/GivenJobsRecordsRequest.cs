@@ -87,7 +87,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status400BadRequest
-                    && x.Message == $"Upload job with id {job.Id} has no available records yet.");
+                    && x.Message == $"Upload job '{job.Id}' heeft nog geen bescikbare job records.");
         }
 
         [Fact]
@@ -103,7 +103,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
-                    && x.Message == $"Upload job with id {jobId} not found.");
+                    && x.Message == "Onbestaande upload job.");
         }
 
         private JobRecord CreateJobRecord(Guid jobId)

@@ -42,13 +42,13 @@
 
             if (job is null)
             {
-                throw new ApiException($"Upload job with id {request.JobId} not found.", StatusCodes.Status404NotFound);
+                throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
 
             if (job.Status != JobStatus.Completed)
             {
                 throw new ApiException(
-                    $"Job with id {request.JobId} has not yet completed.",
+                    $"Upload job '{request.JobId}' wordt verwerkt en resultaten zijn nog niet beschikbaar.",
                     StatusCodes.Status400BadRequest);
             }
 

@@ -37,7 +37,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
-                    && x.Message == $"Upload job with id {jobId} not found.");
+                    && x.Message == "Onbestaande upload job.");
         }
 
         [Fact]
@@ -60,7 +60,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status400BadRequest
-                    && x.Message == $"Upload job with id {job.Id} is being processed and cannot be cancelled.");
+                    && x.Message == $"Upload job '{job.Id}' wordt verwerkt en kan niet worden geannuleerd.");
         }
 
         [Fact]
