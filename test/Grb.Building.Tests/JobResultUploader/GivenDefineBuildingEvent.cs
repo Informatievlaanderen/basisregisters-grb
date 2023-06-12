@@ -29,8 +29,8 @@
             var job = new Job(DateTimeOffset.Now, JobStatus.Completed, Guid.NewGuid());
             buildingGrbContext.Jobs.Add(job);
             buildingGrbContext.JobRecords.AddRange(
-                new JobRecord {JobId = job.Id, GrId = 123, Status = JobRecordStatus.Complete, EventType = GrbEventType.DefineBuilding, Geometry = Polygon.Empty},
-                new JobRecord {JobId = job.Id, GrId = 456, Status = JobRecordStatus.Complete, EventType = GrbEventType.DefineBuilding, Geometry = Polygon.Empty});
+                new JobRecord {JobId = job.Id, GrId = 123, Status = JobRecordStatus.Completed, EventType = GrbEventType.DefineBuilding, Geometry = Polygon.Empty},
+                new JobRecord {JobId = job.Id, GrId = 456, Status = JobRecordStatus.Completed, EventType = GrbEventType.DefineBuilding, Geometry = Polygon.Empty});
 
             await buildingGrbContext.SaveChangesAsync();
 

@@ -7,6 +7,6 @@
         Warning,
         Error,
         ErrorResolved,
-        Complete
+        Completed
     }
 }

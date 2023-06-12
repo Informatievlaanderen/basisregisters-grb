@@ -28,7 +28,7 @@
             var jobRecordWithStatusPending = CreateJobRecord(job.Id, jobRecordId: 2, JobRecordStatus.Pending);
             var jobRecordWithStatusWarning = CreateJobRecord(job.Id, jobRecordId: 3, JobRecordStatus.Warning);
             var jobRecordWithStatusError = CreateJobRecord(job.Id, jobRecordId: 4, JobRecordStatus.Error);
-            var jobRecordWithStatusComplete = CreateJobRecord(job.Id, jobRecordId: 5, JobRecordStatus.Complete);
+            var jobRecordWithStatusComplete = CreateJobRecord(job.Id, jobRecordId: 5, JobRecordStatus.Completed);
 
             await buildingGrbContext.JobRecords.AddAsync(jobRecordWithStatusCreated);
             await buildingGrbContext.JobRecords.AddAsync(jobRecordWithStatusPending);

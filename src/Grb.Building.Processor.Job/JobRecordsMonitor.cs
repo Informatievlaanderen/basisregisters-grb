@@ -51,7 +51,7 @@
                             var etagResponse =
                                 JsonConvert.DeserializeObject<ETagResponse>(ticket.Result!.ResultAsJson!);
                             jobRecord.BuildingPersistentLocalId = etagResponse!.Location.AsIdentifier().Map(int.Parse);
-                            jobRecord.Status = JobRecordStatus.Complete;
+                            jobRecord.Status = JobRecordStatus.Completed;
                             break;
                         case TicketStatus.Error:
                             var ticketError = JsonConvert.DeserializeObject<TicketError>(ticket.Result!.ResultAsJson!);
