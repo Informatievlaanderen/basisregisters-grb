@@ -30,6 +30,13 @@ namespace Grb.Building.Api.Uploads
             return Ok(await _mediator.Send(new UploadPreSignedUrlRequest(), cancellationToken));
         }
 
+        [HttpGet("jobs/{jobId:guid}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
+        public async Task<IActionResult> GetJobRecords(Guid jobId, CancellationToken cancellationToken)
+        {
+            return Ok(await _mediator.Send(new JobRecordsRequest(jobId), cancellationToken));
+        }
+
         [HttpGet("jobs/{jobId:guid}/results")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
         public async Task<IActionResult> GetResultsPreSignedUrl(Guid jobId, CancellationToken cancellationToken)
