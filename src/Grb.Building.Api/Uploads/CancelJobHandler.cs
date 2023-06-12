@@ -30,12 +30,13 @@
 
             if (job is null)
             {
-                throw new ApiException($"Upload job with id {request.JobId} not found.", StatusCodes.Status404NotFound);
+                throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
+
             if (job.Status != JobStatus.Created)
             {
                 throw new ApiException(
-                    $"Upload job with id {request.JobId} is being processed and cannot be cancelled.",
+                    $"Upload job '{request.JobId}' wordt verwerkt en kan niet worden geannuleerd.",
                     StatusCodes.Status400BadRequest);
             }
 

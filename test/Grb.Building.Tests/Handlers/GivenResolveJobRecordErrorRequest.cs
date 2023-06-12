@@ -110,7 +110,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
-                    && x.Message == $"Upload job with id {jobId} not found.");
+                    && x.Message == "Onbestaande upload job.");
             return Task.CompletedTask;
         }
 
@@ -131,7 +131,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
-                    && x.Message == $"Upload job record with id {jobRecordId} not found.");
+                    && x.Message == "Onbestaande upload job record.");
         }
 
         private JobRecord CreateJobRecord(Guid jobId, JobRecordStatus jobRecordStatus)

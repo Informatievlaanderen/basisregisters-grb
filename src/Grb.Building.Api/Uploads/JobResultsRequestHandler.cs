@@ -40,7 +40,7 @@
 
             if (job is null)
             {
-                throw new ApiException($"Upload job with id {request.JobId} not found.", StatusCodes.Status404NotFound);
+                throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
 
             // For job status
@@ -49,7 +49,7 @@
             // we are returning an empty list.
             if (job.Status is JobStatus.Created or JobStatus.Preparing)
             {
-                throw new ApiException($"Upload job with id {request.JobId} has no available records yet.", StatusCodes.Status400BadRequest);
+                throw new ApiException($"Upload job '{request.JobId}' heeft nog geen bescikbare job records.", StatusCodes.Status400BadRequest);
             }
 
             var jobResults = await _buildingGrbContext.JobRecords

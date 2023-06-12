@@ -64,7 +64,7 @@
                 .ThrowAsync<ApiException>()
                 .Result
                 .Where(x =>
-                    x.Message.Contains($"Upload job with id {request.JobId} not found.")
+                    x.Message.Contains("Onbestaande upload job.")
                     && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
@@ -89,7 +89,7 @@
                 .ThrowAsync<ApiException>()
                 .Result
                 .Where(x =>
-                    x.Message.Contains($"Job with id {request.JobId} has not yet completed.")
+                    x.Message.Contains($"Upload job '{job.Id}' wordt verwerkt en resultaten zijn nog niet beschikbaar.")
                     && x.StatusCode == StatusCodes.Status400BadRequest);
         }
     }
