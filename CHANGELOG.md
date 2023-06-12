@@ -1,3 +1,22 @@
+# [1.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.5...v1.1.0) (2023-06-12)
+
+
+### Bug Fixes
+
+* limit authorization to DV on ResolveJobRecordError ([beaf0e8](https://github.com/informatievlaanderen/basisregisters-grb/commit/beaf0e8a5acf64255515e17c9b3394ab3e6481ba))
+* name of GetJob controller action ([4106acb](https://github.com/informatievlaanderen/basisregisters-grb/commit/4106acbd0490b55162982f24731fdec0afc91151))
+* rename JobRecordStatus.Complete to JobRecordStatus.Completed ([1bee797](https://github.com/informatievlaanderen/basisregisters-grb/commit/1bee7976ed43e30d69bdf36182f14152827dd622))
+* return api errors in Dutch ([c23f4ac](https://github.com/informatievlaanderen/basisregisters-grb/commit/c23f4ac7c662cff47e247f278295e521433d288b))
+
+
+### Features
+
+* get active jobs ([a39f694](https://github.com/informatievlaanderen/basisregisters-grb/commit/a39f694b029c159469fdfa32fe5f5498c04cd5f0))
+* get job records ([e7fb55b](https://github.com/informatievlaanderen/basisregisters-grb/commit/e7fb55b6761c78c3c7f6575d88f72842a7d11e13))
+* resolve job record error ([af93428](https://github.com/informatievlaanderen/basisregisters-grb/commit/af9342883f63f50d864c5d239e6a89ef0ec21d04))
+* return job details additional to job records ([de2eba3](https://github.com/informatievlaanderen/basisregisters-grb/commit/de2eba383e28ab2051c64cf6e291e7a1c5faeb68))
+* store record number from dbase file on jobrecord ([e720f01](https://github.com/informatievlaanderen/basisregisters-grb/commit/e720f011c81741eea5830746c2fabacb34adf8f6))
+
 ## [1.0.5](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.4...v1.0.5) (2023-06-06)
 
 
