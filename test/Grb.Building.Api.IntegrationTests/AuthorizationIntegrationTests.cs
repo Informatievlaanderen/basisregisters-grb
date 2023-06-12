@@ -106,6 +106,7 @@ using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
 
         [Theory]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000", Scopes.DvGrIngemetengebouwBeheer)]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/jobrecords/123", Scopes.DvGrIngemetengebouwBeheer)]
         public async Task Delete_ReturnsSuccess(string endpoint, string requiredScopes)
         {
             var client = _fixture.TestServer.CreateClient();
@@ -120,6 +121,7 @@ using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
 
         [Theory]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000")]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/jobrecords/123")]
         public async Task Delete_ReturnsUnauthorized(string endpoint)
         {
             var client = _fixture.TestServer.CreateClient();
@@ -132,6 +134,8 @@ using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
         [Theory]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000")]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000", "dv_gr_geschetstgebouw_beheer")]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/jobrecords/123")]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/jobrecords/123", "dv_gr_geschetstgebouw_beheer")]
         public async Task Delete_ReturnsForbidden(string endpoint, string scope = "")
         {
             var client = _fixture.TestServer.CreateClient();

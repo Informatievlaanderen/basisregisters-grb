@@ -28,6 +28,17 @@ namespace Grb
         public JobRecordStatus Status { get; set; }
         public string? ErrorMessage { get; set; }
         public int? BuildingPersistentLocalId { get; set; }
+
+        public void ResolveError()
+        {
+            if (Status != JobRecordStatus.Error)
+            {
+                return;
+            }
+
+            // We're setting the status to resolved, but we are not deleting the ErrorMessage.
+            Status = JobRecordStatus.ErrorResolved;
+        }
     }
 
     public sealed class JobRecordConfiguration : IEntityTypeConfiguration<JobRecord>

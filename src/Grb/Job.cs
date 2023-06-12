@@ -34,6 +34,8 @@
         }
 
         public bool IsExpired(TimeSpan expiration) => Created.Add(expiration) < DateTimeOffset.Now;
+
+        public bool IsInError() => Status == JobStatus.Error;
     }
 
     public sealed class JobConfiguration : IEntityTypeConfiguration<Job>
