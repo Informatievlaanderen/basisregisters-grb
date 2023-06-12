@@ -61,6 +61,7 @@ using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
         }
 
         [Theory]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000", Scopes.DvGrIngemetengebouwBeheer)]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/results", Scopes.DvGrIngemetengebouwBeheer)]
         public async Task Get_ReturnsSuccess(string endpoint, string requiredScopes)
         {
@@ -76,6 +77,7 @@ using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
         }
 
         [Theory]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000")]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/results")]
         public async Task Get_ReturnsUnauthorized(string endpoint)
         {
@@ -87,6 +89,8 @@ using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
         }
 
         [Theory]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000")]
+        [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000", "dv_gr_geschetstgebouw_beheer")]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/results")]
         [InlineData("/v2/uploads/jobs/00000000-0000-0000-0000-000000000000/results", "dv_gr_geschetstgebouw_beheer")]
         public async Task Get_ReturnsForbidden(string endpoint, string scope = "")
