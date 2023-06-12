@@ -9,19 +9,31 @@
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
+    using Moq;
     using NetTopologySuite.Geometries;
+    using TicketingService.Abstractions;
     using Xunit;
 
-    public class GivenJobsRecordsRequest
+    public class GivenJobRequest
     {
         private readonly Fixture _fixture;
         private readonly FakeBuildingGrbContext _buildingGrbContext;
+        private readonly Mock<ITicketingUrl> _ticketingUrl;
 
-        public GivenJobsRecordsRequest()
+        public GivenJobRequest()
         {
             _fixture = new Fixture();
             _fixture.Customizations.Add(new WithUniqueInteger());
             _buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+            _ticketingUrl = new Mock<ITicketingUrl>();
+            _ticketingUrl
+                .Setup(x => x.For(It.IsAny<Guid>()))
+                .Returns<Guid>(ticketId => new Uri(GetTicketUrl(ticketId)));
+        }
+
+        private static string GetTicketUrl(Guid ticketId)
+        {
+            return $"https://api.basisregisters.vlaanderen.be/v2/tickets/{ticketId}";
         }
 
         [Theory]
@@ -44,8 +56,13 @@
             CreateJobRecord(anotherJob.Id);
             await _buildingGrbContext.SaveChangesAsync(CancellationToken.None);
 
-            var handler = new JobResultsRequestHandler(_buildingGrbContext);
-            var response = await handler.Handle(new JobRecordsRequest(job.Id), CancellationToken.None);
+            var handler = new JobRequestHandler(_buildingGrbContext, _ticketingUrl.Object);
+            var response = await handler.Handle(new JobRequest(job.Id), CancellationToken.None);
+
+            response.JobId.Should().Be(job.Id);
+            response.Created.Should().Be(job.Created);
+            response.Status.Should().Be(job.Status);
+            response.TicketUrl.Should().Be(GetTicketUrl(job.TicketId!.Value));
 
             response.JobRecords.Should().HaveCount(3);
             response.JobRecords.Should().ContainSingle(x =>
@@ -68,35 +85,13 @@
                 && x.ErrorMessage == jobRecordThree.ErrorMessage);
         }
 
-        [Theory]
-        [InlineData(JobStatus.Created)]
-        [InlineData(JobStatus.Preparing)]
-        public async Task WithInvalidJobStatus_ThenThrowsApiException(JobStatus jobStatus)
-        {
-            var job = new Job(DateTimeOffset.Now, jobStatus, _fixture.Create<Guid>());
-            _buildingGrbContext.Jobs.Add(job);
-            var jobRecord = CreateJobRecord(job.Id);
-            _buildingGrbContext.JobRecords.Add(jobRecord);
-            await _buildingGrbContext.SaveChangesAsync(CancellationToken.None);
-
-            var handler = new JobResultsRequestHandler(_buildingGrbContext);
-            var act = async () => await handler.Handle(new JobRecordsRequest(job.Id), CancellationToken.None);
-
-            act.Should()
-                .ThrowAsync<ApiException>()
-                .Result
-                .Where(x =>
-                    x.StatusCode == StatusCodes.Status400BadRequest
-                    && x.Message == $"Upload job '{job.Id}' heeft nog geen bescikbare job records.");
-        }
-
         [Fact]
-        public async Task WithUnexistingJob_ThenThrowsApiException()
+        public Task WithUnexistingJob_ThenThrowsApiException()
         {
             var jobId = _fixture.Create<Guid>();
 
-            var handler = new JobResultsRequestHandler(_buildingGrbContext);
-            var act = async () => await handler.Handle(new JobRecordsRequest(jobId), CancellationToken.None);
+            var handler = new JobRequestHandler(_buildingGrbContext, _ticketingUrl.Object);
+            var act = async () => await handler.Handle(new JobRequest(jobId), CancellationToken.None);
 
             act.Should()
                 .ThrowAsync<ApiException>()
@@ -104,6 +99,7 @@
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
                     && x.Message == "Onbestaande upload job.");
+            return Task.CompletedTask;
         }
 
         private JobRecord CreateJobRecord(Guid jobId)
