@@ -87,13 +87,10 @@
                     var problems = archiveValidator.Validate(archive);
                     if (problems.Any())
                     {
-                        var ticketingErrors = problems.Select(x =>
-                                x.Parameters.Any()
-                                    ? new TicketError(string.Join(',', x.Parameters.Select(y => y.Value)), x.Reason)
-                                    : new TicketError(x.File, x.Reason))
-                            .ToList();
-
-                        await _ticketing.Error(job.TicketId!.Value, new TicketError(ticketingErrors), stoppingToken);
+                        await _ticketing.Error(
+                            job.TicketId!.Value,
+                            new TicketError(MapToTicketErrors(problems)),
+                            stoppingToken);
                         await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                         continue;
@@ -113,8 +110,7 @@
                     _logger.LogError($"Unexpected exception for job '{job.Id}'", ex);
                     await _ticketing.Error(
                         job.TicketId!.Value,
-                        new TicketError("Er deed zich een onverwachte fout voor bij de verwerking van het zip-bestand.",
-                            string.Empty),
+                        new TicketError("Er deed zich een onverwachte fout voor bij de verwerking van het zip-bestand.", string.Empty),
                         stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
                 }
@@ -126,6 +122,35 @@
             }
 
             _hostApplicationLifetime.StopApplication();
+        }
+
+        private static IList<TicketError> MapToTicketErrors(ZipArchiveProblems problems)
+        {
+            // var ticketErrors = new List<TicketError>();
+            //
+            // foreach (var problem in problems)
+            // {
+            //     if (!problem.Parameters.Any())
+            //     {
+            //         // I don't think file should be the errorMessage and reason the error code?
+            //         ticketErrors.Add(new TicketError(problem.File, problem.Reason));
+            //         continue;
+            //     }
+            //
+            //     foreach (var problemParameter in problem.Parameters)
+            //     {
+            //         // What to do here?
+            //         ticketErrors.Add(new TicketError());
+            //     }
+            // }
+            //
+            // return ticketErrors;
+
+            return problems.Select(x =>
+                    x.Parameters.Any()
+                        ? new TicketError(string.Join(',', x.Parameters.Select(y => y.Value)), x.Reason)
+                        : new TicketError(x.File, x.Reason))
+                .ToList();
         }
 
         private async Task UpdateJobStatus(Job job, JobStatus status, CancellationToken stoppingToken)

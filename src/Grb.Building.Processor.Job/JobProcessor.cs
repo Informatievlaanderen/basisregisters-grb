@@ -1,6 +1,7 @@
 ﻿namespace Grb.Building.Processor.Job
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -97,16 +98,13 @@
 
             if (jobRecordErrors.Any())
             {
-                var jobErrors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, string.Empty)).ToList();
-                await _ticketing.Error(job.TicketId!.Value, new TicketError(jobErrors), stoppingToken);
-
+                await _ticketing.Error(job.TicketId!.Value, new TicketError(MapToTicketErrors(jobRecordErrors)), stoppingToken);
                 await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                 return;
             }
 
             await _jobResultUploader.UploadJobResults(job.Id, stoppingToken);
-
             await _ticketing.Complete(
                 job.TicketId!.Value,
                 new TicketResult(new
@@ -135,6 +133,11 @@
         {
             job.UpdateStatus(jobStatus);
             await _buildingGrbContext.SaveChangesAsync(stoppingToken);
+        }
+
+        private static List<TicketError> MapToTicketErrors(IEnumerable<JobRecord> jobRecordErrors)
+        {
+            return jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, string.Empty)).ToList();
         }
     }
 }
