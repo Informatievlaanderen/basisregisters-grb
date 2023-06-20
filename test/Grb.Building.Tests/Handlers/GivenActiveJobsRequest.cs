@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.Handlers;
     using Api.Uploads;
     using AutoFixture;
     using FluentAssertions;
@@ -50,8 +51,8 @@
             _buildingGrbContext.Jobs.Add(jobInStatusCompleted);
             await _buildingGrbContext.SaveChangesAsync(CancellationToken.None);
 
-            var handler = new ActiveJobsRequestHandler(_buildingGrbContext, _ticketingUrl.Object);
-            var response = await handler.Handle(new ActiveJobsRequest(), CancellationToken.None);
+            var handler = new ActiveJobsHandler(_buildingGrbContext, _ticketingUrl.Object);
+            var response = await handler.Handle(new GetActiveJobsHandler(), CancellationToken.None);
 
             response.Jobs.Should().HaveCount(5);
             response.Jobs.Should().ContainSingle(x =>

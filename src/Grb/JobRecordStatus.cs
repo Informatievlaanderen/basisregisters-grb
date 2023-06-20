@@ -2,7 +2,7 @@
 {
     public enum JobRecordStatus
     {
-        Created,
+        Created = 1,
         Pending,
         Warning,
         Error,

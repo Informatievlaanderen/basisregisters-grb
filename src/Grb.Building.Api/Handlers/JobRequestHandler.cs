@@ -1,4 +1,4 @@
-﻿namespace Grb.Building.Api.Uploads
+﻿namespace Grb.Building.Api.Handlers
 {
     using System;
     using System.Collections.Generic;
@@ -12,20 +12,7 @@
     using TicketingService.Abstractions;
 
     public sealed record JobRequest(Guid JobId) : IRequest<JobResponse>;
-
-    public sealed record JobResponse(
-        Guid JobId,
-        DateTimeOffset Created,
-        JobStatus Status,
-        string? TicketUrl,
-        IEnumerable<JobRecordResponse> JobRecords);
-
-    public sealed record JobRecordResponse(
-        long JobRecordId,
-        Guid JobId,
-        int RecordNumber,
-        JobRecordStatus Status,
-        string? ErrorMessage);
+    public record JobResponse(Guid Id, Uri? TicketUrl, JobStatus Status, DateTimeOffset Created, string? BlobName, Uri GetJobRecords);
 
     public sealed class JobRequestHandler
         : IRequestHandler<JobRequest, JobResponse>
@@ -52,23 +39,13 @@
                 throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
 
-            var jobResults = await _buildingGrbContext.JobRecords
-                .Where(x => x.JobId == request.JobId)
-                .OrderBy(x => x.RecordNumber)
-                .Select(x => new JobRecordResponse(
-                    x.Id,
-                    x.JobId,
-                    x.RecordNumber,
-                    x.Status,
-                    x.ErrorMessage))
-                .ToListAsync(cancellationToken);
-
             return new JobResponse(
                 job.Id,
-                job.Created,
+                TicketUrl: job.TicketId.HasValue ? _ticketingUrl.For(job.TicketId.Value) : null,
                 job.Status,
-                job.TicketId.HasValue ? _ticketingUrl.For(job.TicketId.Value).ToString() : null,
-                jobResults);
+                job.Created,
+                job.ReceivedBlobName,
+                new Uri($"http://localhost:6018/v2/uploads/jobs/{job.Id}/jobrecords?offset=0"));
         }
     }
 }

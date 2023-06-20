@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.Handlers;
     using Api.Uploads;
     using AutoFixture;
     using AutoFixtures;
