@@ -5,26 +5,26 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Infrastructure;
     using Infrastructure.Query;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
 
     public record GetAllJobsRequest(Pagination Pagination, List<JobStatus> JobStatuses) : IRequest<GetAllJobsResponse>;
-
-    //public record GetAllJobsResponse(JobResponse[] Jobs, Uri NextPage);
-
     public record GetAllJobsResponse(object[] Jobs, Uri NextPage);
 
     public class GetAllJobsHandler : IRequestHandler<GetAllJobsRequest, GetAllJobsResponse>
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly ITicketingUrl _ticketingUrl;
+        private readonly IPagedUriGenerator _pagedUriGenerator;
 
-        public GetAllJobsHandler(BuildingGrbContext buildingGrbContext, ITicketingUrl ticketingUrl)
+        public GetAllJobsHandler(BuildingGrbContext buildingGrbContext, ITicketingUrl ticketingUrl, IPagedUriGenerator pagedUriGenerator)
         {
             _buildingGrbContext = buildingGrbContext;
             _ticketingUrl = ticketingUrl;
+            _pagedUriGenerator = pagedUriGenerator;
         }
 
         public async Task<GetAllJobsResponse> Handle(GetAllJobsRequest request, CancellationToken cancellationToken)
@@ -41,12 +41,8 @@
                 .OrderBy(x => x.Created)
                 .ToListAsync(cancellationToken);
 
-            var hasNextPage = query
-                .Skip(request.Pagination.NextPageOffset)
-                .Take(1).Any();
-
             return new GetAllJobsResponse(
-                result.ConvertAll(x =>
+                result.Select(x =>
                     new
                     {
                         Id = x.Id,
@@ -55,12 +51,11 @@
                         BlobName = x.ReceivedBlobName,
                         Created = x.Created,
                         LastChanged = x.LastChanged,
-                        GetJobRecords = new Uri($"http://localhost:6018/v2/uploads/jobs/{x.Id}/jobrecords?offset=0")
+                        GetJobRecords = _pagedUriGenerator.FirstPage($"/v2/uploads/jobs/{x.Id}/jobrecords")
                     }
                 ).ToArray(),
-                hasNextPage
-                    ? new Uri($"http://localhost:6018/v2/uploads/jobs?offset={request.Pagination.NextPageOffset}")
-                    : null);
+                _pagedUriGenerator.NextPage(query, request.Pagination, "v2/uploads/jobs"));
         }
     }
 }
+

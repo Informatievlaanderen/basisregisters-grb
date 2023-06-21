@@ -1,12 +1,12 @@
-namespace Grb.Building.Api.Uploads
+namespace Grb.Building.Api
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Handlers;
-    using Infrastructure.Query;
+    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
+    using Grb.Building.Api.Handlers;
+    using Grb.Building.Api.Infrastructure.Query;
     using MediatR;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -63,7 +63,7 @@ namespace Grb.Building.Api.Uploads
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
         public async Task<IActionResult> GetJob(Guid jobId, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new JobRequest(jobId), cancellationToken));
+            return Ok(await _mediator.Send(new GetJobByIdRequest(jobId), cancellationToken));
         }
 
         [HttpGet("jobs/{jobId:guid}/results")]

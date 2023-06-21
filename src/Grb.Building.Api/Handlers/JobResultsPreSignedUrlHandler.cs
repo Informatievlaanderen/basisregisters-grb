@@ -1,4 +1,4 @@
-﻿namespace Grb.Building.Api.Uploads
+﻿namespace Grb.Building.Api.Handlers
 {
     using System;
     using System.Threading;
@@ -6,8 +6,8 @@
     using Amazon.S3.Model;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Grb;
-    using Infrastructure;
-    using Infrastructure.Options;
+    using Grb.Building.Api.Infrastructure;
+    using Grb.Building.Api.Infrastructure.Options;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;

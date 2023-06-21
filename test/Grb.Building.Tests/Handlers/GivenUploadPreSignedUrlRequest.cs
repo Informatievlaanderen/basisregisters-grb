@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.Handlers;
     using Api.Infrastructure;
     using Api.Infrastructure.Options;
-    using Api.Uploads;
     using AutoFixture;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;

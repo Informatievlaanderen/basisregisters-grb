@@ -1,35 +1,36 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Infrastructure;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
 
-    public sealed record GetActiveJobsRequest() : IRequest<GetActiveJobResponse>;
+    public sealed record GetActiveJobsRequest() : IRequest<GetActiveJobsResponse>;
 
-   // public sealed record ActiveJobsResponse(IEnumerable<ActiveJobResponse> Jobs);
+    public sealed record GetActiveJobsResponse(object[] Jobs);
 
-    public sealed record GetActiveJobResponse(object[] Jobs);
-
-    public sealed class ActiveJobsHandler
-        : IRequestHandler<GetActiveJobsRequest, GetActiveJobResponse>
+    public sealed class GetActiveJobsHandler
+        : IRequestHandler<GetActiveJobsRequest, GetActiveJobsResponse>
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly ITicketingUrl _ticketingUrl;
+        private readonly IPagedUriGenerator _pagedUriGenerator;
 
-        public ActiveJobsHandler(
+        public GetActiveJobsHandler(
             BuildingGrbContext buildingGrbContext,
-            ITicketingUrl ticketingUrl)
+            ITicketingUrl ticketingUrl,
+            IPagedUriGenerator pagedUriGenerator)
         {
             _buildingGrbContext = buildingGrbContext;
             _ticketingUrl = ticketingUrl;
+            _pagedUriGenerator = pagedUriGenerator;
         }
 
-        public async Task<GetActiveJobResponse> Handle(
+        public async Task<GetActiveJobsResponse> Handle(
             GetActiveJobsRequest request,
             CancellationToken cancellationToken)
         {
@@ -38,7 +39,7 @@
                 .Where(x => x.Status != JobStatus.Cancelled && x.Status != JobStatus.Completed)
                 .ToListAsync(cancellationToken);
 
-            return new GetActiveJobResponse(
+            return new GetActiveJobsResponse(
                 result.ConvertAll(x =>
                     new
                     {
@@ -48,7 +49,7 @@
                         BlobName = x.ReceivedBlobName,
                         Created = x.Created,
                         LastChanged = x.LastChanged,
-                        GetJobRecords = new Uri($"http://localhost:6018/v2/uploads/jobs/{x.Id}/jobrecords?offset=0")
+                        GetJobRecords = _pagedUriGenerator.FirstPage($"v2/uploads/jobs/{x.Id}/jobrecords")
                     }
                 ).ToArray());
         }

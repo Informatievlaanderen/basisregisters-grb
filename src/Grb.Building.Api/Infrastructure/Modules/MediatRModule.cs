@@ -2,8 +2,8 @@ namespace Grb.Building.Api.Infrastructure.Modules
 {
     using System.Linq;
     using Autofac;
+    using Handlers;
     using MediatR;
-    using Uploads;
 
     public class MediatRModule : Module
     {

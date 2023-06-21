@@ -4,7 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Handlers;
-    using Api.Uploads;
+    using Api.Infrastructure;
     using AutoFixture;
     using AutoFixtures;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -57,33 +57,15 @@
             CreateJobRecord(anotherJob.Id);
             await _buildingGrbContext.SaveChangesAsync(CancellationToken.None);
 
-            var handler = new JobRequestHandler(_buildingGrbContext, _ticketingUrl.Object);
-            var response = await handler.Handle(new JobRequest(job.Id), CancellationToken.None);
+            var mockPagedUriGenerator = new Mock<IPagedUriGenerator>();
 
-            response.JobId.Should().Be(job.Id);
+            var handler = new GetJobByIdHandler(_buildingGrbContext, _ticketingUrl.Object, mockPagedUriGenerator.Object);
+            var response = await handler.Handle(new GetJobByIdRequest(job.Id), CancellationToken.None);
+
+            response.Id.Should().Be(job.Id);
             response.Created.Should().Be(job.Created);
             response.Status.Should().Be(job.Status);
             response.TicketUrl.Should().Be(GetTicketUrl(job.TicketId!.Value));
-
-            response.JobRecords.Should().HaveCount(3);
-            response.JobRecords.Should().ContainSingle(x =>
-                x.JobId == jobRecordOne.JobId
-                && x.JobRecordId == jobRecordOne.Id
-                && x.RecordNumber == jobRecordOne.RecordNumber
-                && x.Status == jobRecordOne.Status
-                && x.ErrorMessage == jobRecordOne.ErrorMessage);
-            response.JobRecords.Should().ContainSingle(x =>
-                x.JobId == jobRecordTwo.JobId
-                && x.JobRecordId == jobRecordTwo.Id
-                && x.RecordNumber == jobRecordTwo.RecordNumber
-                && x.Status == jobRecordTwo.Status
-                && x.ErrorMessage == jobRecordTwo.ErrorMessage);
-            response.JobRecords.Should().ContainSingle(x =>
-                x.JobId == jobRecordThree.JobId
-                && x.JobRecordId == jobRecordThree.Id
-                && x.RecordNumber == jobRecordThree.RecordNumber
-                && x.Status == jobRecordThree.Status
-                && x.ErrorMessage == jobRecordThree.ErrorMessage);
         }
 
         [Fact]
@@ -91,8 +73,9 @@
         {
             var jobId = _fixture.Create<Guid>();
 
-            var handler = new JobRequestHandler(_buildingGrbContext, _ticketingUrl.Object);
-            var act = async () => await handler.Handle(new JobRequest(jobId), CancellationToken.None);
+            var mockPagedUriGenerator = new Mock<IPagedUriGenerator>();
+            var handler = new GetJobByIdHandler(_buildingGrbContext, _ticketingUrl.Object, mockPagedUriGenerator.Object);
+            var act = async () => await handler.Handle(new GetJobByIdRequest(jobId), CancellationToken.None);
 
             act.Should()
                 .ThrowAsync<ApiException>()

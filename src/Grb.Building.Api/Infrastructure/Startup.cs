@@ -10,6 +10,7 @@ namespace Grb.Building.Api.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Configuration;
+    using Handlers;
     using IdentityModel.AspNetCore.OAuth2Introspection;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -85,7 +86,7 @@ namespace Grb.Building.Api.Infrastructure
                                     Url = new Uri("https://backoffice.basisregisters.vlaanderen")
                                 }
                             },
-                            XmlCommentPaths = new[] { typeof(Startup).GetTypeInfo().Assembly.GetName().Name }
+                            XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
                         },
                         MiddlewareHooks =
                         {
@@ -102,7 +103,7 @@ namespace Grb.Building.Api.Infrastructure
                                     health.AddSqlServer(
                                         connectionString.Value,
                                         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
-                                        tags: new[] { DatabaseTag, "sql", "sqlserver" });
+                                        tags: new[] {DatabaseTag, "sql", "sqlserver"});
                             },
                             Authorization = options =>
                             {
@@ -113,11 +114,13 @@ namespace Grb.Building.Api.Infrastructure
                     .EnableJsonErrorActionFilterOption())
                 .Configure<TicketingOptions>(_configuration.GetSection(TicketingModule.TicketingServiceConfigKey))
                 .Configure<BucketOptions>(_configuration.GetSection(BucketOptions.ConfigKey))
-                .AddTransient<IAmazonS3Extended>(c => new AmazonS3ExtendedClient(c.GetRequiredService<ILoggerFactory>(), new AmazonS3Config
-                {
-                    RegionEndpoint = _configuration.GetAWSOptions().Region,
-                }))
-                .AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+                .AddTransient<IAmazonS3Extended>(c => new AmazonS3ExtendedClient(c.GetRequiredService<ILoggerFactory>(),
+                    new AmazonS3Config
+                    {
+                        RegionEndpoint = _configuration.GetAWSOptions().Region,
+                    }))
+                .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                .AddSingleton<IPagedUriGenerator, PagedUriGenerator>();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));

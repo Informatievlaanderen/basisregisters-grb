@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Infrastructure;
     using Infrastructure.Query;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
@@ -21,11 +22,13 @@
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly ITicketingUrl _ticketingUrl;
+        private readonly IPagedUriGenerator _pagedUriGenerator;
 
-        public GetAllJobRecordsHandler(BuildingGrbContext buildingGrbContext, ITicketingUrl ticketingUrl)
+        public GetAllJobRecordsHandler(BuildingGrbContext buildingGrbContext, ITicketingUrl ticketingUrl, IPagedUriGenerator pagedUriGenerator)
         {
             _buildingGrbContext = buildingGrbContext;
             _ticketingUrl = ticketingUrl;
+            _pagedUriGenerator = pagedUriGenerator;
         }
 
         public async Task<GetAllJobRecordsResponse> Handle(GetAllJobRecordsRequest request,
@@ -45,10 +48,6 @@
                 .OrderBy(x => x.RecordNumber)
                 .ToListAsync(cancellationToken);
 
-            var hasNextPage = query
-                .Skip(request.Pagination.NextPageOffset)
-                .Take(1).Any();
-
             return new GetAllJobRecordsResponse(
                 result.ConvertAll(x =>
                     new
@@ -62,9 +61,7 @@
                         VersionDate = x.VersionDate
                     }
                 ).ToArray(),
-                hasNextPage
-                    ? new Uri($"http://localhost:6018/v2/uploads/jobs/{request.JobId}/jobrecords?offset={request.Pagination.NextPageOffset}")
-                    : null);
+                _pagedUriGenerator.NextPage(query, request.Pagination, $"v2/uploads/jobs/{request.JobId}/jobrecords"));
         }
     }
 }
