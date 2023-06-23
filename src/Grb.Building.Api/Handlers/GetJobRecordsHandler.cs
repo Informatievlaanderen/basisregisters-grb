@@ -17,7 +17,7 @@
         Guid JobId)
             : IRequest<GetJobRecordsResponse>;
 
-    public record JobRecordResult(
+    public record JobRecordResponse(
         int RecordNumber,
         long Id,
         int GrId,
@@ -27,7 +27,7 @@
         DateTimeOffset VersionDate
     );
 
-    public record GetJobRecordsResponse(JobRecordResult[] JobRecords, Uri NextPage);
+    public record GetJobRecordsResponse(JobRecordResponse[] JobRecords, Uri NextPage);
 
     public class GetJobRecordsHandler : IRequestHandler<GetJobRecordsRequest, GetJobRecordsResponse>
     {
@@ -62,7 +62,7 @@
 
             return new GetJobRecordsResponse(
                 result.Select(x =>
-                    new JobRecordResult
+                    new JobRecordResponse
                     (
                         RecordNumber: x.RecordNumber,
                         Id: x.Id,

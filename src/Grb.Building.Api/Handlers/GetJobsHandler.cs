@@ -12,13 +12,12 @@
     using TicketingService.Abstractions;
 
     public record GetJobsRequest(Pagination Pagination, List<JobStatus> JobStatuses) : IRequest<GetJobsResponse>;
-    public record GetJobsResponse(JobResult[] Jobs, Uri NextPage);
+    public record GetJobsResponse(JobResponse[] Jobs, Uri NextPage);
 
-    public record JobResult(
+    public record JobResponse(
         Guid Id,
         Uri? TicketUrl,
         JobStatus Status,
-        string BlobName,
         DateTimeOffset Created,
         DateTimeOffset LastChanged,
         Uri GetJobRecords
@@ -54,12 +53,11 @@
 
             return new GetJobsResponse(
                 result.Select(x =>
-                    new JobResult
+                    new JobResponse
                     (
                         Id : x.Id,
                         TicketUrl : x.TicketId.HasValue ? _ticketingUrl.For(x.TicketId.Value) : null,
                         Status : x.Status,
-                        BlobName : x.ReceivedBlobName,
                         Created : x.Created,
                         LastChanged : x.LastChanged,
                         GetJobRecords : _pagedUriGenerator.FirstPage($"/v2/uploads/jobs/{x.Id}/jobrecords")

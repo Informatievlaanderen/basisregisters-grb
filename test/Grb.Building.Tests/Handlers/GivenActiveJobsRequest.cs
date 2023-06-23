@@ -24,12 +24,12 @@
             _ticketingUrl = new Mock<ITicketingUrl>();
             _ticketingUrl
                 .Setup(x => x.For(It.IsAny<Guid>()))
-                .Returns<Guid>(ticketId => new Uri(GetTicketUrl(ticketId)));
+                .Returns<Guid>(GetTicketUrl);
         }
 
-        private static string GetTicketUrl(Guid ticketId)
+        private static Uri GetTicketUrl(Guid ticketId)
         {
-            return $"https://api.basisregisters.vlaanderen.be/v2/tickets/{ticketId}";
+            return new Uri( $"https://api.basisregisters.vlaanderen.be/v2/tickets/{ticketId}");
         }
 
         [Fact]
@@ -57,32 +57,31 @@
             var response = await handler.Handle(new GetActiveJobsRequest(), CancellationToken.None);
 
             response.Jobs.Should().HaveCount(5);
-            // TODO: because use of anonymous object[] cannot assert here
-            // response.Jobs.Should().ContainSingle(x =>
-            //     x.Id == jobInStatusCreated.Id
-            //     && x.Created == jobInStatusCreated.Created
-            //     && x.Status == jobInStatusCreated.Status
-            //     && x.TicketUrl == GetTicketUrl(jobInStatusCreated.TicketId!.Value));
-            // response.Jobs.Should().ContainSingle(x =>
-            //     x.JobId == jobInStatusPreparing.Id
-            //     && x.Created == jobInStatusPreparing.Created
-            //     && x.Status == jobInStatusPreparing.Status
-            //     && x.TicketUrl == GetTicketUrl(jobInStatusPreparing.TicketId!.Value));
-            // response.Jobs.Should().ContainSingle(x =>
-            //     x.JobId == jobInStatusPrepared.Id
-            //     && x.Created == jobInStatusPrepared.Created
-            //     && x.Status == jobInStatusPrepared.Status
-            //     && x.TicketUrl == GetTicketUrl(jobInStatusPrepared.TicketId!.Value));
-            // response.Jobs.Should().ContainSingle(x =>
-            //     x.JobId == jobInStatusProcessing.Id
-            //     && x.Created == jobInStatusProcessing.Created
-            //     && x.Status == jobInStatusProcessing.Status
-            //     && x.TicketUrl == GetTicketUrl(jobInStatusProcessing.TicketId!.Value));
-            // response.Jobs.Should().ContainSingle(x =>
-            //     x.JobId == jobInStatusError.Id
-            //     && x.Created == jobInStatusError.Created
-            //     && x.Status == jobInStatusError.Status
-            //     && x.TicketUrl == GetTicketUrl(jobInStatusError.TicketId!.Value));
+            response.Jobs.Should().ContainSingle(x =>
+                x.Id == jobInStatusCreated.Id
+                && x.Created == jobInStatusCreated.Created
+                && x.Status == jobInStatusCreated.Status
+                && x.TicketUrl == GetTicketUrl(jobInStatusCreated.TicketId!.Value));
+            response.Jobs.Should().ContainSingle(x =>
+                x.Id == jobInStatusPreparing.Id
+                && x.Created == jobInStatusPreparing.Created
+                && x.Status == jobInStatusPreparing.Status
+                && x.TicketUrl == GetTicketUrl(jobInStatusPreparing.TicketId!.Value));
+            response.Jobs.Should().ContainSingle(x =>
+                x.Id == jobInStatusPrepared.Id
+                && x.Created == jobInStatusPrepared.Created
+                && x.Status == jobInStatusPrepared.Status
+                && x.TicketUrl == GetTicketUrl(jobInStatusPrepared.TicketId!.Value));
+            response.Jobs.Should().ContainSingle(x =>
+                x.Id == jobInStatusProcessing.Id
+                && x.Created == jobInStatusProcessing.Created
+                && x.Status == jobInStatusProcessing.Status
+                && x.TicketUrl == GetTicketUrl(jobInStatusProcessing.TicketId!.Value));
+            response.Jobs.Should().ContainSingle(x =>
+                x.Id == jobInStatusError.Id
+                && x.Created == jobInStatusError.Created
+                && x.Status == jobInStatusError.Status
+                && x.TicketUrl == GetTicketUrl(jobInStatusError.TicketId!.Value));
         }
     }
 }

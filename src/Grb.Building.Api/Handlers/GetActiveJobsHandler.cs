@@ -1,6 +1,5 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
-    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,7 +10,7 @@
 
     public sealed record GetActiveJobsRequest() : IRequest<GetActiveJobsResponse>;
 
-    public sealed record GetActiveJobsResponse(JobResult[] Jobs);
+    public sealed record GetActiveJobsResponse(JobResponse[] Jobs);
 
     public sealed class GetActiveJobsHandler
         : IRequestHandler<GetActiveJobsRequest, GetActiveJobsResponse>
@@ -41,12 +40,11 @@
 
             return new GetActiveJobsResponse(
                 result.Select(x =>
-                    new JobResult
+                    new JobResponse
                     (
                         Id : x.Id,
                         TicketUrl : x.TicketId.HasValue ? _ticketingUrl.For(x.TicketId.Value) : null,
                         Status : x.Status,
-                        BlobName : x.ReceivedBlobName,
                         Created : x.Created,
                         LastChanged : x.LastChanged,
                         GetJobRecords : _pagedUriGenerator.FirstPage($"v2/uploads/jobs/{x.Id}/jobrecords")

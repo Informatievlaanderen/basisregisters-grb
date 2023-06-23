@@ -10,7 +10,6 @@
     using TicketingService.Abstractions;
 
     public sealed record GetJobByIdRequest(Guid JobId) : IRequest<JobResponse>;
-    public record JobResponse(Guid Id, Uri? TicketUrl, JobStatus Status, DateTimeOffset Created, string? BlobName, Uri GetJobRecords);
 
     public sealed class GetJobByIdHandler
         : IRequestHandler<GetJobByIdRequest, JobResponse>
@@ -45,7 +44,7 @@
                 TicketUrl: job.TicketId.HasValue ? _ticketingUrl.For(job.TicketId.Value) : null,
                 job.Status,
                 job.Created,
-                job.ReceivedBlobName,
+                job.LastChanged,
                 _pagedUriGenerator.FirstPage($"v2/uploads/jobs/{job.Id}/jobrecords"));
         }
     }

@@ -32,13 +32,6 @@ namespace Grb.Building.Api
             return Ok(await _mediator.Send(new UploadPreSignedUrlRequest(), cancellationToken));
         }
 
-        [HttpGet("jobs/active")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
-        public async Task<IActionResult> GetActiveJobs(CancellationToken cancellationToken)
-        {
-            return Ok(await _mediator.Send(new GetActiveJobsRequest(), cancellationToken));
-        }
-
         [HttpGet("jobs")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
         public async Task<IActionResult> GetJobs(CancellationToken cancellationToken)
@@ -47,6 +40,28 @@ namespace Grb.Building.Api
             var statusesFilter = new EnumFilter<JobStatus>(HttpContext.Request.Query, "statuses");
 
             return Ok(await _mediator.Send(new GetJobsRequest(pagination, statusesFilter), cancellationToken));
+        }
+
+        [HttpGet("jobs/active")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
+        public async Task<IActionResult> GetActiveJobs(CancellationToken cancellationToken)
+        {
+            return Ok(await _mediator.Send(new GetActiveJobsRequest(), cancellationToken));
+        }
+
+        [HttpGet("jobs/{jobId:guid}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
+        public async Task<IActionResult> GetJob(Guid jobId, CancellationToken cancellationToken)
+        {
+            return Ok(await _mediator.Send(new GetJobByIdRequest(jobId), cancellationToken));
+        }
+
+        [HttpDelete("jobs/{jobId:guid}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
+        public async Task<IActionResult> CancelJob(Guid jobId, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new CancelJobRequest(jobId), cancellationToken);
+            return NoContent();
         }
 
         [HttpGet("jobs/{jobId:guid}/jobrecords")]
@@ -59,11 +74,12 @@ namespace Grb.Building.Api
             return Ok(await _mediator.Send(new GetJobRecordsRequest(pagination, statusesFilter, jobId), cancellationToken));
         }
 
-        [HttpGet("jobs/{jobId:guid}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
-        public async Task<IActionResult> GetJob(Guid jobId, CancellationToken cancellationToken)
+        [HttpDelete("jobs/{jobId:guid}/jobrecords/{jobRecordId:long}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.InterneBijwerker)]
+        public async Task<IActionResult> ResolveJobRecordError(Guid jobId, long jobRecordId, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new GetJobByIdRequest(jobId), cancellationToken));
+            await _mediator.Send(new ResolveJobRecordErrorRequest(jobId, jobRecordId), cancellationToken);
+            return NoContent();
         }
 
         [HttpGet("jobs/{jobId:guid}/results")]
@@ -71,22 +87,6 @@ namespace Grb.Building.Api
         public async Task<IActionResult> GetResultsPreSignedUrl(Guid jobId, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new JobResultsPreSignedUrlRequest(jobId), cancellationToken));
-        }
-
-        [HttpDelete("jobs/{jobId:guid}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
-        public async Task<IActionResult> CancelJob(Guid jobId, CancellationToken cancellationToken)
-        {
-            await _mediator.Send(new CancelJobRequest(jobId), cancellationToken);
-            return NoContent();
-        }
-
-        [HttpDelete("jobs/{jobId:guid}/jobrecords/{jobRecordId:long}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.InterneBijwerker)]
-        public async Task<IActionResult> ResolveJobRecordError(Guid jobId, long jobRecordId, CancellationToken cancellationToken)
-        {
-            await _mediator.Send(new ResolveJobRecordErrorRequest(jobId, jobRecordId), cancellationToken);
-            return NoContent();
         }
     }
 }
