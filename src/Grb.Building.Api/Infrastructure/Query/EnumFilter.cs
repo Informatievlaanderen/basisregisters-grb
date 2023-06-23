@@ -14,7 +14,7 @@
         {
             var stringEnums = queryCollection[parameterName].ToString();
 
-            if (string.IsNullOrEmpty(stringEnums))
+            if (string.IsNullOrWhiteSpace(stringEnums))
             {
                 return;
             }

@@ -46,7 +46,7 @@ namespace Grb.Building.Api
             var pagination = new Pagination(HttpContext.Request.Query);
             var statusesFilter = new EnumFilter<JobStatus>(HttpContext.Request.Query, "statuses");
 
-            return Ok(await _mediator.Send(new GetAllJobsRequest(pagination, statusesFilter), cancellationToken));
+            return Ok(await _mediator.Send(new GetJobsRequest(pagination, statusesFilter), cancellationToken));
         }
 
         [HttpGet("jobs/{jobId:guid}/jobrecords")]
@@ -56,7 +56,7 @@ namespace Grb.Building.Api
             var pagination = new Pagination(HttpContext.Request.Query);
             var statusesFilter = new EnumFilter<JobRecordStatus>(HttpContext.Request.Query, "statuses");
 
-            return Ok(await _mediator.Send(new GetAllJobRecordsRequest(pagination, statusesFilter, jobId), cancellationToken));
+            return Ok(await _mediator.Send(new GetJobRecordsRequest(pagination, statusesFilter, jobId), cancellationToken));
         }
 
         [HttpGet("jobs/{jobId:guid}")]

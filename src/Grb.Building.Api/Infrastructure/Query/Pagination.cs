@@ -5,7 +5,7 @@
 
     public sealed class Pagination
     {
-        public const int MaxLimit = 5;
+        public const int MaxLimit = 200;
 
         public int? Offset
         {

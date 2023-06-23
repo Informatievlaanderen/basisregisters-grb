@@ -33,11 +33,9 @@ namespace Grb.Building.Api.Infrastructure
                 : null;
         }
 
-        public Uri? FirstPage(string path)
+        public Uri FirstPage(string path)
         {
-            path = path.TrimEnd('/');
-
-            return new Uri(_baseUri, $"{path}?offset=0");
+            return new Uri(_baseUri, $"{path.TrimEnd('/')}?offset=0");
         }
     }
 }

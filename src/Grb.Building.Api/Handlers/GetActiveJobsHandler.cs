@@ -11,7 +11,7 @@
 
     public sealed record GetActiveJobsRequest() : IRequest<GetActiveJobsResponse>;
 
-    public sealed record GetActiveJobsResponse(object[] Jobs);
+    public sealed record GetActiveJobsResponse(JobResult[] Jobs);
 
     public sealed class GetActiveJobsHandler
         : IRequestHandler<GetActiveJobsRequest, GetActiveJobsResponse>
@@ -40,17 +40,17 @@
                 .ToListAsync(cancellationToken);
 
             return new GetActiveJobsResponse(
-                result.ConvertAll(x =>
-                    new
-                    {
-                        Id = x.Id,
-                        TicketUrl = x.TicketId.HasValue ? _ticketingUrl.For(x.TicketId.Value) : null,
-                        Status = x.Status,
-                        BlobName = x.ReceivedBlobName,
-                        Created = x.Created,
-                        LastChanged = x.LastChanged,
-                        GetJobRecords = _pagedUriGenerator.FirstPage($"v2/uploads/jobs/{x.Id}/jobrecords")
-                    }
+                result.Select(x =>
+                    new JobResult
+                    (
+                        Id : x.Id,
+                        TicketUrl : x.TicketId.HasValue ? _ticketingUrl.For(x.TicketId.Value) : null,
+                        Status : x.Status,
+                        BlobName : x.ReceivedBlobName,
+                        Created : x.Created,
+                        LastChanged : x.LastChanged,
+                        GetJobRecords : _pagedUriGenerator.FirstPage($"v2/uploads/jobs/{x.Id}/jobrecords")
+                    )
                 ).ToArray());
         }
     }
