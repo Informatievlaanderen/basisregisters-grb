@@ -1,4 +1,4 @@
-﻿namespace Grb.Building.Api.Uploads
+﻿namespace Grb.Building.Api.Handlers
 {
     using System;
     using System.Threading;

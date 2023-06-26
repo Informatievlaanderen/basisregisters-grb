@@ -60,10 +60,6 @@ Target.create "Publish_Solution" (fun _ ->
     "Grb.Building.Processor.Job"
   ] |> List.iter publishSource)
 
-Target.create "Pack_Solution" (fun _ ->
-  [
-  ] |> List.iter pack)
-
 Target.create "Containerize_ApiGrb" (fun _ -> containerize "Grb.Building.Api" "api-grb")
 Target.create "Containerize_GrbProcessorUpload" (fun _ -> containerize "Grb.Building.Processor.Upload" "grb-processor-upload")
 Target.create "Containerize_GrbProcessorJob" (fun _ -> containerize "Grb.Building.Processor.Job" "grb-processor-job")
@@ -93,7 +89,6 @@ Target.create "Containerize" ignore
   ==> "Publish"
 
 "Publish"
-  ==> "Pack_Solution"
   ==> "Pack"
 
 "Pack"

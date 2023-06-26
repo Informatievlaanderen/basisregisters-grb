@@ -4,9 +4,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Amazon.S3.Model;
+    using Api.Handlers;
     using Api.Infrastructure;
     using Api.Infrastructure.Options;
-    using Api.Uploads;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;

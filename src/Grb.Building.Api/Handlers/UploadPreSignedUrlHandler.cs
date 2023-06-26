@@ -1,12 +1,12 @@
-namespace Grb.Building.Api.Uploads
+namespace Grb.Building.Api.Handlers
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Grb;
-    using Infrastructure;
-    using Infrastructure.Options;
+    using Grb.Building.Api.Infrastructure;
+    using Grb.Building.Api.Infrastructure.Options;
     using MediatR;
     using Microsoft.Extensions.Options;
     using NodaTime;
