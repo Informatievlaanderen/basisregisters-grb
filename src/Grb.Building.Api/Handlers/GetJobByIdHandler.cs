@@ -1,15 +1,14 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
+    using Abstractions.Responses;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Infrastructure;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using TicketingService.Abstractions;
-
-    public sealed record GetJobByIdRequest(Guid JobId) : IRequest<JobResponse>;
 
     public sealed class GetJobByIdHandler
         : IRequestHandler<GetJobByIdRequest, JobResponse>

@@ -1,15 +1,13 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Grb;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using TicketingService.Abstractions;
-
-    public sealed record CancelJobRequest(Guid JobId) : IRequest;
 
     public sealed class CancelJobHandler : IRequestHandler<CancelJobRequest>
     {

@@ -3,6 +3,8 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
+    using Abstractions.Responses;
     using Amazon.S3.Model;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Grb;
@@ -11,11 +13,6 @@
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
-
-    public sealed record JobResultsPreSignedUrlRequest
-        (Guid JobId) : IRequest<JobResultsPreSignedUrlResponse>;
-
-    public sealed record JobResultsPreSignedUrlResponse(Guid JobId, string GetUrl);
 
     public sealed class JobResultsPreSignedUrlHandler
         : IRequestHandler<JobResultsPreSignedUrlRequest, JobResultsPreSignedUrlResponse>

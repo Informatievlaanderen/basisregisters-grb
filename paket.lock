@@ -436,9 +436,6 @@ NUGET
       Microsoft.Bcl.AsyncInterfaces (>= 6.0) - restriction: == net472
       Microsoft.Extensions.DependencyInjection.Abstractions (>= 6.0)
     MediatR.Contracts (2.0.1)
-    MediatR.Extensions.Microsoft.DependencyInjection (10.0.1)
-      MediatR (>= 10.0.1) - restriction: || (&& (== net472) (>= netstandard2.1)) (== net6.0)
-      Microsoft.Extensions.DependencyInjection.Abstractions (>= 6.0) - restriction: || (&& (== net472) (>= netstandard2.1)) (== net6.0)
     Microsoft.AspNetCore.Authentication.JwtBearer (6.0.11) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Microsoft.IdentityModel.Protocols.OpenIdConnect (>= 6.10) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore (6.0.3) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

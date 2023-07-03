@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.Abstractions.Requests;
     using Api.Handlers;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;

@@ -1,27 +1,14 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
+    using Abstractions.Responses;
     using Infrastructure;
-    using Infrastructure.Query;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
-
-    public record GetJobsRequest(Pagination Pagination, List<JobStatus> JobStatuses) : IRequest<GetJobsResponse>;
-    public record GetJobsResponse(JobResponse[] Jobs, Uri NextPage);
-
-    public record JobResponse(
-        Guid Id,
-        Uri? TicketUrl,
-        JobStatus Status,
-        DateTimeOffset Created,
-        DateTimeOffset LastChanged,
-        Uri GetJobRecords
-    );
 
     public class GetJobsHandler : IRequestHandler<GetJobsRequest, GetJobsResponse>
     {

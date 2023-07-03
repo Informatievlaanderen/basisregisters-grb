@@ -3,14 +3,12 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
+    using Abstractions.Responses;
     using Infrastructure;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
-
-    public sealed record GetActiveJobsRequest() : IRequest<GetActiveJobsResponse>;
-
-    public sealed record GetActiveJobsResponse(JobResponse[] Jobs);
 
     public sealed class GetActiveJobsHandler
         : IRequestHandler<GetActiveJobsRequest, GetActiveJobsResponse>
