@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.2.0...v1.3.0) (2023-07-03)
+
+
+### Features
+
+* add abstractions ([fc6432f](https://github.com/informatievlaanderen/basisregisters-grb/commit/fc6432f335134671c11d56c8e3a5d989b9d0ac26))
+
 # [1.2.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.1.0...v1.2.0) (2023-07-03)
 
 
