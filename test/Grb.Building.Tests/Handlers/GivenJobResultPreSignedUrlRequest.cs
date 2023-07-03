@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Amazon.S3.Model;
+    using Api.Abstractions.Requests;
     using Api.Handlers;
     using Api.Infrastructure;
     using Api.Infrastructure.Options;

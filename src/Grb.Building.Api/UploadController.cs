@@ -3,6 +3,7 @@ namespace Grb.Building.Api
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Grb.Building.Api.Handlers;

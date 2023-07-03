@@ -4,6 +4,8 @@ namespace Grb.Building.Api.Handlers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
+    using Abstractions.Responses;
     using Grb;
     using Grb.Building.Api.Infrastructure;
     using Grb.Building.Api.Infrastructure.Options;
@@ -11,10 +13,6 @@ namespace Grb.Building.Api.Handlers
     using Microsoft.Extensions.Options;
     using NodaTime;
     using TicketingService.Abstractions;
-
-    public sealed record UploadPreSignedUrlRequest : IRequest<UploadPreSignedUrlResponse>;
-
-    public sealed record UploadPreSignedUrlResponse(Guid JobId, string UploadUrl, Dictionary<string, string> UploadUrlFormData, string TicketUrl);
 
     public sealed class UploadPreSignedUrlHandler : IRequestHandler<UploadPreSignedUrlRequest, UploadPreSignedUrlResponse>
     {

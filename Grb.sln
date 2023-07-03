@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grb.Building.Processor.Uplo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grb.Building.Tests", "test\Grb.Building.Tests\Grb.Building.Tests.csproj", "{6AD514DC-2F98-476C-8E5F-9AE9EA98B32E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grb.Building.Api.Abstractions", "src\Grb.Building.Api.Abstractions\Grb.Building.Api.Abstractions.csproj", "{7DB96633-5934-4B50-9629-B11D8A128637}"
+EndProject
 Global
 GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ EndGlobalSection
 		{6AD514DC-2F98-476C-8E5F-9AE9EA98B32E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AD514DC-2F98-476C-8E5F-9AE9EA98B32E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AD514DC-2F98-476C-8E5F-9AE9EA98B32E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DB96633-5934-4B50-9629-B11D8A128637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DB96633-5934-4B50-9629-B11D8A128637}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DB96633-5934-4B50-9629-B11D8A128637}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DB96633-5934-4B50-9629-B11D8A128637}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2E1BD87C-929B-4917-B31D-34EC81E82BAD} = {7394E8AB-821D-43E7-9290-7543690843AE}
@@ -68,5 +74,6 @@ EndGlobalSection
 		{428B4C80-7DC6-4866-88E2-B6EE362A9B73} = {9D1F8B93-289C-4127-AD7C-C4D2C936FD74}
 		{DB1CE62B-2391-4837-96AD-23A475ADEA2C} = {9D1F8B93-289C-4127-AD7C-C4D2C936FD74}
 		{6AD514DC-2F98-476C-8E5F-9AE9EA98B32E} = {7394E8AB-821D-43E7-9290-7543690843AE}
+		{7DB96633-5934-4B50-9629-B11D8A128637} = {9D1F8B93-289C-4127-AD7C-C4D2C936FD74}
 	EndGlobalSection
 EndGlobal

@@ -1,15 +1,13 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
-
-    public sealed record ResolveJobRecordErrorRequest(Guid JobId, long JobRecordId) : IRequest;
 
     public sealed class ResolveJobRecordErrorHandler : IRequestHandler<ResolveJobRecordErrorRequest>
     {
