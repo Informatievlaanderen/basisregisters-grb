@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.1.0...v1.2.0) (2023-07-03)
+
+
+### Bug Fixes
+
+* set paket.tempalte to content copy always ([055c58c](https://github.com/informatievlaanderen/basisregisters-grb/commit/055c58c8fc5df42cf3db5d61b0071a9ea37ee17c))
+
+
+### Features
+
+* extend endpoints for ops ([b4e73ca](https://github.com/informatievlaanderen/basisregisters-grb/commit/b4e73cabf034131850c89f165a6de2e9094e4d41))
+
 # [1.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.0.5...v1.1.0) (2023-06-12)
 
 
