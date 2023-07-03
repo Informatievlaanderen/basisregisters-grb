@@ -29,13 +29,6 @@
                         ValidationErrorType.GeometryIsNotPolygon
                     });
                 }
-                // else if (!GeometryValidator.IsValid(GeometryTranslator.ToGeometryPolygon((record.Content as PolygonShapeContent)!.Shape)))
-                // {
-                //     validationErrors.Add(record.Header.RecordNumber, new List<ValidationErrorType>
-                //     {
-                //         ValidationErrorType.PolygonNotValid
-                //     });
-                // }
 
                 moved = records.MoveNext();
             }
@@ -43,18 +36,4 @@
             return validationErrors;
         }
     }
-
-    // public static class GeometryValidator
-    // {
-    //     public static bool IsValid(Geometry geometry)
-    //     {
-    //         var validOp =
-    //             new NetTopologySuite.Operation.Valid.IsValidOp(geometry)
-    //             {
-    //                 IsSelfTouchingRingFormingHoleValid = true
-    //             };
-    //
-    //         return validOp.IsValid;
-    //     }
-    // }
 }

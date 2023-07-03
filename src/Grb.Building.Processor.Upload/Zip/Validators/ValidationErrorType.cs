@@ -3,7 +3,6 @@
     public enum ValidationErrorType
     {
         GeometryIsNotPolygon,
-        PolygonNotValid,
         UnknownEventType,
         InvalidGrId
     }

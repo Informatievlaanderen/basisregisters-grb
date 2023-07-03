@@ -17,7 +17,8 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
 
         private readonly Dictionary<string, IZipArchiveEntryValidator> _validators;
 
-        public ZipArchiveValidator(Dictionary<string, IZipArchiveEntryValidator> archiveEntries)
+        public ZipArchiveValidator(
+            Dictionary<string, IZipArchiveEntryValidator> archiveEntries)
         {
             _validators = archiveEntries;
         }
@@ -28,79 +29,104 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
 
             var problems = ZipArchiveProblems.None;
 
-            // Report all missing required files
-            var missingRequiredFiles = new HashSet<string>(
-                _validators.Keys,
-                StringComparer.InvariantCultureIgnoreCase
-            );
-            missingRequiredFiles.ExceptWith(
-                new HashSet<string>(
-                    archive.Entries.Select(entry => entry.FullName),
-                    StringComparer.InvariantCultureIgnoreCase
-                )
-            );
-            problems = missingRequiredFiles.Aggregate(
-                problems,
-                (current, file) => current.RequiredFileMissing(file));
+            var missingRequiredFiles = FindMissingRequiredFiles(archive);
+            if (missingRequiredFiles.Any())
+            {
+                problems = missingRequiredFiles.Aggregate(
+                    problems,
+                    (current, file) => current.RequiredFileMissing(file));
 
-            // Validate all required files (if a validator was registered for it)
+                return problems;
+            }
+
             try
             {
-                if (missingRequiredFiles.Count == 0)
-                {
-                    var requiredFiles = new HashSet<string>(
-                        archive.Entries.Select(entry => entry.FullName),
+                var requiredFiles = GetRequiredFiles(archive);
+                requiredFiles.IntersectWith(
+                    new HashSet<string>(
+                        _validators.Keys,
                         StringComparer.InvariantCultureIgnoreCase
-                    );
-                    requiredFiles.IntersectWith(
-                        new HashSet<string>(
-                            _validators.Keys,
-                            StringComparer.InvariantCultureIgnoreCase
-                        )
-                    );
+                    )
+                );
 
-                    foreach (var file in requiredFiles.OrderBy(file =>
-                                 Array.IndexOf(ValidationOrder, file.ToUpperInvariant())))
+                foreach (var file in requiredFiles
+                             .OrderBy(file => Array.IndexOf(ValidationOrder, file.ToUpperInvariant())))
+                {
+                    if (!_validators.TryGetValue(file, out var validator))
                     {
-                        if (_validators.TryGetValue(file, out var validator))
-                        {
-                            var fileProblems = validator.Validate(archive.GetEntry(file));
-                            var fileProblemsGrouped = fileProblems
-                                .SelectMany(kvp =>
-                                    kvp.Value.Select(errorType =>
-                                        new { ErrorType = errorType, RecordNumber = kvp.Key }))
-                                .GroupBy(x => x.ErrorType)
-                                .ToDictionary(group => group.Key, group => group.Select(x => x.RecordNumber).ToList());
+                        continue;
+                    }
 
-                            foreach (var kvp in fileProblemsGrouped)
+                    var problemsInFile = validator.Validate(archive.GetEntry(file));
+                    var problemsInFileByErrorType = problemsInFile
+                        .SelectMany(kvp =>
+                        {
+                            var (recordNumber, errorTypes) = kvp;
+                            return errorTypes.Select(errorType => new
                             {
-                                problems.Add(new FileError(file, kvp.Key.ToString(),
-                                    new ProblemParameter("recordnumbers", string.Join(",", kvp.Value))));
-                            }
-                        }
+                                ErrorType = errorType,
+                                RecordNumber = recordNumber
+                            });
+                        })
+                        .GroupBy(x => x.ErrorType)
+                        .ToDictionary(
+                            group => group.Key,
+                            group => group.Select(x => x.RecordNumber).ToList());
+
+                    foreach (var problemsForErrorType in problemsInFileByErrorType)
+                    {
+                        problems.Add(new FileError(
+                            file,
+                            // I think we should translate below to a proper string/text as this will be showed in the job ticket error result.
+                            problemsForErrorType.Key.ToString(),
+                            new ProblemParameter("recordNumbers", string.Join(",", problemsForErrorType.Value))));
                     }
                 }
             }
             catch (ShapeHeaderFormatException ex)
             {
-                problems += new FileError(ex.FileName, nameof(ShapeHeaderFormatException),
+                problems += new FileError(
+                    ex.FileName,
+                    // I think we should translate below to a proper string/text as this will be showed in the job ticket error result.
+                    nameof(ShapeHeaderFormatException),
                     new ProblemParameter("Exception", ex.InnerException!.ToString()));
             }
             catch (DbaseHeaderFormatException ex)
             {
-                problems += new FileError(ex.FileName, nameof(DbaseHeaderFormatException),
+                problems += new FileError(
+                    ex.FileName,
+                    // I think we should translate below to a proper string/text as this will be showed in the job ticket error result.
+                    nameof(DbaseHeaderFormatException),
                     new ProblemParameter("Exception", ex.InnerException!.ToString()));
             }
             catch (DbaseHeaderSchemaMismatchException ex)
             {
+                // I think we should translate below to a proper string/text as this will be showed in the job ticket error result.
                 problems += new FileError(ex.FileName, nameof(DbaseHeaderSchemaMismatchException));
             }
             catch (NoDbaseRecordsException ex)
             {
+                // I think we should translate below to a proper string/text as this will be showed in the job ticket error result.
                 problems += new FileError(ex.FileName, nameof(NoDbaseRecordsException));
             }
 
             return problems;
+        }
+
+        private HashSet<string> FindMissingRequiredFiles(ZipArchive archive)
+        {
+            var missingRequiredFiles = new HashSet<string>(_validators.Keys, StringComparer.InvariantCultureIgnoreCase);
+
+            missingRequiredFiles.ExceptWith(GetRequiredFiles(archive));
+
+            return missingRequiredFiles;
+        }
+
+        private static HashSet<string> GetRequiredFiles(ZipArchive archive)
+        {
+            return new HashSet<string>(
+                archive.Entries.Select(entry => entry.FullName),
+                StringComparer.InvariantCultureIgnoreCase);
         }
     }
 }

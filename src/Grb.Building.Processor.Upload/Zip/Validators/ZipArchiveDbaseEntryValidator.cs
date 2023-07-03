@@ -36,7 +36,8 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             var problems = new Dictionary<RecordNumber, List<ValidationErrorType>>();
             using var stream = entry.Open();
             using var reader = new BinaryReader(stream, Encoding);
-            DbaseFileHeader? header = null;
+
+            DbaseFileHeader? header;
             try
             {
                 header = DbaseFileHeader.Read(reader, HeaderReadBehavior);
