@@ -10,6 +10,7 @@
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
+    using Notifications;
     using TicketingService.Abstractions;
     using Xunit;
 
@@ -26,6 +27,7 @@
             var jobRecordsArchiver = new Mock<IJobRecordsArchiver>();
             var ticketing = new Mock<ITicketing>();
             var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
+            var notificationsService = new Mock<INotificationService>();
 
             var jobProcessor = new JobProcessor(
                 buildingGrbContext,
@@ -36,6 +38,7 @@
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
                 hostApplicationLifetime.Object,
+                notificationsService.Object,
                 new NullLoggerFactory());
 
             const int maxLifeTimeJob = 65;
@@ -61,6 +64,7 @@
                 new TicketResult(new { JobStatus = "Cancelled" }),
                 It.IsAny<CancellationToken>()));
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
         }
     }
 }

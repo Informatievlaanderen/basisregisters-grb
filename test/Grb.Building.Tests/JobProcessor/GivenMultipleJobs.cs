@@ -12,6 +12,7 @@
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
+    using Notifications;
     using TicketingService.Abstractions;
     using Xunit;
 
@@ -26,6 +27,7 @@
             var jobRecordsMonitor = new Mock<IJobRecordsMonitor>();
             var mockJobResultsUploader = new Mock<IJobResultUploader>();
             var mockJobRecordsArchiver = new Mock<IJobRecordsArchiver>();
+            var notificationsService = new Mock<INotificationService>();
             var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 
             var jobProcessor = new JobProcessor(
@@ -37,6 +39,7 @@
                 Mock.Of<ITicketing>(),
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
                 hostApplicationLifetime.Object,
+                notificationsService.Object,
                 new NullLoggerFactory());
 
             var job1 = new Job(DateTimeOffset.Now.AddMinutes(-10), JobStatus.Created);
@@ -54,6 +57,8 @@
             mockJobRecordsArchiver.Verify(x => x.Archive(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
             mockJobResultsUploader.Verify(x => x.UploadJobResults(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
 
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
+
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
         }
 
@@ -66,6 +71,7 @@
             var jobRecordsMonitor = new Mock<IJobRecordsMonitor>();
             var mockJobResultsUploader = new Mock<IJobResultUploader>();
             var mockJobRecordsArchiver = new Mock<IJobRecordsArchiver>();
+            var notificationsService = new Mock<INotificationService>();
             var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 
             var jobProcessor = new JobProcessor(
@@ -77,6 +83,7 @@
                 Mock.Of<ITicketing>(),
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
                 hostApplicationLifetime.Object,
+                notificationsService.Object,
                 new NullLoggerFactory());
 
             var firstJob = new Job(DateTimeOffset.Now.AddMinutes(-10), JobStatus.Prepared, ticketId: Guid.NewGuid()) { Id = Guid.NewGuid() };
@@ -111,6 +118,7 @@
             mockJobRecordsArchiver.Verify(x => x.Archive(firstJob.Id, It.IsAny<CancellationToken>()), Times.Once);
             mockJobResultsUploader.Verify(x => x.UploadJobResults(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
             mockJobRecordsArchiver.Verify(x => x.Archive(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
         }
 
         [Fact]
@@ -126,6 +134,7 @@
             var jobRecordsMonitor = new Mock<IJobRecordsMonitor>();
             var mockJobResultsUploader = new Mock<IJobResultUploader>();
             var mockJobRecordsArchiver = new Mock<IJobRecordsArchiver>();
+            var notificationsService = new Mock<INotificationService>();
             var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 
             var jobProcessor = new JobProcessor(
@@ -137,6 +146,7 @@
                 Mock.Of<ITicketing>(),
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
                 hostApplicationLifetime.Object,
+                notificationsService.Object,
                 new NullLoggerFactory());
 
             var firstJob = new Job(DateTimeOffset.Now.AddMinutes(-10), JobStatus.Prepared, ticketId: Guid.NewGuid()) { Id = Guid.NewGuid() };
@@ -174,6 +184,7 @@
             mockJobRecordsArchiver.Verify(x => x.Archive(firstJob.Id, It.IsAny<CancellationToken>()));
             mockJobResultsUploader.Verify(x => x.UploadJobResults(secondJob.Id, It.IsAny<CancellationToken>()));
             mockJobRecordsArchiver.Verify(x => x.Archive(secondJob.Id, It.IsAny<CancellationToken>()));
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Exactly(2));
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
 
         }

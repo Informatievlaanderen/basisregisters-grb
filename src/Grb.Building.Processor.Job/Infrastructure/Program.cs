@@ -5,6 +5,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
     using System.Text;
     using System.Threading.Tasks;
     using Amazon.S3;
+    using Amazon.SimpleNotificationService;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -19,6 +20,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Notifications;
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
@@ -89,6 +91,14 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         });
 
                     services.Configure<GrbApiOptions>(hostContext.Configuration);
+
+                    services.AddAWSService<IAmazonSimpleNotificationService>();
+                    services.AddScoped<INotificationService>(provider =>
+                    {
+                        var snsService = provider.GetRequiredService<IAmazonSimpleNotificationService>();
+                        var topicArn = hostContext.Configuration["TopicArn"];
+                        return new NotificationService(snsService, topicArn);
+                    });
 
                     services
                         .AddSingleton<IBlobClient>(_ => new S3BlobClient(
