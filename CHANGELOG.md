@@ -1,3 +1,15 @@
+# [1.4.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.3.0...v1.4.0) (2023-07-07)
+
+
+### Bug Fixes
+
+* set severity to good on completed jobs and camelcasing for jsonconvert ([a9601c4](https://github.com/informatievlaanderen/basisregisters-grb/commit/a9601c41a9ef74239cbf24440092f40fb0c5d325))
+
+
+### Features
+
+* add notifications ([f7d7fcb](https://github.com/informatievlaanderen/basisregisters-grb/commit/f7d7fcb6bcc570bf59d7e0e19a749a8109038dfa))
+
 # [1.3.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.2.0...v1.3.0) (2023-07-03)
 
 
