@@ -15,12 +15,13 @@
             MessageType = messageType;
             BasisregistersError = basisregistersError;
             Service = service;
-            Warning = warning.ToString();
+            Warning = warning.ToString().ToLowerInvariant();
         }
     }
 
     public enum NotificationSeverity
     {
+        Good,
         Low,
         Danger
     }

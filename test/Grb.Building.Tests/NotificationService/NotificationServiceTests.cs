@@ -36,10 +36,10 @@
             {
                 { "MessageType", new MessageAttributeValue { DataType = "String", StringValue = nameof(Grb.Building.Processor.Job) } },
                 { "service", new MessageAttributeValue { DataType = "String", StringValue = "Grb job processor" } },
-                { "warning", new MessageAttributeValue { DataType = "String", StringValue = "Danger" } }
+                { "warning", new MessageAttributeValue { DataType = "String", StringValue = "danger" } }
             };
 
-            publishRequest.Message.Should().Be(@"{""BasisregistersError"":""JobRecordErrors, Job: 1001 has 5 errors."",""Service"":""Grb job processor"",""Warning"":""Danger""}");
+            publishRequest.Message.Should().Be(@"{""basisregistersError"":""JobRecordErrors, Job: 1001 has 5 errors."",""service"":""Grb job processor"",""warning"":""danger""}");
             publishRequest.TopicArn.Should().Be("topic");
             publishRequest.MessageAttributes.Should().BeEquivalentTo(expectedMessageAttributes);
         }
