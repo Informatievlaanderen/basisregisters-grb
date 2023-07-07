@@ -15,6 +15,7 @@
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
+    using Notifications;
     using TicketingService.Abstractions;
     using Xunit;
     using Task = System.Threading.Tasks.Task;
@@ -60,6 +61,8 @@
                 .Setup(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new RunTaskResponse { HttpStatusCode = HttpStatusCode.OK});
 
+            var notificationsService = new Mock<INotificationService>();
+
             var sut = new UploadProcessor(
                 _buildingGrbContext,
                 mockTicketing.Object,
@@ -67,6 +70,7 @@
                 mockAmazonClient.Object,
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
                 Options.Create(new EcsTaskOptions { Subnets = "subnet-1234", SecurityGroups = "sg-5678" }));
 
             // Act
@@ -80,6 +84,7 @@
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Prepared);
 
             mockAmazonClient.Verify(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
             mockIHostApplicationLifeTime.Verify(x => x.StopApplication(), Times.Once);
         }
 
@@ -103,6 +108,8 @@
                 .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
+            var notificationsService = new Mock<INotificationService>();
+
             var sut = new UploadProcessor(
                 _buildingGrbContext,
                 mockTicketing.Object,
@@ -110,6 +117,7 @@
                 mockAmazonClient.Object,
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
                 Options.Create(new EcsTaskOptions()));
 
             // Act
@@ -117,6 +125,7 @@
 
             // Assert
             mockTicketing.Verify(x => x.Pending(ticketId, It.IsAny<CancellationToken>()), Times.Never);
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
         }
 
 
@@ -145,6 +154,8 @@
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((BlobObject?)null);
 
+            var notificationsService = new Mock<INotificationService>();
+
             var sut = new UploadProcessor(
                 _buildingGrbContext,
                 mockTicketing.Object,
@@ -152,6 +163,7 @@
                 mockAmazonClient.Object,
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
                 Options.Create(new EcsTaskOptions()));
 
             // Act
@@ -160,6 +172,7 @@
             // Assert
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
             jobRecords.Should().BeEmpty();
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
         }
 
         [Fact]
@@ -189,6 +202,8 @@
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"), _ => Task.FromResult((Stream)zipFileStream)));
 
+            var notificationsService = new Mock<INotificationService>();
+
             var sut = new UploadProcessor(
                 _buildingGrbContext,
                 mockTicketing.Object,
@@ -196,6 +211,7 @@
                 mockAmazonClient.Object,
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
                 Options.Create(new EcsTaskOptions()));
 
             // Act
@@ -211,6 +227,8 @@
             jobRecords.Should().BeEmpty();
 
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
         }
 
         [Fact]
@@ -238,6 +256,8 @@
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"), _ => throw new BlobNotFoundException(blobName)));
 
+            var notificationsService = new Mock<INotificationService>();
+
             var sut = new UploadProcessor(
                 _buildingGrbContext,
                 mockTicketing.Object,
@@ -245,6 +265,7 @@
                 mockAmazonClient.Object,
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
                 Options.Create(new EcsTaskOptions()));
 
             // Act
@@ -253,6 +274,8 @@
             // Assert
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
             jobRecords.Should().BeEmpty();
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
         }
     }
 }

@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Notifications;
     using TicketingService.Abstractions;
 
     public sealed class JobProcessor : BackgroundService
@@ -20,6 +21,7 @@
         private readonly IJobRecordsArchiver _jobRecordsArchiver;
         private readonly GrbApiOptions _grbApiOptions;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<JobProcessor> _logger;
 
         public JobProcessor(
@@ -31,6 +33,7 @@
             ITicketing ticketing,
             IOptions<GrbApiOptions> grbApiOptions,
             IHostApplicationLifetime hostApplicationLifetime,
+            INotificationService notificationService,
             ILoggerFactory loggerFactory)
         {
             _buildingGrbContext = buildingGrbContext;
@@ -41,6 +44,7 @@
             _jobRecordsArchiver = jobRecordsArchiver;
             _grbApiOptions = grbApiOptions.Value;
             _hostApplicationLifetime = hostApplicationLifetime;
+            _notificationService = notificationService;
             _logger = loggerFactory.CreateLogger<JobProcessor>();
         }
 
@@ -50,7 +54,7 @@
 
             _logger.LogInformation("JobProcessor started");
 
-            var inactiveJobStatuses = new[] {JobStatus.Completed, JobStatus.Cancelled};
+            var inactiveJobStatuses = new[] { JobStatus.Completed, JobStatus.Cancelled };
             var jobsToProcess = await _buildingGrbContext.Jobs
                 .Where(x => !inactiveJobStatuses.Contains(x.Status))
                 .OrderBy(x => x.Created)
@@ -65,12 +69,14 @@
                         await CancelJob(job, stoppingToken);
                         continue;
                     }
+
                     break;
                 }
 
                 if (job.Status is JobStatus.Preparing or JobStatus.Error)
                 {
-                    _logger.LogWarning("Job '{jobId}' cannot be processed because it has status '{jobStatus}'.", job.Id, job.Status);
+                    _logger.LogWarning("Job '{jobId}' cannot be processed because it has status '{jobStatus}'.", job.Id,
+                        job.Status);
                     break;
                 }
 
@@ -100,6 +106,12 @@
                 var jobErrors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, string.Empty)).ToList();
                 await _ticketing.Error(job.TicketId!.Value, new TicketError(jobErrors), stoppingToken);
 
+                await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                    nameof(Grb.Building.Processor.Job),
+                    $"JobRecordErrors, Job: {job.Id} has {jobRecordErrors.Count} errors.",
+                    "Grb job processor",
+                    NotificationSeverity.Danger));
+
                 await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                 return;
@@ -111,10 +123,18 @@
                 job.TicketId!.Value,
                 new TicketResult(new
                 {
-                    JobResultLocation = new Uri(new Uri(_grbApiOptions.PublicApiUrl), $"/v2/gebouwen/uploads/jobs/{job.Id:D}/results").ToString()
+                    JobResultLocation = new Uri(new Uri(_grbApiOptions.PublicApiUrl),
+                        $"/v2/gebouwen/uploads/jobs/{job.Id:D}/results").ToString()
                 }),
                 stoppingToken);
             await UpdateJobStatus(job, JobStatus.Completed, stoppingToken);
+
+            await _notificationService.PublishToTopicAsync(
+                new NotificationMessage(
+                    nameof(Grb.Building.Processor.Job),
+                    $"JobRecordsCompleted, Job {job.Id} is completed.",
+                    "Grb job processor",
+                    NotificationSeverity.Low));
 
             await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
         }
@@ -127,6 +147,13 @@
                 stoppingToken);
 
             await UpdateJobStatus(job, JobStatus.Cancelled, stoppingToken);
+
+            await _notificationService.PublishToTopicAsync(
+                new NotificationMessage(
+                    nameof(Grb.Building.Processor.Job),
+                    $"JobRecordsCompleted, Job {job.Id} is cancelled.",
+                    "Grb.Building.Processor.Job",
+                    NotificationSeverity.Low));
 
             _logger.LogWarning("Cancelled expired job '{jobId}'.", job.Id);
         }

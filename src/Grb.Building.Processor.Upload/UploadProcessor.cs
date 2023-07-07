@@ -17,6 +17,7 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Notifications;
     using TicketingService.Abstractions;
     using Zip;
     using Zip.Translators;
@@ -31,6 +32,7 @@
         private readonly IAmazonECS _amazonEcs;
         private readonly ILogger<UploadProcessor> _logger;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly INotificationService _notificationService;
         private readonly EcsTaskOptions _ecsTaskOptions;
 
         public UploadProcessor(
@@ -40,6 +42,7 @@
             IAmazonECS amazonEcs,
             ILoggerFactory loggerFactory,
             IHostApplicationLifetime hostApplicationLifetime,
+            INotificationService notificationService,
             IOptions<EcsTaskOptions> ecsTaskOptions)
         {
             _buildingGrbContext = buildingGrbContext;
@@ -48,6 +51,7 @@
             _amazonEcs = amazonEcs;
             _logger = loggerFactory.CreateLogger<UploadProcessor>();
             _hostApplicationLifetime = hostApplicationLifetime;
+            _notificationService = notificationService;
             _ecsTaskOptions = ecsTaskOptions.Value;
         }
 
@@ -96,6 +100,12 @@
                         await _ticketing.Error(job.TicketId!.Value, new TicketError(ticketingErrors), stoppingToken);
                         await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
+                        await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                            nameof(Grb.Building.Processor.Upload),
+                            $"Job '{job.Id}' placed in error due to validation problems.",
+                            "Grb upload processor",
+                            NotificationSeverity.Danger));
+
                         continue;
                     }
 
@@ -111,8 +121,15 @@
                 catch (Exception ex)
                 {
                     _logger.LogError($"Unexpected exception for job '{job.Id}'", ex);
+
                     await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", string.Empty), stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
+
+                    await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                        nameof(Grb.Building.Processor.Upload),
+                        $"Unexpected exception for job '{job.Id}'.",
+                        "Grb upload processor",
+                        NotificationSeverity.Danger));
                 }
             }
 

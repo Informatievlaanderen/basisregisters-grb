@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
+    using Notifications;
     using TicketingService.Abstractions;
     using Xunit;
 
@@ -27,6 +28,7 @@
             var jobResultsUploader = new Mock<IJobResultUploader>();
             var jobRecordsArchiver = new Mock<IJobRecordsArchiver>();
             var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
+            var notificationsService = new Mock<INotificationService>();
 
             var grbApiBaseUrl = "https://api-vlaanderen.be";
             var jobProcessor = new JobProcessor(
@@ -38,6 +40,7 @@
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = grbApiBaseUrl }),
                 hostApplicationLifetime.Object,
+                notificationsService.Object,
                 new NullLoggerFactory());
 
             var job = new Job(DateTimeOffset.Now.AddMinutes(-10), JobStatus.Prepared, ticketId: Guid.NewGuid());
@@ -68,6 +71,7 @@
                 It.IsAny<CancellationToken>()));
 
             jobRecordsArchiver.Verify(x => x.Archive(job.Id, It.IsAny<CancellationToken>()));
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
         }
 
@@ -81,6 +85,7 @@
             var jobResultsUploader = new Mock<IJobResultUploader>();
             var jobRecordsArchiver = new Mock<IJobRecordsArchiver>();
             var ticketing = new Mock<ITicketing>();
+            var notificationsService = new Mock<INotificationService>();
             var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 
             var jobProcessor = new JobProcessor(
@@ -93,6 +98,7 @@
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions
                     { PublicApiUrl = "https://api-vlaanderen.be" }),
                 hostApplicationLifetime.Object,
+                notificationsService.Object,
                 new NullLoggerFactory());
 
             var job = new Job(DateTimeOffset.Now.AddMinutes(-10), JobStatus.Prepared, ticketId: Guid.NewGuid());
@@ -139,6 +145,8 @@
                         && y.Errors!.Contains(new TicketError(jobRecord2.ErrorMessage, string.Empty))),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
 
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
         }
