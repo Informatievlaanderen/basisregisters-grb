@@ -19,10 +19,15 @@
 
         public async Task PublishToTopicAsync(NotificationMessage message)
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
             var request = new PublishRequest
             {
                 TopicArn = _topicArn,
-                Message = JsonSerializer.Serialize(message),
+                Message = JsonSerializer.Serialize(message, options),
                 MessageAttributes =
                 {
                     { "MessageType", new MessageAttributeValue { DataType = "String", StringValue = message.MessageType } },

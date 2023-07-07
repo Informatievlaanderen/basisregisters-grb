@@ -134,7 +134,7 @@
                     nameof(Grb.Building.Processor.Job),
                     $"JobRecordsCompleted, Job {job.Id} is completed.",
                     "Grb job processor",
-                    NotificationSeverity.Low));
+                    NotificationSeverity.Good));
 
             await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
         }
