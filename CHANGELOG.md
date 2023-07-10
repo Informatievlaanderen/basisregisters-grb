@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.4.0...v1.4.1) (2023-07-10)
+
+
+### Bug Fixes
+
+* fix appsettings ([72e7ea3](https://github.com/informatievlaanderen/basisregisters-grb/commit/72e7ea31d98273eab789e874bdb7a90b487b0462))
+
 # [1.4.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.3.0...v1.4.0) (2023-07-07)
 
 
