@@ -132,7 +132,7 @@
             await _notificationService.PublishToTopicAsync(
                 new NotificationMessage(
                     nameof(Grb.Building.Processor.Job),
-                    $"JobRecordsCompleted, Job {job.Id} is completed.",
+                    $"JobCompleted, Job {job.Id} is completed.",
                     "Grb job processor",
                     NotificationSeverity.Good));
 
@@ -151,8 +151,8 @@
             await _notificationService.PublishToTopicAsync(
                 new NotificationMessage(
                     nameof(Grb.Building.Processor.Job),
-                    $"JobRecordsCompleted, Job {job.Id} is cancelled.",
-                    "Grb.Building.Processor.Job",
+                    $"JobCancelled, Job {job.Id} is cancelled. (Expired)",
+                    "Grb job processor",
                     NotificationSeverity.Low));
 
             _logger.LogWarning("Cancelled expired job '{jobId}'.", job.Id);
