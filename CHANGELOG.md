@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.4.2...v1.5.0) (2023-07-13)
+
+
+### Features
+
+* job is cancellable when in error but without job records ([62fa608](https://github.com/informatievlaanderen/basisregisters-grb/commit/62fa608884ce25b9187ac2e2f24adba38a2d3882))
+
 ## [1.4.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.4.1...v1.4.2) (2023-07-13)
 
 
