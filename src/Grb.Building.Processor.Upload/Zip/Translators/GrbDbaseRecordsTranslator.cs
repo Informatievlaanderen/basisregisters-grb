@@ -26,7 +26,8 @@
                     EventType = (GrbEventType)record.EventType.Value,
                     GrbObject = (GrbObject)record.GRBOBJECT.Value,
                     GrId = record.GRID.Value == "-9" ? -9 : record.GRID.Value.AsIdentifier().Map(int.Parse),
-                    GrbObjectType = (GrbObjectType)record.TPC.Value
+                    GrbObjectType = (GrbObjectType)record.TPC.Value,
+                    Status = JobRecordStatus.Created
                 });
 
                 recordNumber = recordNumber.Next();
