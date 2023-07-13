@@ -7,6 +7,7 @@
     using Grb;
     using MediatR;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
 
     public sealed class CancelJobHandler : IRequestHandler<CancelJobRequest>
@@ -31,7 +32,7 @@
                 throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
 
-            if (job.Status != JobStatus.Created)
+            if (!await CanCancelJob(job))
             {
                 throw new ApiException(
                     $"Upload job '{request.JobId}' wordt verwerkt en kan niet worden geannuleerd.",
@@ -45,6 +46,21 @@
 
             job.UpdateStatus(JobStatus.Cancelled);
             await _buildingGrbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task<bool> CanCancelJob(Job job)
+        {
+            if (job.Status == JobStatus.Created)
+            {
+                return true;
+            }
+
+            if (job.Status != JobStatus.Error)
+            {
+                return false;
+            }
+
+            return !await _buildingGrbContext.JobRecords.AnyAsync(x => x.JobId == job.Id);
         }
     }
 }
