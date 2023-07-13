@@ -1,3 +1,11 @@
+## [1.4.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.4.1...v1.4.2) (2023-07-13)
+
+
+### Bug Fixes
+
+* message notification ([1229163](https://github.com/informatievlaanderen/basisregisters-grb/commit/1229163df68756bfa5d165f03b085741e93d2c88))
+* set job record status upon creating ([c0e6a63](https://github.com/informatievlaanderen/basisregisters-grb/commit/c0e6a6300f103c59f2839622c88e134b556f978e))
+
 ## [1.4.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.4.0...v1.4.1) (2023-07-10)
 
 
