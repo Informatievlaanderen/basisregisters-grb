@@ -24,7 +24,7 @@
     using Zip.Validators;
     using Task = System.Threading.Tasks.Task;
 
- public sealed class UploadProcessor : BackgroundService
+    public sealed class UploadProcessor : BackgroundService
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly ITicketing _ticketing;
@@ -101,7 +101,7 @@
                         await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                         await _notificationService.PublishToTopicAsync(new NotificationMessage(
-                            nameof(Grb.Building.Processor.Upload),
+                            nameof(Upload),
                             $"Job '{job.Id}' placed in error due to validation problems.",
                             "Grb upload processor",
                             NotificationSeverity.Danger));
@@ -126,7 +126,7 @@
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                     await _notificationService.PublishToTopicAsync(new NotificationMessage(
-                        nameof(Grb.Building.Processor.Upload),
+                        nameof(Upload),
                         $"Unexpected exception for job '{job.Id}'.",
                         "Grb upload processor",
                         NotificationSeverity.Danger));
