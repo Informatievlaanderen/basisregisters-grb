@@ -108,6 +108,7 @@
                 Id = 123456,
                 JobId = job.Id,
                 Status = JobRecordStatus.Error,
+                ErrorCode = "Code1",
                 ErrorMessage = "Error1",
                 Geometry = (Polygon)GeometryHelper.ValidPolygon,
             };
@@ -116,6 +117,7 @@
                 Id = 654321,
                 JobId = job.Id,
                 Status = JobRecordStatus.Error,
+                ErrorCode = "Code2",
                 ErrorMessage = "Error2",
                 Geometry = (Polygon)GeometryHelper.ValidPolygon,
             };
@@ -141,8 +143,8 @@
             ticketing.Verify(x => x.Error(
                     job.TicketId!.Value,
                     It.Is<TicketError>(y =>
-                        y.Errors!.Contains(new TicketError(jobRecord1.ErrorMessage, string.Empty))
-                        && y.Errors!.Contains(new TicketError(jobRecord2.ErrorMessage, string.Empty))),
+                        y.Errors!.Contains(new TicketError(jobRecord1.ErrorMessage, jobRecord1.ErrorCode))
+                        && y.Errors!.Contains(new TicketError(jobRecord2.ErrorMessage, jobRecord2.ErrorCode))),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 

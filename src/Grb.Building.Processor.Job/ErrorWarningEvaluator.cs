@@ -27,11 +27,11 @@
                     .Aggregate((warning, result) => $"{result}{Environment.NewLine}{warning}"));
         }
 
-        public static (JobRecordStatus jobRecordStatus, string message) Evaluate(TicketError ticketError)
+        public static (JobRecordStatus jobRecordStatus, TicketError ticketError) Evaluate(TicketError ticketError)
         {
             return Warnings.Contains(ticketError.ErrorCode)
-                ? (JobRecordStatus.Warning, ticketError.ErrorMessage)
-                : (JobRecordStatus.Error, ticketError.ErrorMessage);
+                ? (JobRecordStatus.Warning, ticketError)
+                : (JobRecordStatus.Error, ticketError);
         }
     }
 }

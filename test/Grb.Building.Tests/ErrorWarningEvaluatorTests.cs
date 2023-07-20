@@ -85,11 +85,11 @@
             var ticketError = new TicketError("reason", "error1");
 
             // Act
-            var (status, message) = ErrorWarningEvaluator.Evaluate(ticketError);
+            var (status, evaluatedTicketError) = ErrorWarningEvaluator.Evaluate(ticketError);
 
             // Assert
             status.Should().Be(JobRecordStatus.Error);
-            message.Should().Be("reason");
+            evaluatedTicketError.ErrorMessage.Should().Be("reason");
         }
 
         [Theory]
@@ -103,7 +103,7 @@
 
             // Assert
             status.Should().Be(JobRecordStatus.Warning);
-            resultMessage.Should().Be(message);
+            resultMessage.ErrorMessage.Should().Be(message);
         }
     }
 }
