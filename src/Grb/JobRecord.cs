@@ -26,6 +26,7 @@ namespace Grb
 
         public Guid? TicketId { get; set; }
         public JobRecordStatus Status { get; set; }
+        public string? ErrorCode { get; set; }
         public string? ErrorMessage { get; set; }
         public int? BuildingPersistentLocalId { get; set; }
 
@@ -76,6 +77,7 @@ namespace Grb
 
             builder.Property(x => x.TicketId);
             builder.Property(x => x.Status);
+            builder.Property(x => x.ErrorCode);
             builder.Property(x => x.ErrorMessage);
             builder.Property(x => x.BuildingPersistentLocalId);
 

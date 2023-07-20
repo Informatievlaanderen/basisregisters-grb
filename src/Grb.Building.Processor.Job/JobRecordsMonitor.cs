@@ -57,7 +57,8 @@
                             var ticketError = JsonConvert.DeserializeObject<TicketError>(ticket.Result!.ResultAsJson!);
                             var evaluation = ErrorWarningEvaluator.Evaluate(ticketError!);
                             jobRecord.Status = evaluation.jobRecordStatus;
-                            jobRecord.ErrorMessage = evaluation.message;
+                            jobRecord.ErrorCode = evaluation.ticketError.ErrorCode;
+                            jobRecord.ErrorMessage = evaluation.ticketError.ErrorMessage;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(TicketStatus), ticket.Status, null);

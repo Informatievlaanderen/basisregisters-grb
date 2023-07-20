@@ -103,7 +103,7 @@
 
             if (jobRecordErrors.Any())
             {
-                var jobErrors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, string.Empty)).ToList();
+                var jobErrors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, x.ErrorCode ?? string.Empty)).ToList();
                 await _ticketing.Error(job.TicketId!.Value, new TicketError(jobErrors), stoppingToken);
 
                 await _notificationService.PublishToTopicAsync(new NotificationMessage(
