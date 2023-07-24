@@ -103,8 +103,12 @@
 
             if (jobRecordErrors.Any())
             {
-                var jobErrors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, x.ErrorCode ?? string.Empty)).ToList();
-                await _ticketing.Error(job.TicketId!.Value, new TicketError(jobErrors), stoppingToken);
+                var jobTicketError = new TicketError
+                {
+                    Errors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, x.ErrorCode ?? string.Empty)).ToList()
+                };
+
+                await _ticketing.Error(job.TicketId!.Value, jobTicketError, stoppingToken);
 
                 await _notificationService.PublishToTopicAsync(new NotificationMessage(
                     nameof(Grb.Building.Processor.Job),
