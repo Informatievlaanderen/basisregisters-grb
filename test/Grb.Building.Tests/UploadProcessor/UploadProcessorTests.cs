@@ -220,7 +220,9 @@
             // Assert
             mockTicketing.Verify(x => x.Error(
                 ticketId,
-                It.Is<TicketError>(x => x.Errors.First().ErrorCode == "RequiredFileMissing" && x.Errors.First().ErrorMessage == ZipArchiveConstants.DBF_FILENAME.ToUpper()),
+                It.Is<TicketError>(x =>
+                    x.Errors.First().ErrorCode == $"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF."
+                    && x.Errors.First().ErrorMessage == ZipArchiveConstants.DBF_FILENAME.ToUpper()),
                 It.IsAny<CancellationToken>()), Times.Once );
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);

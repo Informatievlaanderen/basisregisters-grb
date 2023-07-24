@@ -7,9 +7,8 @@
     using Abstractions.Responses;
     using Amazon.S3.Model;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Grb;
-    using Grb.Building.Api.Infrastructure;
-    using Grb.Building.Api.Infrastructure.Options;
+    using Infrastructure;
+    using Infrastructure.Options;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
@@ -40,6 +39,13 @@
             if (job is null)
             {
                 throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
+            }
+
+            if (job.Status is JobStatus.Cancelled or JobStatus.Error)
+            {
+                throw new ApiException(
+                    $"Upload job '{request.JobId}' zit in status {job.Status} hierdoor zijn er voor deze job geen resultaten beschikbaar.",
+                    StatusCodes.Status400BadRequest);
             }
 
             if (job.Status != JobStatus.Completed)

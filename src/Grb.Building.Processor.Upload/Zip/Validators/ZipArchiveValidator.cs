@@ -41,7 +41,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             );
             problems = missingRequiredFiles.Aggregate(
                 problems,
-                (current, file) => current.RequiredFileMissing(file));
+                (current, file) =>   current.RequiredFileMissing(file));
 
             // Validate all required files (if a validator was registered for it)
             try

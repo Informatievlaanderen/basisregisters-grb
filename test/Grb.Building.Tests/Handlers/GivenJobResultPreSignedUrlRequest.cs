@@ -70,12 +70,31 @@
         }
 
         [Theory]
-        [InlineData(JobStatus.Created)]
         [InlineData(JobStatus.Cancelled)]
+        [InlineData(JobStatus.Error)]
+        public void WithCancelledOrErrorJob_ThenThrowsApiException(JobStatus jobStatus)
+        {
+            var job = new Job(DateTimeOffset.Now, jobStatus) { Id = Guid.NewGuid() };
+            _fakeBuildingGrbContext.Jobs.Add(job);
+            _fakeBuildingGrbContext.SaveChanges();
+
+            var request = new JobResultsPreSignedUrlRequest(job.Id);
+            var act = async () => await _handler.Handle(request, CancellationToken.None);
+
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains($"Upload job '{job.Id}' zit in status {job.Status}")
+                    && x.StatusCode == StatusCodes.Status400BadRequest);
+        }
+
+        [Theory]
+        [InlineData(JobStatus.Created)]
         [InlineData(JobStatus.Preparing)]
         [InlineData(JobStatus.Prepared)]
         [InlineData(JobStatus.Processing)]
-        [InlineData(JobStatus.Error)]
         public void WithUncompletedJob_ThenThrowsApiException(JobStatus jobStatus)
         {
             var job = new Job(DateTimeOffset.Now, jobStatus) { Id = Guid.NewGuid() };
