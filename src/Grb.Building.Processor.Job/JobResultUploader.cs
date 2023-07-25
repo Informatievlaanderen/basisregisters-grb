@@ -11,6 +11,7 @@
     using Be.Vlaanderen.Basisregisters.BlobStore;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
 
     public interface IJobResultUploader
     {
@@ -21,11 +22,13 @@
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly IBlobClient _blobClient;
+        private readonly string _buildingReadUri;
 
-        public JobResultUploader(BuildingGrbContext buildingGrbContext, IBlobClient blobClient)
+        public JobResultUploader(BuildingGrbContext buildingGrbContext, IBlobClient blobClient, string buildingReadUri)
         {
             _buildingGrbContext = buildingGrbContext;
             _blobClient = blobClient;
+            _buildingReadUri = buildingReadUri;
         }
 
         public async Task UploadJobResults(Guid jobId, CancellationToken ct)
@@ -60,8 +63,9 @@
             {
                 var item = new JobResultDbaseRecord
                 {
-                    idn = {Value = jobResult.GrbIdn},
-                    grid = {Value = jobResult.BuildingPersistentLocalId},
+                    Idn = {Value = jobResult.GrbIdn},
+                    GrbObject = {Value = (int)jobResult.GrbObject},
+                    GrId =  {Value = $"{_buildingReadUri.TrimEnd('/')}/{jobResult.BuildingPersistentLocalId}"}
                 };
 
                 return item.ToBytes(DbfFileWriter<JobResultDbaseRecord>.Encoding);
@@ -91,7 +95,8 @@
                     JobId = jobRecord.JobId,
                     BuildingPersistentLocalId = jobRecord.BuildingPersistentLocalId ?? jobRecord.GrId,
                     GrbIdn = (int)jobRecord.Idn,
-                    IsBuildingCreated = jobRecord.EventType == GrbEventType.DefineBuilding
+                    IsBuildingCreated = jobRecord.EventType == GrbEventType.DefineBuilding,
+                    GrbObject = jobRecord.GrbObject
                 })
                 .ToList();
         }

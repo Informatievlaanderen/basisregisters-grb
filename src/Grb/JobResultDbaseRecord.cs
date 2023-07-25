@@ -6,18 +6,21 @@ namespace Grb
     {
         public static readonly JobResultDbaseSchema Schema = new JobResultDbaseSchema();
 
-        public DbaseInt32 idn { get; }
-        public DbaseInt32 grid { get; }
+        public DbaseInt32 Idn { get; }
+        public DbaseInt32 GrbObject { get; set; }
+        public DbaseCharacter GrId { get; }
 
         public JobResultDbaseRecord()
         {
-            idn = new DbaseInt32(Schema.idn);
-            grid = new DbaseInt32(Schema.grid);
+            Idn = new DbaseInt32(Schema.GrbIdn);
+            GrbObject = new DbaseInt32(Schema.GrbObject);
+            GrId = new DbaseCharacter(Schema.GrId);
 
             Values = new DbaseFieldValue[]
             {
-                idn,
-                grid
+                Idn,
+                GrbObject,
+                GrId
             };
         }
     }

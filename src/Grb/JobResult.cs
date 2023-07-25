@@ -9,5 +9,6 @@ namespace Grb
         public int GrbIdn { get; set; }
         public int BuildingPersistentLocalId { get; set; }
         public bool IsBuildingCreated { get; set; }
+        public GrbObject GrbObject { get; set; }
     }
 }
