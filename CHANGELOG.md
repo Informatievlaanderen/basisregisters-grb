@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.6.0...v1.6.1) (2023-07-25)
+
+
+### Bug Fixes
+
+* instantiate ticketError using different ctor + added more specific error message ([1b68bd0](https://github.com/informatievlaanderen/basisregisters-grb/commit/1b68bd020b609b3378dd2138d757dc0f3fd3e61d))
+
 # [1.6.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.5.0...v1.6.0) (2023-07-20)
 
 
