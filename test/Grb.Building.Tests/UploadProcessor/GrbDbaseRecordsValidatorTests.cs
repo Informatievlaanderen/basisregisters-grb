@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
-    using Grb.Building.Processor.Upload.Zip;
-    using Grb.Building.Processor.Upload.Zip.Exceptions;
-    using Grb.Building.Processor.Upload.Zip.Validators;
+    using Processor.Upload.Zip;
+    using Processor.Upload.Zip.Exceptions;
+    using Processor.Upload.Zip.Validators;
     using Xunit;
 
     public class GrbDbaseRecordsValidatorTests

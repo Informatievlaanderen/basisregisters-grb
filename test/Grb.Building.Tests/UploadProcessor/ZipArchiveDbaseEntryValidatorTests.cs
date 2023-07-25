@@ -4,10 +4,10 @@
     using System.Text;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using FluentAssertions;
-    using Grb.Building.Processor.Upload.Zip;
-    using Grb.Building.Processor.Upload.Zip.Exceptions;
-    using Grb.Building.Processor.Upload.Zip.Validators;
     using Moq;
+    using Processor.Upload.Zip;
+    using Processor.Upload.Zip.Exceptions;
+    using Processor.Upload.Zip.Validators;
     using Xunit;
 
     [Collection(ZipArchiveCollectionFixture.COLLECTION)]

@@ -110,7 +110,11 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         .AddSingleton<IBackOfficeApiProxy, BackOfficeApiProxy>()
                         .AddSingleton<IJobRecordsProcessor, JobRecordsProcessor>()
                         .AddSingleton<IJobRecordsMonitor, JobRecordsMonitor>()
-                        .AddSingleton<IJobResultUploader, JobResultUploader>()
+                        .AddSingleton<IJobResultUploader>(c
+                            => new JobResultUploader(
+                                c.GetRequiredService<BuildingGrbContext>(),
+                                c.GetRequiredService<IBlobClient>(),
+                                hostContext.Configuration.GetConnectionString("ReadBuildingUrl")))
                         .AddSingleton<IJobRecordsArchiver>(_
                             => new JobRecordsArchiver(hostContext.Configuration.GetConnectionString("BuildingGrb"), loggerFactory));
 
