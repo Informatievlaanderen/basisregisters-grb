@@ -86,7 +86,7 @@
                 .ThrowAsync<ApiException>()
                 .Result
                 .Where(x =>
-                    x.Message.Contains($"Upload job '{job.Id}' zit in status {job.Status}")
+                    x.Message.Contains($"De status van de upload job '{job.Id}' is {job.Status.ToString().ToLower()}, hierdoor zijn er voor deze job geen resultaten beschikbaar.")
                     && x.StatusCode == StatusCodes.Status400BadRequest);
         }
 

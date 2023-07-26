@@ -44,7 +44,7 @@
             if (job.Status is JobStatus.Cancelled or JobStatus.Error)
             {
                 throw new ApiException(
-                    $"Upload job '{request.JobId}' zit in status {job.Status} hierdoor zijn er voor deze job geen resultaten beschikbaar.",
+                    $"De status van de upload job '{request.JobId}' is {job.Status.ToString().ToLower()}, hierdoor zijn er voor deze job geen resultaten beschikbaar.",
                     StatusCodes.Status400BadRequest);
             }
 
