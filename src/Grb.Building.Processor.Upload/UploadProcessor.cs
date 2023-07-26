@@ -94,7 +94,7 @@
                         var ticketingErrors = problems.Select(x =>
                                 x.Parameters.Any()
                                     ? new TicketError(string.Join(',', x.Parameters.Select(y => y.Value)), x.Reason)
-                                    : new TicketError(x.File, x.Reason))
+                                    : new TicketError(x.Reason, x.File))
                             .ToList();
 
                         await _ticketing.Error(job.TicketId!.Value, new TicketError(ticketingErrors), stoppingToken);

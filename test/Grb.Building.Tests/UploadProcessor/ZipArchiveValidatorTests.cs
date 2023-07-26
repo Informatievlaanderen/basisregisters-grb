@@ -36,7 +36,7 @@
             var zipArchiveProblems = sut.Validate(archive);
 
             // Assert
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == ZipArchiveConstants.DBF_FILENAME.ToUpper());
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == "RequiredFileMissing");
             fileProblem.Should().NotBeNull();
             fileProblem.Reason.Should().Be($"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF.");
         }
