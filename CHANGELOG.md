@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.6.1...v1.7.0) (2023-07-26)
+
+
+### Features
+
+* add grbobject and change schema names in jobresults ([74df982](https://github.com/informatievlaanderen/basisregisters-grb/commit/74df982be1b0f577e76f0b670a8059f08ec3b4f1))
+
 ## [1.6.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.6.0...v1.6.1) (2023-07-25)
 
 
