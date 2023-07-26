@@ -114,7 +114,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                             => new JobResultUploader(
                                 c.GetRequiredService<BuildingGrbContext>(),
                                 c.GetRequiredService<IBlobClient>(),
-                                hostContext.Configuration.GetConnectionString("ReadBuildingUrl")))
+                                hostContext.Configuration["ReadBuildingUrl"]))
                         .AddSingleton<IJobRecordsArchiver>(_
                             => new JobRecordsArchiver(hostContext.Configuration.GetConnectionString("BuildingGrb"), loggerFactory));
 
