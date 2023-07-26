@@ -1,3 +1,11 @@
+## [1.7.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.1...v1.7.2) (2023-07-26)
+
+
+### Bug Fixes
+
+* errormessage canceljob and jobresults ([81734bb](https://github.com/informatievlaanderen/basisregisters-grb/commit/81734bb5160413a103b5673e1f6180f51047bbec))
+* get buildingreadurl from config ([ec86f89](https://github.com/informatievlaanderen/basisregisters-grb/commit/ec86f894b31206dace6a50779bd777244420cbf8))
+
 ## [1.7.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.0...v1.7.1) (2023-07-26)
 
 
