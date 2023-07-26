@@ -97,7 +97,11 @@
                                     : new TicketError(x.Reason, x.File))
                             .ToList();
 
-                        await _ticketing.Error(job.TicketId!.Value, new TicketError(ticketingErrors), stoppingToken);
+                        var ticketError = new TicketError
+                        {
+                            Errors = ticketingErrors
+                        };
+                        await _ticketing.Error(job.TicketId!.Value, ticketError, stoppingToken);
                         await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                         await _notificationService.PublishToTopicAsync(new NotificationMessage(

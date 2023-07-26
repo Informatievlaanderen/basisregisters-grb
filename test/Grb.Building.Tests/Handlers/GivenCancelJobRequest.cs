@@ -66,7 +66,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status400BadRequest
-                    && x.Message == $"Upload job '{job.Id}' wordt verwerkt en kan niet worden geannuleerd.");
+                    && x.Message == $"De status van de upload job '{job.Id}' is {job.Status.ToString().ToLower()}, hierdoor kan deze job niet geannuleerd worden.");
         }
 
         [Fact]
@@ -142,7 +142,7 @@
                 .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status400BadRequest
-                    && x.Message == $"Upload job '{job.Id}' wordt verwerkt en kan niet worden geannuleerd.");
+                    && x.Message == $"De status van de upload job '{job.Id}' is {job.Status.ToString().ToLower()}, hierdoor kan deze job niet geannuleerd worden.");
         }
 
         private JobRecord CreateJobRecord(Guid jobId)

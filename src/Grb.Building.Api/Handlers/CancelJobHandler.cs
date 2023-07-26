@@ -1,10 +1,12 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Grb;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
@@ -32,11 +34,18 @@
                 throw new ApiException("Onbestaande upload job.", StatusCodes.Status404NotFound);
             }
 
-            if (!await CanCancelJob(job))
+            void ThrowCancelException() => throw new ApiException(
+                $"De status van de upload job '{request.JobId}' is {job.Status.ToString().ToLower()}, hierdoor kan deze job niet geannuleerd worden.",
+                StatusCodes.Status400BadRequest);
+
+            if(job.Status == JobStatus.Error && HasJobRecords(job.Id))
             {
-                throw new ApiException(
-                    $"Upload job '{request.JobId}' wordt verwerkt en kan niet worden geannuleerd.",
-                    StatusCodes.Status400BadRequest);
+                ThrowCancelException();
+            }
+
+            if (!new []{ JobStatus.Created, JobStatus.Cancelled, JobStatus.Error}.Contains(job.Status))
+            {
+                ThrowCancelException();
             }
 
             await _ticketing.Complete(
@@ -48,19 +57,7 @@
             await _buildingGrbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task<bool> CanCancelJob(Job job)
-        {
-            if (job.Status == JobStatus.Created)
-            {
-                return true;
-            }
-
-            if (job.Status != JobStatus.Error)
-            {
-                return false;
-            }
-
-            return !await _buildingGrbContext.JobRecords.AnyAsync(x => x.JobId == job.Id);
-        }
+        private bool HasJobRecords(Guid jobId) =>
+            _buildingGrbContext.JobRecords.Any(x => x.JobId == jobId);
     }
 }
