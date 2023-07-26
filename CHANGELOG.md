@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.0...v1.7.1) (2023-07-26)
+
+
+### Bug Fixes
+
+* grb importer missing file errors ([2e368d7](https://github.com/informatievlaanderen/basisregisters-grb/commit/2e368d77f7acc5597913bb68dca9389fe676ca56))
+
 # [1.7.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.6.1...v1.7.0) (2023-07-26)
 
 
