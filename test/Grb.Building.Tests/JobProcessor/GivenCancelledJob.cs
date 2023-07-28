@@ -3,12 +3,12 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Grb.Building.Processor.Job;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
     using Notifications;
+    using Processor.Job;
     using TicketingService.Abstractions;
     using Xunit;
 
