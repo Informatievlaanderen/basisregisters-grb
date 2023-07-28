@@ -1,7 +1,6 @@
 ﻿namespace Grb.Building.Api.Handlers
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,7 +8,6 @@
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using MediatR;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.EntityFrameworkCore;
     using TicketingService.Abstractions;
 
     public sealed class CancelJobHandler : IRequestHandler<CancelJobRequest>
@@ -48,9 +46,17 @@
                 ThrowCancelException();
             }
 
-            await _ticketing.Complete(
-                job.TicketId!.Value,
-                new TicketResult(new { JobStatus = "Cancelled" }),
+            var jobRecordErrors = _buildingGrbContext
+                .JobRecords
+                .Where(x => x.JobId == job.Id)
+                .Select(x => new { ErrorMessage = x.ErrorMessage, ErrorCode = x.ErrorCode})
+                .ToList();
+
+                await _ticketing.Complete(
+                    job.TicketId!.Value,
+                    jobRecordErrors.Any()
+                        ? new TicketResult(new {JobStatus = "Cancelled", Errors = jobRecordErrors})
+                        : new TicketResult(new { JobStatus = "Cancelled"}),
                 cancellationToken);
 
             job.UpdateStatus(JobStatus.Cancelled);
