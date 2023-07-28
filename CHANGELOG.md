@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.2...v1.7.3) (2023-07-28)
+
+
+### Bug Fixes
+
+* change jobresult column names to IDN, GRBOBJECT, GRID ([0972d97](https://github.com/informatievlaanderen/basisregisters-grb/commit/0972d9722c72fd42241e36c0a6c883137a84cc44))
+
 ## [1.7.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.1...v1.7.2) (2023-07-26)
 
 
