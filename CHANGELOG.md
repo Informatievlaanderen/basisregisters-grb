@@ -1,3 +1,10 @@
+## [1.7.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.3...v1.7.4) (2023-08-02)
+
+
+### Bug Fixes
+
+* jobResult IDN column to GRBIDN ([261eca5](https://github.com/informatievlaanderen/basisregisters-grb/commit/261eca55b1d7188351bf2b25168e1bf9f8dfc082))
+
 ## [1.7.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.2...v1.7.3) (2023-07-28)
 
 
