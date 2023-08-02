@@ -4,7 +4,7 @@
 
     public class GrbDbaseSchema : DbaseSchema
     {
-        public DbaseField IDN => Fields[0];
+        public DbaseField GRBIDN => Fields[0];
         public DbaseField IDNV => Fields[1];
         public DbaseField GVDV => Fields[2];
         public DbaseField GVDE => Fields[3];
@@ -15,7 +15,7 @@
 
         public GrbDbaseSchema() => Fields = new[]
         {
-            DbaseField.CreateNumberField(new DbaseFieldName(nameof(IDN)), new DbaseFieldLength(10), new DbaseDecimalCount(0)),
+            DbaseField.CreateNumberField(new DbaseFieldName(nameof(GRBIDN)), new DbaseFieldLength(10), new DbaseDecimalCount(0)),
             DbaseField.CreateNumberField(new DbaseFieldName(nameof(IDNV)), new DbaseFieldLength(5), new DbaseDecimalCount(0)),
             DbaseField.CreateDateField(new DbaseFieldName(nameof(GVDV))),
             DbaseField.CreateDateField(new DbaseFieldName(nameof(GVDE))),
