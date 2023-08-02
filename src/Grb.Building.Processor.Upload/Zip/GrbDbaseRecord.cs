@@ -17,7 +17,7 @@ namespace Grb.Building.Processor.Upload.Zip
 
         public GrbDbaseRecord()
         {
-            IDN = new DbaseInt32(Schema.IDN);
+            IDN = new DbaseInt32(Schema.GRBIDN);
             IDNV = new DbaseInt32(Schema.IDNV);
             GVDV = new DbaseDate(Schema.GVDV);
             GVDE = new DbaseDate(Schema.GVDE);
