@@ -1,3 +1,10 @@
+## [1.7.5](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.4...v1.7.5) (2023-08-02)
+
+
+### Bug Fixes
+
+* change gebouw_ALL.zip schema col from IDN to GRBIDN ([1df4be8](https://github.com/informatievlaanderen/basisregisters-grb/commit/1df4be8f43b25dd75808e02930376b6e1a4d295b))
+
 ## [1.7.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.3...v1.7.4) (2023-08-02)
 
 
