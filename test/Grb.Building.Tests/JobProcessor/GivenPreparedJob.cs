@@ -107,6 +107,7 @@
             {
                 Id = 123456,
                 JobId = job.Id,
+                GrId = 456,
                 Status = JobRecordStatus.Error,
                 ErrorCode = "Code1",
                 ErrorMessage = "Error1",
@@ -116,6 +117,7 @@
             {
                 Id = 654321,
                 JobId = job.Id,
+                GrId = 789,
                 Status = JobRecordStatus.Error,
                 ErrorCode = "Code2",
                 ErrorMessage = "Error2",
@@ -143,8 +145,8 @@
             ticketing.Verify(x => x.Error(
                     job.TicketId!.Value,
                     It.Is<TicketError>(y =>
-                        y.Errors!.Contains(new TicketError(jobRecord1.ErrorMessage, jobRecord1.ErrorCode))
-                        && y.Errors!.Contains(new TicketError(jobRecord2.ErrorMessage, jobRecord2.ErrorCode))),
+                        y.Errors!.Contains(new TicketError($"RecordNumber:{jobRecord1.RecordNumber}, GRID:{jobRecord1.GrId}{Environment.NewLine}Message:{jobRecord1.ErrorMessage}", jobRecord1.ErrorCode))
+                        && y.Errors!.Contains(new TicketError($"RecordNumber:{jobRecord2.RecordNumber}, GRID:{jobRecord2.GrId}{Environment.NewLine}Message:{jobRecord2.ErrorMessage}", jobRecord2.ErrorCode))),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 

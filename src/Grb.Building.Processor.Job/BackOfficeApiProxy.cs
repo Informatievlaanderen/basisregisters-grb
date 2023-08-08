@@ -122,7 +122,7 @@
                             var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
                             var validationProblemDetails = JsonConvert.DeserializeObject<ProblemDetails>(jsonResponse);
 
-                            return new BackOfficeApiResult(null, new[] { new ValidationError(validationProblemDetails.Detail) });
+                            return new BackOfficeApiResult(null, new[] { new ValidationError("OnbestaandGebouw", validationProblemDetails.Detail) });
                         }
 
                         response.EnsureSuccessStatusCode();
