@@ -105,7 +105,7 @@
             {
                 var jobTicketError = new TicketError
                 {
-                    Errors = jobRecordErrors.Select(x => new TicketError(x.ErrorMessage!, x.ErrorCode ?? string.Empty)).ToList()
+                    Errors = jobRecordErrors.Select(x => new TicketError($"RecordNumber:{x.RecordNumber}, GRID:{x.GrId}{Environment.NewLine}Message:{x.ErrorMessage!}", x.ErrorCode ?? string.Empty)).ToList()
                 };
 
                 await _ticketing.Error(job.TicketId!.Value, jobTicketError, stoppingToken);
