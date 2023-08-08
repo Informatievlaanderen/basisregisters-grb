@@ -2,12 +2,14 @@
 {
     using System;
     using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using MediatR;
     using Microsoft.AspNetCore.Http;
+    using Newtonsoft.Json;
     using TicketingService.Abstractions;
 
     public sealed class CancelJobHandler : IRequestHandler<CancelJobRequest>
@@ -36,27 +38,23 @@
                 $"De status van de upload job '{request.JobId}' is {job.Status.ToString().ToLower()}, hierdoor kan deze job niet geannuleerd worden.",
                 StatusCodes.Status400BadRequest);
 
-            if(job.Status == JobStatus.Error && HasJobRecords(job.Id))
+            if (job.Status == JobStatus.Error && HasJobRecords(job.Id))
             {
                 ThrowCancelException();
             }
 
-            if (!new []{ JobStatus.Created, JobStatus.Cancelled, JobStatus.Error}.Contains(job.Status))
+            if (!new[] {JobStatus.Created, JobStatus.Cancelled, JobStatus.Error}.Contains(job.Status))
             {
                 ThrowCancelException();
             }
 
-            var jobRecordErrors = _buildingGrbContext
-                .JobRecords
-                .Where(x => x.JobId == job.Id)
-                .Select(x => new { ErrorMessage = x.ErrorMessage, ErrorCode = x.ErrorCode})
-                .ToList();
+            var ticket = await _ticketing.Get(job.TicketId!.Value, cancellationToken);
 
-                await _ticketing.Complete(
-                    job.TicketId!.Value,
-                    jobRecordErrors.Any()
-                        ? new TicketResult(new {JobStatus = "Cancelled", Errors = jobRecordErrors})
-                        : new TicketResult(new { JobStatus = "Cancelled"}),
+            await _ticketing.Complete(
+                job.TicketId!.Value,
+                ticket!.Result is not null && ticket.Status == TicketStatus.Error
+                    ? new TicketResult(new {JobStatus = "Cancelled", Error = System.Text.Json.JsonSerializer.Deserialize<TicketError>(ticket.Result.ResultAsJson)})
+                    : new TicketResult(new {JobStatus = "Cancelled"}),
                 cancellationToken);
 
             job.UpdateStatus(JobStatus.Cancelled);
@@ -67,3 +65,4 @@
             _buildingGrbContext.JobRecords.Any(x => x.JobId == jobId);
     }
 }
+

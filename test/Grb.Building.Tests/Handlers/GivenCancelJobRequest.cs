@@ -1,6 +1,9 @@
 ﻿namespace Grb.Building.Tests.Handlers
 {
     using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Abstractions.Requests;
@@ -78,6 +81,14 @@
             _buildingGrbContext.Jobs.Add(job);
 
             var ticketing = new Mock<ITicketing>();
+            ticketing
+                .Setup(x => x.Get(job.TicketId!.Value, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new Ticket(
+                        job.TicketId!.Value,
+                        TicketStatus.Created,
+                        new Dictionary<string, string>()
+                        ));
 
             var request = new CancelJobRequest(job.Id);
             var handler = new CancelJobHandler(_buildingGrbContext, ticketing.Object);
@@ -102,6 +113,14 @@
             _buildingGrbContext.Jobs.Add(job);
 
             var ticketing = new Mock<ITicketing>();
+            ticketing
+                .Setup(x => x.Get(job.TicketId!.Value, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new Ticket(
+                        job.TicketId!.Value,
+                        TicketStatus.Created,
+                        new Dictionary<string, string>()
+                    ));
 
             var request = new CancelJobRequest(job.Id);
             var handler = new CancelJobHandler(_buildingGrbContext, ticketing.Object);
@@ -114,6 +133,40 @@
             ticketing.Verify(x => x.Complete(
                 job.TicketId!.Value,
                 new TicketResult(new { JobStatus = "Cancelled" }),
+                It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task WithJobInStatusErrorAndWithoutJobRecordErrors_ThenJobIsCancelledAndErrorsInsertedIntoTicket()
+        {
+            // Arrange
+            var job = _fixture.Create<Job>();
+            job.UpdateStatus(JobStatus.Error);
+            _buildingGrbContext.Jobs.Add(job);
+
+            var expectedErrors = new TicketError("Something went wrong", "ErrorCode");
+            var ticketing = new Mock<ITicketing>();
+            ticketing
+                .Setup(x => x.Get(job.TicketId!.Value, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new Ticket(
+                        job.TicketId!.Value,
+                        TicketStatus.Error,
+                        new Dictionary<string, string>(),
+                        new TicketResult(expectedErrors)
+                    ));
+
+            var request = new CancelJobRequest(job.Id);
+            var handler = new CancelJobHandler(_buildingGrbContext, ticketing.Object);
+
+            // Act
+            await handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            job.Status.Should().Be(JobStatus.Cancelled);
+            ticketing.Verify(x => x.Complete(
+                job.TicketId!.Value,
+                new TicketResult(new { JobStatus = "Cancelled", Error = expectedErrors}),
                 It.IsAny<CancellationToken>()));
         }
 
