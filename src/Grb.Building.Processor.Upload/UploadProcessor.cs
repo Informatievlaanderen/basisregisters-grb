@@ -126,7 +126,7 @@
                 {
                     _logger.LogError($"Unexpected exception for job '{job.Id}'", ex);
 
-                    await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", string.Empty), stoppingToken);
+                    await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", "OnverwachteFout"), stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                     await _notificationService.PublishToTopicAsync(new NotificationMessage(

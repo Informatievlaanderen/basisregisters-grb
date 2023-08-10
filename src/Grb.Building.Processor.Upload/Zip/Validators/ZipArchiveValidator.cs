@@ -68,7 +68,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
                             var fileProblemsGrouped = fileProblems
                                 .SelectMany(kvp =>
                                     kvp.Value.Select(errorType =>
-                                        new { ErrorType = errorType, RecordNumber = kvp.Key }))
+                                        new {ErrorType = errorType, RecordNumber = kvp.Key}))
                                 .GroupBy(x => x.ErrorType)
                                 .ToDictionary(group => group.Key, group => group.Select(x => x.RecordNumber).ToList());
 
@@ -97,7 +97,11 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             }
             catch (NoDbaseRecordsException ex)
             {
-                problems += new FileError(ex.FileName, nameof(NoDbaseRecordsException));
+                problems += new FileError($"De meegegeven dbase record file ({ex.FileName}) is leeg.", "DbaseRecordFileLeeg");
+            }
+            catch (NoShapeRecordsException ex)
+            {
+                problems += new FileError($"De meegegeven shapefile ({ex.FileName}) is leeg.", "ShapefileLeeg");
             }
 
             return problems;
