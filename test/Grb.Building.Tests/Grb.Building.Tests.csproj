@@ -21,14 +21,17 @@
     <None Update="UploadProcessor\gebouw_dbf_missing.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="UploadProcessor\gebouw_shape_missing.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="UploadProcessor\gebouw_shape_missing.zip" />
-    <Content Include="UploadProcessor\gebouw_shape_missing.zip">
+    <None Remove="UploadProcessor\gebouw_grid_invalid.zip" />
+    <Content Include="UploadProcessor\gebouw_grid_invalid.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
+  
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

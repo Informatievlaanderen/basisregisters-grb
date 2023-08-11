@@ -123,6 +123,18 @@
 
                     await UpdateJobStatus(job, JobStatus.Prepared, stoppingToken);
                 }
+                catch (InvalidGrIdException)
+                {
+                    var errorMessage = "De meegegeven waarde in de kolom 'GRID' is ongeldig.";
+                    await _ticketing.Error(job.TicketId!.Value, new TicketError(errorMessage, "GebouwIdOngeldig"), stoppingToken);
+                    await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
+
+                    await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                        nameof(Upload),
+                        errorMessage,
+                        "Grb upload processor",
+                        NotificationSeverity.Danger));
+                }
                 catch (DbRecordsWithMissingShapeException ex)
                 {
                     var errorMessage = $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers ({string.Join(',', ex.RecordNumbers)})";

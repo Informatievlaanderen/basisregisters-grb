@@ -3,7 +3,9 @@
     using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using Be.Vlaanderen.Basisregisters.Shaperon;
+    using Exceptions;
 
     public class GrbDbaseRecordsTranslator : IZipArchiveDbaseRecordsTranslator
     {
@@ -16,6 +18,13 @@
             while (records.MoveNext())
             {
                 var record = records.Current;
+
+                var grId = record.GRID.Value == "-9"
+                    ? -9
+                    : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId)
+                        ? persistentLocalId
+                        : throw new InvalidGrIdException(recordNumber);
+
                 jobRecords.Add(recordNumber, new JobRecord
                 {
                     RecordNumber = recordNumber.ToInt32(),
@@ -25,7 +34,7 @@
                     EndDate = record.GVDE.Value.HasValue ? new DateTimeOffset(record.GVDE.Value!.Value) : null,
                     EventType = (GrbEventType)record.EventType.Value,
                     GrbObject = (GrbObject)record.GRBOBJECT.Value,
-                    GrId = record.GRID.Value == "-9" ? -9 : record.GRID.Value.AsIdentifier().Map(int.Parse),
+                    GrId = grId,
                     GrbObjectType = (GrbObjectType)record.TPC.Value,
                     Status = JobRecordStatus.Created
                 });

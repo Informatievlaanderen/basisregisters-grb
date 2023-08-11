@@ -21,10 +21,11 @@
             };
 
             // Act
-            var (status, message) = ErrorWarningEvaluator.Evaluate(validationErrors);
+            var (status, code, message) = ErrorWarningEvaluator.Evaluate(validationErrors);
 
             // Assert
             status.Should().Be(JobRecordStatus.Error);
+            code.Should().Be($"error1{Environment.NewLine}error2");
             message.Should().Be($"reason{Environment.NewLine}reason2");
         }
 
@@ -37,11 +38,12 @@
             };
 
             // Act
-            var (status, message) = ErrorWarningEvaluator.Evaluate(validationErrors);
+            var (status, code, message) = ErrorWarningEvaluator.Evaluate(validationErrors);
 
             // Assert
             status.Should().Be(JobRecordStatus.Error);
             message.Should().Be($"reason");
+            code.Should().BeNull();
         }
 
         [Theory]
@@ -54,11 +56,12 @@
             };
 
             // Act
-            var (status, resultMessage) = ErrorWarningEvaluator.Evaluate(validationErrors);
+            var (status, errorCode, resultMessage) = ErrorWarningEvaluator.Evaluate(validationErrors);
 
             // Assert
             status.Should().Be(JobRecordStatus.Warning);
             resultMessage.Should().Be(message);
+            errorCode.Should().Be(errorCode);
         }
 
         [Fact]
@@ -72,11 +75,12 @@
             };
 
             // Act
-            var (status, message) = ErrorWarningEvaluator.Evaluate(validationErrors);
+            var (status, code, message) = ErrorWarningEvaluator.Evaluate(validationErrors);
 
             // Assert
             status.Should().Be(JobRecordStatus.Error);
             message.Should().Be($"reason{Environment.NewLine}reason2");
+            code.Should().Be($"error1{Environment.NewLine}error2");
         }
 
         [Fact]

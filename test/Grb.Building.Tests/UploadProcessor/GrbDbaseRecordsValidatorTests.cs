@@ -75,24 +75,6 @@
             v.Value.Should().Contain(ValidationErrorType.UnknownEventType);
         }
 
-        [Fact]
-        public void WhenRecordGridIsInValid_ThenValidationError()
-        {
-            var recordWithEventTypeNull = GetCreateValidRecord();
-            recordWithEventTypeNull.GRID.Value = "https://data.vlaanderen.be/id/gebouw/123abc";
-
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
-                "dummy",
-                new List<GrbDbaseRecord>
-                {
-                    recordWithEventTypeNull
-                }.GetEnumerator());
-
-            var v = validationResult.FirstOrDefault();
-            v.Should().NotBeNull();
-            v.Value.Should().Contain(ValidationErrorType.InvalidGrId);
-        }
-
         [Theory]
         [InlineData("-9")]
         [InlineData("https://data.vlaanderen.be/id/gebouw/123")]

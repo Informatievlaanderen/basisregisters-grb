@@ -74,6 +74,7 @@
                     var evaluation = ErrorWarningEvaluator.Evaluate(backOfficeApiResult.ValidationErrors!.ToList());
                     jobRecord.Status = evaluation.jobRecordStatus;
                     jobRecord.ErrorMessage = evaluation.message;
+                    jobRecord.ErrorCode = evaluation.code;
                 }
 
                 await _buildingGrbContext.SaveChangesAsync(ct);

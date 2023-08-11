@@ -238,6 +238,8 @@ NUGET
     Be.Vlaanderen.Basisregisters.GrAr.Common (19.0)
       Be.Vlaanderen.Basisregisters.AggregateSource (>= 8.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       NodaTime (>= 3.0.10) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
+    Be.Vlaanderen.Basisregisters.GrAr.Edit (19.0)
+      NetTopologySuite (>= 2.4) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.GrAr.Extracts (19.0)
       Be.Vlaanderen.Basisregisters.Api (>= 20.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Be.Vlaanderen.Basisregisters.Shaperon (>= 9.0.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

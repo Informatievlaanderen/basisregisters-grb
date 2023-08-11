@@ -68,7 +68,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
                             var fileProblemsGrouped = fileProblems
                                 .SelectMany(kvp =>
                                     kvp.Value.Select(errorType =>
-                                        new {ErrorType = errorType, RecordNumber = kvp.Key}))
+                                        new { ErrorType = errorType, RecordNumber = kvp.Key }))
                                 .GroupBy(x => x.ErrorType)
                                 .ToDictionary(group => group.Key, group => group.Select(x => x.RecordNumber).ToList());
 
@@ -80,6 +80,10 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
                         }
                     }
                 }
+            }
+            catch (InvalidGrIdException ex)
+            {
+                problems += new FileError("GebouwIdOngeldig", $"De meegegeven waarde in de kolom 'GRID' is ongeldig. (RecordNumber: {ex.RecordNumber})");
             }
             catch (ShapeHeaderFormatException ex)
             {

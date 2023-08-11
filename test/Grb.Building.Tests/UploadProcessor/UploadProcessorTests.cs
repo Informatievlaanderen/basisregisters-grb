@@ -55,11 +55,13 @@
                     blobName,
                     null,
                     ContentType.Parse("X-multipart/abc"),
-                    _  => Task.FromResult((Stream)new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_ALL.zip", FileMode.Open, FileAccess.Read))));
+                    _ => Task.FromResult((Stream)new FileStream(
+                        $"{AppContext.BaseDirectory}/UploadProcessor/gebouw_ALL.zip", FileMode.Open,
+                        FileAccess.Read))));
 
             mockAmazonClient
                 .Setup(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new RunTaskResponse { HttpStatusCode = HttpStatusCode.OK});
+                .ReturnsAsync(new RunTaskResponse { HttpStatusCode = HttpStatusCode.OK });
 
             var notificationsService = new Mock<INotificationService>();
 
@@ -77,18 +79,19 @@
             await sut.StartAsync(CancellationToken.None);
 
             // Assert
-            mockTicketing.Verify(x => x.Pending(ticketId, It.IsAny<CancellationToken>()), Times.Once );
+            mockTicketing.Verify(x => x.Pending(ticketId, It.IsAny<CancellationToken>()), Times.Once);
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
             jobRecords.Should().HaveCount(10);
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Prepared);
 
-            mockAmazonClient.Verify(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockAmazonClient.Verify(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()),
+                Times.Once);
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
             mockIHostApplicationLifeTime.Verify(x => x.StopApplication(), Times.Once);
         }
 
-         [Fact]
+        [Fact]
         public async Task WhenBlobNotFound()
         {
             var mockTicketing = new Mock<ITicketing>();
@@ -196,11 +199,13 @@
                 .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_dbf_missing.zip", FileMode.Open, FileAccess.Read);
+            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_dbf_missing.zip",
+                FileMode.Open, FileAccess.Read);
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"), _ => Task.FromResult((Stream)zipFileStream)));
+                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
 
@@ -223,7 +228,7 @@
                 It.Is<TicketError>(x =>
                     x.Errors.First().ErrorCode == "RequiredFileMissing"
                     && x.Errors.First().ErrorMessage == $"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF."),
-                It.IsAny<CancellationToken>()), Times.Once );
+                It.IsAny<CancellationToken>()), Times.Once);
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
             jobRecords.Should().BeEmpty();
@@ -233,7 +238,7 @@
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
         }
 
-          [Fact]
+        [Fact]
         public async Task WhenDbaseRecordHasMissingShapeRecord_ThenTicketError()
         {
             var ct = CancellationToken.None;
@@ -254,11 +259,13 @@
                 .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_shape_missing.zip", FileMode.Open, FileAccess.Read);
+            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_shape_missing.zip",
+                FileMode.Open, FileAccess.Read);
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"), _ => Task.FromResult((Stream)zipFileStream)));
+                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
 
@@ -280,8 +287,70 @@
                 ticketId,
                 It.Is<TicketError>(x =>
                     x.ErrorCode == "OntbrekendeGeometriePolygoonShapeFile"
-                    && x.ErrorMessage == $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers (2)"),
-                It.IsAny<CancellationToken>()), Times.Once );
+                    && x.ErrorMessage ==
+                    $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers (2)"),
+                It.IsAny<CancellationToken>()), Times.Once);
+
+            var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
+            jobRecords.Should().BeEmpty();
+
+            _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenDbaseRecordHasInvalidGrId_ThenTicketError()
+        {
+            var ct = CancellationToken.None;
+            var mockTicketing = new Mock<ITicketing>();
+            var mockIBlobClient = new Mock<IBlobClient>();
+            var mockAmazonClient = new Mock<IAmazonECS>();
+            var mockIHostApplicationLifeTime = new Mock<IHostApplicationLifetime>();
+
+            var ticketId = Guid.NewGuid();
+            var job = new Job(DateTimeOffset.Now, JobStatus.Created, ticketId);
+
+            _buildingGrbContext.Jobs.Add(job);
+            await _buildingGrbContext.SaveChangesAsync(ct);
+
+            var blobName = new BlobName(job.ReceivedBlobName);
+
+            mockIBlobClient
+                .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_grid_invalid.zip",
+                FileMode.Open, FileAccess.Read);
+
+            mockIBlobClient
+                .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)zipFileStream)));
+
+            var notificationsService = new Mock<INotificationService>();
+
+            var sut = new UploadProcessor(
+                _buildingGrbContext,
+                mockTicketing.Object,
+                mockIBlobClient.Object,
+                mockAmazonClient.Object,
+                new NullLoggerFactory(),
+                mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
+                Options.Create(new EcsTaskOptions()));
+
+            // Act
+            await sut.StartAsync(ct);
+
+            // Assert
+            mockTicketing.Verify(x => x.Error(
+                ticketId,
+                It.Is<TicketError>(x =>
+                    x.Errors.Any(y =>
+                        y.ErrorCode == "GebouwIdOngeldig" &&
+                        y.ErrorMessage == "De meegegeven waarde in de kolom 'GRID' is ongeldig. (RecordNumber: 1)")),
+                It.IsAny<CancellationToken>()), Times.Once);
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
             jobRecords.Should().BeEmpty();
@@ -314,7 +383,8 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"), _ => throw new BlobNotFoundException(blobName)));
+                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                    _ => throw new BlobNotFoundException(blobName)));
 
             var notificationsService = new Mock<INotificationService>();
 
