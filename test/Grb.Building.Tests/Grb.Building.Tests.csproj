@@ -23,5 +23,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="UploadProcessor\gebouw_shape_missing.zip" />
+    <Content Include="UploadProcessor\gebouw_shape_missing.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
