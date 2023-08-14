@@ -54,7 +54,7 @@
 
             _logger.LogInformation("JobProcessor started");
 
-            var inactiveJobStatuses = new[] { JobStatus.Completed, JobStatus.Cancelled };
+            var inactiveJobStatuses = new[] {JobStatus.Completed, JobStatus.Cancelled};
             var jobsToProcess = await _buildingGrbContext.Jobs
                 .Where(x => !inactiveJobStatuses.Contains(x.Status))
                 .OrderBy(x => x.Created)
@@ -105,7 +105,10 @@
             {
                 var jobTicketError = new TicketError
                 {
-                    Errors = jobRecordErrors.Select(x => new TicketError($"RecordNumber:{x.RecordNumber}, GRID:{x.GrId}{Environment.NewLine}Message:{x.ErrorMessage!}", x.ErrorCode ?? string.Empty)).ToList()
+                    Errors = jobRecordErrors.Select(x =>
+                        new TicketError(
+                            $"RecordNumber:{x.RecordNumber}, GRID:{x.GrId}{Environment.NewLine}Message:{x.ErrorMessage!}",
+                            x.ErrorCode ?? string.Empty)).ToList()
                 };
 
                 await _ticketing.Error(job.TicketId!.Value, jobTicketError, stoppingToken);
@@ -133,10 +136,17 @@
                 stoppingToken);
             await UpdateJobStatus(job, JobStatus.Completed, stoppingToken);
 
+            var numberOfWarnings = _buildingGrbContext.JobRecords
+                .Count(x =>
+                    x.JobId == job.Id
+                    && x.Status == JobRecordStatus.Warning);
+
             await _notificationService.PublishToTopicAsync(
                 new NotificationMessage(
-                    nameof(Grb.Building.Processor.Job),
-                    $"JobCompleted, Job {job.Id} is completed.",
+                    nameof(Job),
+                    numberOfWarnings > 0
+                        ? $"JobCompleted, Job {job.Id} is completed with {numberOfWarnings} warnings."
+                        : $"JobCompleted, Job {job.Id} is completed.",
                     "Grb job processor",
                     NotificationSeverity.Good));
 
@@ -147,7 +157,7 @@
         {
             await _ticketing.Complete(
                 job.TicketId!.Value,
-                new TicketResult(new { JobStatus = "Cancelled" }),
+                new TicketResult(new {JobStatus = "Cancelled"}),
                 stoppingToken);
 
             await UpdateJobStatus(job, JobStatus.Cancelled, stoppingToken);

@@ -22,9 +22,8 @@
                     if (jobRecord is not null)
                     {
                         matchingShapeWithRecord[shapeRecord.Header.RecordNumber] = true;
+                        jobRecord.Geometry = GeometryTranslator.ToGeometryPolygon(content.Shape);
                     }
-
-                    jobRecord.Geometry = GeometryTranslator.ToGeometryPolygon(content.Shape);
                 }
             }
 
