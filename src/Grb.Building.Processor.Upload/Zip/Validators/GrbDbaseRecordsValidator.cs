@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Exceptions;
 
@@ -36,13 +37,11 @@
                     });
                 }
 
-                if (record.GRID.Value != "-9" && !int.TryParse(record.GRID.Value.AsIdentifier().Value, out _))
-                {
-                    validationErrors.Add(new RecordNumber(index), new List<ValidationErrorType>
-                    {
-                        ValidationErrorType.InvalidGrId
-                    });
-                }
+                _ = record.GRID.Value == "-9"
+                    ? -9
+                    : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId)
+                        ? persistentLocalId
+                        : throw new InvalidGrIdException(new RecordNumber(index));
 
                 moved = records.MoveNext();
 

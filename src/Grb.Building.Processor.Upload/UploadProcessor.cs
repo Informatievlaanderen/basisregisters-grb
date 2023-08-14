@@ -20,6 +20,7 @@
     using Notifications;
     using TicketingService.Abstractions;
     using Zip;
+    using Zip.Exceptions;
     using Zip.Translators;
     using Zip.Validators;
     using Task = System.Threading.Tasks.Task;
@@ -122,11 +123,23 @@
 
                     await UpdateJobStatus(job, JobStatus.Prepared, stoppingToken);
                 }
+                catch (DbRecordsWithMissingShapeException ex)
+                {
+                    var errorMessage = $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers ({string.Join(',', ex.RecordNumbers)})";
+                    await _ticketing.Error(job.TicketId!.Value, new TicketError(errorMessage, "OntbrekendeGeometriePolygoonShapeFile"), stoppingToken);
+                    await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
+
+                    await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                        nameof(Upload),
+                        errorMessage,
+                        "Grb upload processor",
+                        NotificationSeverity.Danger));
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError($"Unexpected exception for job '{job.Id}'", ex);
 
-                    await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", string.Empty), stoppingToken);
+                    await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", "OnverwachteFout"), stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
                     await _notificationService.PublishToTopicAsync(new NotificationMessage(

@@ -81,6 +81,10 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
                     }
                 }
             }
+            catch (InvalidGrIdException ex)
+            {
+                problems += new FileError("GebouwIdOngeldig", $"De meegegeven waarde in de kolom 'GRID' is ongeldig. (RecordNumber: {ex.RecordNumber})");
+            }
             catch (ShapeHeaderFormatException ex)
             {
                 problems += new FileError(ex.FileName, nameof(ShapeHeaderFormatException),
@@ -97,7 +101,11 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             }
             catch (NoDbaseRecordsException ex)
             {
-                problems += new FileError(ex.FileName, nameof(NoDbaseRecordsException));
+                problems += new FileError($"De meegegeven dbase record file ({ex.FileName}) is leeg.", "DbaseRecordFileLeeg");
+            }
+            catch (NoShapeRecordsException ex)
+            {
+                problems += new FileError($"De meegegeven shapefile ({ex.FileName}) is leeg.", "ShapefileLeeg");
             }
 
             return problems;

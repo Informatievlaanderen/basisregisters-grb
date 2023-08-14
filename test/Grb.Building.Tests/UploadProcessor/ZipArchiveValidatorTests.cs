@@ -148,9 +148,41 @@
             var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
 
             // Assert
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == ZipArchiveConstants.DBF_FILENAME);
+            var expectedReason = "DbaseRecordFileLeeg";
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Reason == expectedReason);
             fileProblem.Should().NotBeNull();
-            fileProblem.Reason.Should().Be("NoDbaseRecordsException");
+            fileProblem.Reason.Should().Be(expectedReason);
+            fileProblem.File.Should().Be($"De meegegeven dbase record file ({ZipArchiveConstants.DBF_FILENAME}) is leeg.");
+        }
+
+        [Fact]
+        public void WhenNoDbaseShapeRecordsException_ThenProblem()
+        {
+            var zipArchiveRecordEntryValidator = new Mock<IZipArchiveDbaseEntryValidator>();
+            zipArchiveRecordEntryValidator
+                .Setup(x => x.Validate(It.IsAny<ZipArchiveEntry>()))
+                .Throws(new NoShapeRecordsException(ZipArchiveConstants.SHP_FILENAME));
+
+            // Act
+            var sut = new ZipArchiveValidator(new Dictionary<string, IZipArchiveEntryValidator>(StringComparer.InvariantCultureIgnoreCase)
+            {
+                {
+                    ZipArchiveConstants.DBF_FILENAME,
+                    zipArchiveRecordEntryValidator.Object
+                },
+                {
+                    ZipArchiveConstants.SHP_FILENAME,
+                    new ZipArchiveShapeEntryValidator(Encoding.UTF8, new GrbShapeRecordsValidator())
+                }
+            });
+            var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
+
+            // Assert
+            var expectedReason = "ShapefileLeeg";
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Reason == expectedReason);
+            fileProblem.Should().NotBeNull();
+            fileProblem.File.Should().Be($"De meegegeven shapefile ({ZipArchiveConstants.SHP_FILENAME}) is leeg.");
+            fileProblem.Reason.Should().Be(expectedReason);
         }
     }
 }

@@ -1,11 +1,16 @@
 ﻿namespace Grb.Building.Tests.UploadProcessor
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.IO.Compression;
     using System.Linq;
+    using System.Text;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using FluentAssertions;
     using Grb.Building.Processor.Upload.Zip.Exceptions;
     using Grb.Building.Processor.Upload.Zip.Validators;
+    using Processor.Upload.Zip;
     using Xunit;
 
     public class GrbShapeRecordsValidatorTests
