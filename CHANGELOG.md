@@ -1,3 +1,13 @@
+## [1.7.6](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.5...v1.7.6) (2023-08-14)
+
+
+### Bug Fixes
+
+* add errors to ticket when errored job is cancelled ([e9f648e](https://github.com/informatievlaanderen/basisregisters-grb/commit/e9f648e71258dcb94ccad72e0ef57c1d655869e0))
+* add http status code to not found error in httpproxy ([ca5d888](https://github.com/informatievlaanderen/basisregisters-grb/commit/ca5d888825f2c9e86a0c0946747e76627cd92721))
+* error handling + warnings to completed ticket ([469c1fe](https://github.com/informatievlaanderen/basisregisters-grb/commit/469c1fed4618da801f68a961fc7a4778487fdac0))
+* get ticket errors from ticket when cancelling job ([88705f5](https://github.com/informatievlaanderen/basisregisters-grb/commit/88705f54568fe40c3635ce80a3c827968b4210ef))
+
 ## [1.7.5](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.4...v1.7.5) (2023-08-02)
 
 
