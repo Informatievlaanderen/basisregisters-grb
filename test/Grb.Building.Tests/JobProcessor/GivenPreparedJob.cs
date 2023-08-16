@@ -145,8 +145,8 @@
             ticketing.Verify(x => x.Error(
                     job.TicketId!.Value,
                     It.Is<TicketError>(y =>
-                        y.Errors!.Contains(new TicketError($"RecordNumber:{jobRecord1.RecordNumber}, GRID:{jobRecord1.GrId}{Environment.NewLine}Message:{jobRecord1.ErrorMessage}", jobRecord1.ErrorCode))
-                        && y.Errors!.Contains(new TicketError($"RecordNumber:{jobRecord2.RecordNumber}, GRID:{jobRecord2.GrId}{Environment.NewLine}Message:{jobRecord2.ErrorMessage}", jobRecord2.ErrorCode))),
+                        y.Errors!.Contains(new TicketError($"{jobRecord1.ErrorMessage} Record nummer: {jobRecord1.RecordNumber}, GRID: {jobRecord1.GrId}", jobRecord1.ErrorCode))
+                        && y.Errors!.Contains(new TicketError($"{jobRecord2.ErrorMessage} Record nummer: {jobRecord2.RecordNumber}, GRID: {jobRecord2.GrId}", jobRecord2.ErrorCode))),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 

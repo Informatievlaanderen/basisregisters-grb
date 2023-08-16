@@ -125,7 +125,7 @@
                 }
                 catch (DbRecordsWithMissingShapeException ex)
                 {
-                    var errorMessage = $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers ({string.Join(',', ex.RecordNumbers)})";
+                    var errorMessage = $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers: {string.Join(',', ex.RecordNumbers)}";
                     await _ticketing.Error(job.TicketId!.Value, new TicketError(errorMessage, "OntbrekendeGeometriePolygoonShapeFile"), stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
 
