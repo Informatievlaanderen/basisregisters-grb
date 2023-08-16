@@ -288,7 +288,7 @@
                 It.Is<TicketError>(x =>
                     x.ErrorCode == "OntbrekendeGeometriePolygoonShapeFile"
                     && x.ErrorMessage ==
-                    $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers (2)"),
+                    $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers: 2"),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);

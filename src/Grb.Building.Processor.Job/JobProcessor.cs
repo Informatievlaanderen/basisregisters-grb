@@ -107,7 +107,7 @@
                 {
                     Errors = jobRecordErrors.Select(x =>
                         new TicketError(
-                            $"RecordNumber:{x.RecordNumber}, GRID:{x.GrId}{Environment.NewLine}Message:{x.ErrorMessage!}",
+                            $"{x.ErrorMessage!} Record nummer: {x.RecordNumber}, GRID: {x.GrId}",
                             x.ErrorCode ?? string.Empty)).ToList()
                 };
 
