@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.6...v1.8.0) (2023-08-18)
+
+
+### Features
+
+* add errorcode to jobrecords archive ([1b272c9](https://github.com/informatievlaanderen/basisregisters-grb/commit/1b272c954ded4ef5a9fe407e78c5ac8b136ffe17))
+
 ## [1.7.6](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.5...v1.7.6) (2023-08-14)
 
 
