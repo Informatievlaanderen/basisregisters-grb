@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.8.0...v1.8.1) (2023-08-18)
+
+
+### Bug Fixes
+
+* record error formatting ([7db79b3](https://github.com/informatievlaanderen/basisregisters-grb/commit/7db79b38f65e6da3ed8e0ff1eb3121ca77ebefbf))
+
 # [1.8.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.7.6...v1.8.0) (2023-08-18)
 
 
