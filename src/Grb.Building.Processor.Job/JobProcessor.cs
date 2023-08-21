@@ -81,6 +81,11 @@
                 }
 
                 await ProcessJob(job, stoppingToken);
+
+                if (job.Status is JobStatus.Error)
+                {
+                    break;
+                }
             }
 
             _hostApplicationLifetime.StopApplication();
