@@ -154,5 +154,89 @@
 
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
         }
+
+        [Fact]
+        public async Task WhenJobRecordErrors_ThenNextJobIsNotExecuted()
+        {
+            var buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+
+            var jobRecordsProcessor = new Mock<IJobRecordsProcessor>();
+            var jobRecordsMonitor = new Mock<IJobRecordsMonitor>();
+            var jobResultsUploader = new Mock<IJobResultUploader>();
+            var jobRecordsArchiver = new Mock<IJobRecordsArchiver>();
+            var ticketing = new Mock<ITicketing>();
+            var notificationsService = new Mock<INotificationService>();
+            var hostApplicationLifetime = new Mock<IHostApplicationLifetime>();
+
+            var jobProcessor = new JobProcessor(
+                buildingGrbContext,
+                jobRecordsProcessor.Object,
+                jobRecordsMonitor.Object,
+                jobResultsUploader.Object,
+                jobRecordsArchiver.Object,
+                ticketing.Object,
+                new OptionsWrapper<GrbApiOptions>(new GrbApiOptions
+                    { PublicApiUrl = "https://api-vlaanderen.be" }),
+                hostApplicationLifetime.Object,
+                notificationsService.Object,
+                new NullLoggerFactory());
+
+            var job = new Job(DateTimeOffset.Now.AddMinutes(-10), JobStatus.Prepared, ticketId: Guid.NewGuid());
+            buildingGrbContext.Jobs.Add(job);
+            var secondJob = new Job(DateTimeOffset.Now.AddMinutes(-9), JobStatus.Prepared, ticketId: Guid.NewGuid());
+            buildingGrbContext.Jobs.Add(secondJob);
+            var jobRecord1 = new JobRecord
+            {
+                Id = 123456,
+                JobId = job.Id,
+                GrId = 456,
+                Status = JobRecordStatus.Error,
+                ErrorCode = "Code1",
+                ErrorMessage = "Error1",
+                Geometry = (Polygon)GeometryHelper.ValidPolygon,
+            };
+            var jobRecord2 = new JobRecord
+            {
+                Id = 654321,
+                JobId = secondJob.Id,
+                GrId = 789,
+                Status = JobRecordStatus.Completed,
+                ErrorCode = "Code2",
+                ErrorMessage = "Error2",
+                Geometry = (Polygon)GeometryHelper.ValidPolygon,
+            };
+            buildingGrbContext.JobRecords.AddRange(new[]
+            {
+                jobRecord1,
+                jobRecord2
+            });
+            await buildingGrbContext.SaveChangesAsync();
+
+            //act
+            await jobProcessor.StartAsync(CancellationToken.None);
+            await jobProcessor.ExecuteTask;
+
+            //assert
+            var jobEntity = buildingGrbContext.Jobs.FirstOrDefault(x => x.Id == job.Id);
+            jobEntity.Should().NotBeNull();
+            jobEntity!.Status.Should().Be(JobStatus.Error);
+
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+
+            jobRecordsProcessor.Verify(x => x.Process(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
+            jobRecordsMonitor.Verify(x => x.Monitor(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
+
+            ticketing.Verify(x => x.Error(
+                    job.TicketId!.Value,
+                    It.Is<TicketError>(y =>
+                        y.Errors!.Contains(new TicketError($"{jobRecord1.ErrorMessage} Record nummer: {jobRecord1.RecordNumber}, GRID: {jobRecord1.GrId}", jobRecord1.ErrorCode))),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
+
+            hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
+        }
     }
 }
