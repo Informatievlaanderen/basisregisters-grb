@@ -349,7 +349,7 @@
                 It.Is<TicketError>(x =>
                     x.Errors.Any(y =>
                         y.ErrorCode == "GebouwIdOngeldig" &&
-                        y.ErrorMessage == "De meegegeven waarde in de kolom 'GRID' is ongeldig. (RecordNumber: 1)")),
+                        y.ErrorMessage == "De meegegeven waarde in de kolom 'GRID' is ongeldig. Record nummer: 1, GRID: invalid puri")),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
