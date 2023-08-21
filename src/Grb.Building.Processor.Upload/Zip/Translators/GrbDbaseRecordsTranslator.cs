@@ -23,7 +23,7 @@
                     ? -9
                     : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId)
                         ? persistentLocalId
-                        : throw new InvalidGrIdException(recordNumber);
+                        : throw new InvalidGrIdException(recordNumber, record.GRID.Value);
 
                 jobRecords.Add(recordNumber, new JobRecord
                 {

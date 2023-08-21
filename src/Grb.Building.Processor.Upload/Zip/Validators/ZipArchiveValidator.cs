@@ -83,7 +83,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             }
             catch (InvalidGrIdException ex)
             {
-                problems += new FileError("GebouwIdOngeldig", $"De meegegeven waarde in de kolom 'GRID' is ongeldig. (RecordNumber: {ex.RecordNumber})");
+                problems += new FileError("GebouwIdOngeldig", $"De meegegeven waarde in de kolom 'GRID' is ongeldig. Record nummer: {ex.RecordNumber}, GRID: {ex.GrId}");
             }
             catch (ShapeHeaderFormatException ex)
             {

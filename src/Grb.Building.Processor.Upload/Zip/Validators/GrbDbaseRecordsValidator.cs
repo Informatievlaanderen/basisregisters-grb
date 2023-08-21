@@ -41,7 +41,7 @@
                     ? -9
                     : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId)
                         ? persistentLocalId
-                        : throw new InvalidGrIdException(new RecordNumber(index));
+                        : throw new InvalidGrIdException(new RecordNumber(index), record.GRID.Value);
 
                 moved = records.MoveNext();
 
