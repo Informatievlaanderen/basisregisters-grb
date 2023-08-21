@@ -1,3 +1,11 @@
+## [1.8.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.8.1...v1.8.2) (2023-08-21)
+
+
+### Bug Fixes
+
+* append error message with grid ([00ad27a](https://github.com/informatievlaanderen/basisregisters-grb/commit/00ad27af14edc3726fa336a905add3bbd33a8a4a))
+* not execute job when previous job in error ([443e077](https://github.com/informatievlaanderen/basisregisters-grb/commit/443e0779fe3b4fd0583394234e32864b1956fb5a))
+
 ## [1.8.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.8.0...v1.8.1) (2023-08-18)
 
 
