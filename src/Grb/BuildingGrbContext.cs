@@ -1,9 +1,12 @@
 ﻿namespace Grb
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
@@ -16,11 +19,14 @@
         public DbSet<Job> Jobs => Set<Job>();
         public DbSet<JobRecord> JobRecords => Set<JobRecord>();
 
-        public BuildingGrbContext() { }
+        public BuildingGrbContext()
+        {
+        }
 
         public BuildingGrbContext(DbContextOptions<BuildingGrbContext> options)
             : base(options)
-        { }
+        {
+        }
 
         public async Task<Job?> FindJob(Guid jobId, CancellationToken cancellationToken)
         {
@@ -30,6 +36,13 @@
         public async Task<JobRecord?> FindJobRecord(long jobRecordId, CancellationToken cancellationToken)
         {
             return await JobRecords.FindAsync(new object[] { jobRecordId }, cancellationToken);
+        }
+
+        public IQueryable<JobRecord> GetJobRecordsArchive(Guid jobId)
+        {
+            return JobRecords
+                .FromSqlRaw($"select * from [{Schema}].[JobRecordsArchive] where {nameof(JobRecord.JobId)} = @jobId", new SqlParameter("@jobId", jobId))
+                .AsNoTracking();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -63,7 +76,8 @@
                 .UseSqlServer(connectionString, sqlServerOptions =>
                 {
                     sqlServerOptions.EnableRetryOnFailure();
-                    sqlServerOptions.MigrationsHistoryTable(BuildingGrbContext.MigrationsTableName, BuildingGrbContext.Schema);
+                    sqlServerOptions.MigrationsHistoryTable(BuildingGrbContext.MigrationsTableName,
+                        BuildingGrbContext.Schema);
                     sqlServerOptions.UseNetTopologySuite();
                 });
 

@@ -97,15 +97,15 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
             }
             catch (DbaseHeaderSchemaMismatchException ex)
             {
-                problems += new FileError(ex.FileName, nameof(DbaseHeaderSchemaMismatchException));
+                problems += new FileError(nameof(DbaseHeaderSchemaMismatchException), "De kolomnamen komen niet overeen met de verwachte kolomstructuur.");
             }
             catch (NoDbaseRecordsException ex)
             {
-                problems += new FileError($"De meegegeven dbase record file ({ex.FileName}) is leeg.", "DbaseRecordFileLeeg");
+                problems += new FileError("DbaseRecordFileLeeg", $"De meegegeven dbase record file ({ex.FileName}) is leeg.");
             }
             catch (NoShapeRecordsException ex)
             {
-                problems += new FileError($"De meegegeven shapefile ({ex.FileName}) is leeg.", "ShapefileLeeg");
+                problems += new FileError("ShapefileLeeg", $"De meegegeven shapefile ({ex.FileName}) is leeg.");
             }
 
             return problems;
