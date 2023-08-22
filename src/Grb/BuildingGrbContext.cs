@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
@@ -40,7 +41,7 @@
         public IQueryable<JobRecord> GetJobRecordsArchive(Guid jobId)
         {
             return JobRecords
-                .FromSqlRaw($"select * from [{Schema}].[JobRecordsArchive] where {nameof(JobRecord.JobId)} = '{jobId}'")
+                .FromSqlRaw($"select * from [{Schema}].[JobRecordsArchive] where {nameof(JobRecord.JobId)} = @jobId", new SqlParameter("@jobId", jobId))
                 .AsNoTracking();
         }
 

@@ -30,7 +30,7 @@
         public async Task<GetJobRecordsResponse> Handle(GetJobRecordsRequest request,
             CancellationToken cancellationToken)
         {
-            var job = await _buildingGrbContext.Jobs.FindAsync(request.JobId);
+            var job = await _buildingGrbContext.Jobs.FindAsync(new object?[]{request.JobId}, cancellationToken);
 
             if (job is null)
             {
