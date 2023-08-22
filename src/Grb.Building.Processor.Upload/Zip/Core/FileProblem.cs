@@ -6,16 +6,16 @@ namespace Grb.Building.Processor.Upload.Zip.Core
 
     public abstract class FileProblem : IEquatable<FileProblem>, IEqualityComparer<FileProblem>
     {
-        protected FileProblem(string file, string reason, IReadOnlyCollection<ProblemParameter> parameters)
+        protected FileProblem(string code, string message, IReadOnlyCollection<ProblemParameter> parameters)
         {
-            File = file ?? throw new ArgumentNullException(nameof(file));
-            Reason = reason ?? throw new ArgumentNullException(nameof(reason));
+            Code = code ?? throw new ArgumentNullException(nameof(code));
+            Message = message ?? throw new ArgumentNullException(nameof(message));
             Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
         }
 
-        public string File { get; }
+        public string Code { get; }
         public IReadOnlyCollection<ProblemParameter> Parameters { get; }
-        public string Reason { get; }
+        public string Message { get; }
 
         public bool Equals(FileProblem x, FileProblem y)
         {
@@ -27,8 +27,8 @@ namespace Grb.Building.Processor.Upload.Zip.Core
 
             if (x.GetType() != y.GetType()) return false;
 
-            return x.File == y.File
-                   && x.Reason == y.Reason
+            return x.Code == y.Code
+                   && x.Message == y.Message
                    && Equals(x.Parameters, y.Parameters);
         }
 
@@ -36,8 +36,8 @@ namespace Grb.Building.Processor.Upload.Zip.Core
         {
             return other != null
                    && GetType() == other.GetType()
-                   && string.Equals(File, other.File, StringComparison.InvariantCultureIgnoreCase)
-                   && string.Equals(Reason, other.Reason)
+                   && string.Equals(Code, other.Code, StringComparison.InvariantCultureIgnoreCase)
+                   && string.Equals(Message, other.Message)
                    && Parameters.SequenceEqual(other.Parameters);
         }
 
@@ -48,16 +48,14 @@ namespace Grb.Building.Processor.Upload.Zip.Core
 
         public int GetHashCode(FileProblem obj)
         {
-            return HashCode.Combine(obj.File, obj.Reason, obj.Parameters);
+            return HashCode.Combine(obj.Code, obj.Message, obj.Parameters);
         }
 
         public override int GetHashCode()
         {
             return Parameters.Aggregate(
-                File.GetHashCode() ^ Reason.GetHashCode(),
+                Code.GetHashCode() ^ Message.GetHashCode(),
                 (current, parameter) => current ^ parameter.GetHashCode());
         }
-
-        public abstract Messages.FileProblem Translate();
     }
 }

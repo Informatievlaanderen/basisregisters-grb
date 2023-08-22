@@ -94,8 +94,8 @@
                     {
                         var ticketingErrors = problems.Select(x =>
                                 x.Parameters.Any()
-                                    ? new TicketError(string.Join(',', x.Parameters.Select(y => y.Value)), x.Reason)
-                                    : new TicketError(x.Reason, x.File))
+                                    ? new TicketError(string.Join(',', x.Parameters.Select(y => y.Value)), x.Message)
+                                    : new TicketError(x.Message, x.Code))
                             .ToList();
 
                         var ticketError = new TicketError

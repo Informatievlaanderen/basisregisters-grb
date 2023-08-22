@@ -36,9 +36,9 @@
             var zipArchiveProblems = sut.Validate(archive);
 
             // Assert
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == "RequiredFileMissing");
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "RequiredFileMissing");
             fileProblem.Should().NotBeNull();
-            fileProblem.Reason.Should().Be($"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF.");
+            fileProblem.Message.Should().Be($"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF.");
         }
 
         [Fact]
@@ -64,9 +64,9 @@
             var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
 
             // Assert
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == ZipArchiveConstants.DBF_FILENAME);
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == ZipArchiveConstants.DBF_FILENAME);
             fileProblem.Should().NotBeNull();
-            fileProblem.Reason.Should().Be("ShapeHeaderFormatException");
+            fileProblem.Message.Should().Be("ShapeHeaderFormatException");
         }
 
         [Fact]
@@ -92,9 +92,9 @@
             var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
 
             // Assert
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == ZipArchiveConstants.DBF_FILENAME);
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == ZipArchiveConstants.DBF_FILENAME);
             fileProblem.Should().NotBeNull();
-            fileProblem.Reason.Should().Be("DbaseHeaderFormatException");
+            fileProblem.Message.Should().Be("DbaseHeaderFormatException");
         }
 
         [Fact]
@@ -120,9 +120,10 @@
             var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
 
             // Assert
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.File == ZipArchiveConstants.DBF_FILENAME);
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "DbaseHeaderSchemaMismatchException");
             fileProblem.Should().NotBeNull();
-            fileProblem.Reason.Should().Be("DbaseHeaderSchemaMismatchException");
+            fileProblem.Message.Should().Be("De kolomnamen komen niet overeen met de verwachte kolomstructuur.");
+            fileProblem.Code.Should().Be("DbaseHeaderSchemaMismatchException");
         }
 
         [Fact]
@@ -148,11 +149,10 @@
             var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
 
             // Assert
-            var expectedReason = "DbaseRecordFileLeeg";
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Reason == expectedReason);
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "DbaseRecordFileLeeg");
             fileProblem.Should().NotBeNull();
-            fileProblem.Reason.Should().Be(expectedReason);
-            fileProblem.File.Should().Be($"De meegegeven dbase record file ({ZipArchiveConstants.DBF_FILENAME}) is leeg.");
+            fileProblem.Message.Should().Be($"De meegegeven dbase record file ({ZipArchiveConstants.DBF_FILENAME}) is leeg.");
+            fileProblem.Code.Should().Be("DbaseRecordFileLeeg");
         }
 
         [Fact]
@@ -178,11 +178,10 @@
             var zipArchiveProblems = sut.Validate(_fixture.ZipArchive);
 
             // Assert
-            var expectedReason = "ShapefileLeeg";
-            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Reason == expectedReason);
+            var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "ShapefileLeeg");
             fileProblem.Should().NotBeNull();
-            fileProblem.File.Should().Be($"De meegegeven shapefile ({ZipArchiveConstants.SHP_FILENAME}) is leeg.");
-            fileProblem.Reason.Should().Be(expectedReason);
+            fileProblem.Message.Should().Be($"De meegegeven shapefile ({ZipArchiveConstants.SHP_FILENAME}) is leeg.");
+            fileProblem.Code.Should().Be("ShapefileLeeg");
         }
     }
 }

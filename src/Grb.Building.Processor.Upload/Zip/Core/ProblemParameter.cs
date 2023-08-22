@@ -49,13 +49,5 @@ namespace Grb.Building.Processor.Upload.Zip.Core
         {
             return Name.GetHashCode() ^ Value.GetHashCode();
         }
-
-        public Messages.ProblemParameter Translate()
-        {
-            return new Messages.ProblemParameter
-            {
-                Name = Name, Value = Value
-            };
-        }
     }
 }
