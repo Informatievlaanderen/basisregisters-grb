@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.8.2...v1.9.0) (2023-08-22)
+
+
+### Features
+
+* expand getjobrecords with archived jobrecords ([a2c4d33](https://github.com/informatievlaanderen/basisregisters-grb/commit/a2c4d334fd54dc46bd2fb5aa0dbc401b2f2b700b))
+
 ## [1.8.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.8.1...v1.8.2) (2023-08-21)
 
 
