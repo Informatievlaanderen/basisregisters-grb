@@ -119,7 +119,7 @@
                 await _ticketing.Error(job.TicketId!.Value, jobTicketError, stoppingToken);
 
                 await _notificationService.PublishToTopicAsync(new NotificationMessage(
-                    nameof(Grb.Building.Processor.Job),
+                    nameof(Job),
                     $"JobRecordErrors, Job: {job.Id} has {jobRecordErrors.Count} errors.",
                     "Grb job processor",
                     NotificationSeverity.Danger));

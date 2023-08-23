@@ -48,6 +48,11 @@
 
             var maxJobRecords = createJobRecords.Count + updateJobRecords.Count;
 
+            if (maxJobRecords == 0)
+            {
+                return;
+            }
+
             var maxDegreeOfParallelism = 10.0;
 
             var percentageCreatedJobRecords = createJobRecords.Count / maxJobRecords;
