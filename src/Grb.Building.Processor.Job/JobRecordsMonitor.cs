@@ -18,132 +18,84 @@
 
     public class JobRecordsMonitor : IJobRecordsMonitor
     {
-        private readonly BuildingGrbContext _buildingGrbContext;
+        private readonly IDbContextFactory<BuildingGrbContext> _buildingGrbContextFactory;
         private readonly ITicketing _ticketing;
 
         public JobRecordsMonitor(
-            BuildingGrbContext buildingGrbContext,
+            IDbContextFactory<BuildingGrbContext> buildingGrbContextFactory,
             ITicketing ticketing)
         {
-            _buildingGrbContext = buildingGrbContext;
+            _buildingGrbContextFactory = buildingGrbContextFactory;
             _ticketing = ticketing;
         }
 
         public async Task Monitor(Guid jobId, CancellationToken ct)
         {
-            var pendingJobRecords = await _buildingGrbContext.JobRecords
-                .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending)
-                .OrderBy(x => x.Id)
-                .ToListAsync(ct);
-
-            while (pendingJobRecords.Any())
+            int pendingJobRecordsCount;
+            await using (var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct))
             {
-                foreach (var jobRecord in pendingJobRecords)
-                {
-                    var ticket = await _ticketing.Get(jobRecord.TicketId!.Value, ct);
+                pendingJobRecordsCount = await buildingGrbContext.JobRecords
+                    .CountAsync(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending, cancellationToken: ct);
+            }
 
-                    switch (ticket!.Status)
+            while (pendingJobRecordsCount > 0)
+            {
+                const int chunkSize = 50;
+                var numberOfChunks = (int)Math.Ceiling(pendingJobRecordsCount / (decimal)chunkSize);
+
+                await Parallel.ForEachAsync(
+                    Enumerable.Range(0, numberOfChunks),
+                    new ParallelOptions { MaxDegreeOfParallelism = 10 , CancellationToken = ct},
+                    async (index, innerCt) =>
                     {
-                        case TicketStatus.Created:
-                        case TicketStatus.Pending:
-                            break;
-                        case TicketStatus.Complete:
-                            var etagResponse =
-                                JsonConvert.DeserializeObject<ETagResponse>(ticket.Result!.ResultAsJson!);
-                            jobRecord.BuildingPersistentLocalId = etagResponse!.Location.AsIdentifier().Map(int.Parse);
-                            jobRecord.Status = JobRecordStatus.Completed;
-                            break;
-                        case TicketStatus.Error:
-                            var ticketError = JsonConvert.DeserializeObject<TicketError>(ticket.Result!.ResultAsJson!);
-                            var evaluation = ErrorWarningEvaluator.Evaluate(ticketError!);
-                            jobRecord.Status = evaluation.jobRecordStatus;
-                            jobRecord.ErrorCode = evaluation.ticketError.ErrorCode;
-                            jobRecord.ErrorMessage = evaluation.ticketError.ErrorMessage;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(TicketStatus), ticket.Status, null);
-                    }
+                        var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(innerCt);
+                        var jobRecords = buildingGrbContext.JobRecords
+                            .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending)
+                            .OrderBy(x => x.Id)
+                            .Skip(index * chunkSize)
+                            .Take(chunkSize);
 
-                    await _buildingGrbContext.SaveChangesAsync(ct);
-                }
+                        foreach (var jobRecord in jobRecords)
+                        {
+                            var ticket = await _ticketing.Get(jobRecord.TicketId!.Value, innerCt);
 
-                pendingJobRecords = pendingJobRecords
-                    .Where(x => x.Status == JobRecordStatus.Pending)
-                    .OrderBy(x => x.Id)
-                    .ToList();
+                            switch (ticket!.Status)
+                            {
+                                case TicketStatus.Created:
+                                case TicketStatus.Pending:
+                                    break;
+                                case TicketStatus.Complete:
+                                    var etagResponse =
+                                        JsonConvert.DeserializeObject<ETagResponse>(ticket.Result!.ResultAsJson!);
+                                    jobRecord.BuildingPersistentLocalId =
+                                        etagResponse!.Location.AsIdentifier().Map(int.Parse);
+                                    jobRecord.Status = JobRecordStatus.Completed;
+                                    break;
+                                case TicketStatus.Error:
+                                    var ticketError =
+                                        JsonConvert.DeserializeObject<TicketError>(ticket.Result!.ResultAsJson!);
+                                    var evaluation = ErrorWarningEvaluator.Evaluate(ticketError!);
+                                    jobRecord.Status = evaluation.jobRecordStatus;
+                                    jobRecord.ErrorCode = evaluation.ticketError.ErrorCode;
+                                    jobRecord.ErrorMessage = evaluation.ticketError.ErrorMessage;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(TicketStatus), ticket.Status, null);
+                            }
 
-                if (pendingJobRecords.Any())
+                            await buildingGrbContext.SaveChangesAsync(innerCt);
+                        }
+                    });
+
+                await using var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
+                pendingJobRecordsCount = await buildingGrbContext.JobRecords
+                    .CountAsync(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending, cancellationToken: ct);
+
+                if (pendingJobRecordsCount > 0)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(5), ct);
                 }
             }
         }
-
-        // Untested, parallel code
-        // public async Task Monitor(Guid jobId, CancellationToken ct)
-        // {
-        //     int pendingJobRecordsCount;
-        //     await using (var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct))
-        //     {
-        //         pendingJobRecordsCount = await buildingGrbContext.JobRecords
-        //             .CountAsync(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending, cancellationToken: ct);
-        //     }
-        //
-        //     while (pendingJobRecordsCount > 0)
-        //     {
-        //         // var chunkSize = (int)Math.Ceiling(pendingJobRecords.Count / 10.0);
-        //         const int chunkSize = 50;
-        //
-        //         await Parallel.ForEachAsync(
-        //             Enumerable.Range(0, (int) Math.Ceiling(pendingJobRecordsCount / (decimal)chunkSize)),
-        //             new ParallelOptions { MaxDegreeOfParallelism = 10 },
-        //             async (index, innerCt) =>
-        //             {
-        //                 var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
-        //                 var jobRecords = buildingGrbContext.JobRecords
-        //                     .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending)
-        //                     .OrderBy(x => x.Id)
-        //                     .Skip(index * chunkSize)
-        //                     .Take(chunkSize);
-        //
-        //                 foreach (var jobRecord in jobRecords)
-        //                 {
-        //                     var ticket = await _ticketing.Get(jobRecord.TicketId!.Value, innerCt);
-        //
-        //                     switch (ticket!.Status)
-        //                     {
-        //                         case TicketStatus.Created:
-        //                         case TicketStatus.Pending:
-        //                             break;
-        //                         case TicketStatus.Complete:
-        //                             var etagResponse = JsonConvert.DeserializeObject<ETagResponse>(ticket.Result!.ResultAsJson!);
-        //                             jobRecord.BuildingPersistentLocalId = etagResponse!.Location.AsIdentifier().Map(int.Parse);
-        //                             jobRecord.Status = JobRecordStatus.Complete;
-        //                             break;
-        //                         case TicketStatus.Error:
-        //                             var ticketError = JsonConvert.DeserializeObject<TicketError>(ticket.Result!.ResultAsJson!);
-        //                             var evaluation = ErrorWarningEvaluator.Evaluate(ticketError!);
-        //                             jobRecord.Status = evaluation.jobRecordStatus;
-        //                             jobRecord.ErrorMessage = evaluation.message;
-        //                             break;
-        //                         default:
-        //                             throw new ArgumentOutOfRangeException(nameof(TicketStatus), ticket.Status, null);
-        //                     }
-        //
-        //                     buildingGrbContext.SaveChangesAsync(ct);
-        //                 }
-        //             });
-        //
-        //
-        //         await using var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
-        //         pendingJobRecordsCount = await buildingGrbContext.JobRecords
-        //              .CountAsync(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending, cancellationToken: ct);
-        //
-        //         if (pendingJobRecordsCount > 0)
-        //         {
-        //             await Task.Delay(TimeSpan.FromSeconds(5), ct);
-        //         }
-        //     }
-        // }
     }
 }

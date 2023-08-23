@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Grb.Building.Processor.Job;
+    using Microsoft.EntityFrameworkCore;
     using Moq;
     using NetTopologySuite.Geometries;
     using TicketingService.Abstractions;
@@ -17,7 +18,9 @@
         [Fact]
         public async Task ThenJobRecordIsCompleted()
         {
-            var buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+            var buildingGrbContext = new FakeBuildingGrbContextFactory(canBeDisposed: false).CreateDbContext();
+            var mockFactory = new Mock<IDbContextFactory<BuildingGrbContext>>();
+            mockFactory.Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(buildingGrbContext);
             var ticketing = new Mock<ITicketing>();
 
             var job = new Job(DateTimeOffset.Now, JobStatus.Prepared, Guid.NewGuid());
@@ -34,7 +37,7 @@
                     new Dictionary<string, string>(),
                     new TicketResult(new ETagResponse($"https://building.be/{buildingPersistentLocalId}", "etag"))));
 
-            var monitor = new JobRecordsMonitor(buildingGrbContext, ticketing.Object);
+            var monitor = new JobRecordsMonitor(mockFactory.Object, ticketing.Object);
 
             //act
             await monitor.Monitor(job.Id, CancellationToken.None);
@@ -48,7 +51,9 @@
         [Fact]
         public async Task ThenRetryUntilJobRecordIsCompleted()
         {
-            var buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+            var buildingGrbContext = new FakeBuildingGrbContextFactory(canBeDisposed: false).CreateDbContext();
+            var mockFactory = new Mock<IDbContextFactory<BuildingGrbContext>>();
+            mockFactory.Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(buildingGrbContext);
             var ticketing = new Mock<ITicketing>();
 
             var job = new Job(DateTimeOffset.Now, JobStatus.Prepared, Guid.NewGuid());
@@ -70,7 +75,7 @@
                     new Dictionary<string, string>(),
                     new TicketResult(new ETagResponse($"https://building.be/{buildingPersistentLocalId}", "etag"))));
 
-            var monitor = new JobRecordsMonitor(buildingGrbContext, ticketing.Object);
+            var monitor = new JobRecordsMonitor(mockFactory.Object, ticketing.Object);
 
             //act
             await monitor.Monitor(job.Id, CancellationToken.None);
