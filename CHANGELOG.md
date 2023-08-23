@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.1...v1.9.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* open datareader + divide by zero exception ([1fbc4b5](https://github.com/informatievlaanderen/basisregisters-grb/commit/1fbc4b5f3bf8f82bc745f879c1f0673a08f22998))
+
 ## [1.9.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.0...v1.9.1) (2023-08-23)
 
 
