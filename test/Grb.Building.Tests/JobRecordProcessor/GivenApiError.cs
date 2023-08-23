@@ -8,6 +8,7 @@
     using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using BuildingRegistry.Api.BackOffice.Abstractions.Building.Requests;
     using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
     using Moq;
     using NetTopologySuite.Geometries;
     using Processor.Job;
@@ -18,8 +19,10 @@
         [Fact]
         public async Task ThenJobRecordInError()
         {
-            var buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+            var buildingGrbContext = new FakeBuildingGrbContextFactory(canBeDisposed: false).CreateDbContext();
             var backOfficeApiProxy = new Mock<IBackOfficeApiProxy>();
+            var mockFactory = new Mock<IDbContextFactory<BuildingGrbContext>>();
+            mockFactory.Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(buildingGrbContext);
 
             var job = new Job(DateTimeOffset.Now, JobStatus.Prepared, Guid.NewGuid());
             await buildingGrbContext.Jobs.AddAsync(job);
@@ -48,7 +51,7 @@
                 .ReturnsAsync(new BackOfficeApiResult(string.Empty, new List<ValidationError>{new ValidationError("error1", "reason1")}));
 
             var jobRecordsProcessor = new JobRecordsProcessor(
-                buildingGrbContext,
+                mockFactory.Object,
                 backOfficeApiProxy.Object);
 
             //act
