@@ -11,11 +11,13 @@
 
     public class FakeBuildingGrbContext : BuildingGrbContext
     {
+        private readonly bool _canBeDisposed;
         public FakeDatabaseFacade FakeDatabase;
 
-        public FakeBuildingGrbContext(
-            DbContextOptions<BuildingGrbContext> options) : base(options)
-        { }
+        public FakeBuildingGrbContext(DbContextOptions<BuildingGrbContext> options, bool canBeDisposed) : base(options)
+        {
+            _canBeDisposed = canBeDisposed;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,6 +27,22 @@
         }
 
         public override DatabaseFacade Database => FakeDatabase ??= new FakeDatabaseFacade(this);
+
+        public override void Dispose()
+        {
+            if (_canBeDisposed)
+            {
+                base.Dispose();
+            }
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            if(_canBeDisposed)
+                return base.DisposeAsync();
+
+            return ValueTask.CompletedTask;
+        }
     }
 
     public class FakeDatabaseFacade : DatabaseFacade
@@ -86,11 +104,14 @@
 
     public class FakeBuildingGrbContextFactory : IDesignTimeDbContextFactory<FakeBuildingGrbContext>
     {
+        private readonly bool _canBeDisposed;
         private readonly string _databaseName;
 
         public FakeBuildingGrbContextFactory(
-            string? databaseName = null)
+            string? databaseName = null,
+            bool canBeDisposed = true)
         {
+            _canBeDisposed = canBeDisposed;
             _databaseName = !string.IsNullOrWhiteSpace(databaseName)
                 ? databaseName : Guid.NewGuid().ToString();
         }
@@ -101,7 +122,7 @@
                 .UseInMemoryDatabase(_databaseName)
                 .Options;
 
-            return new FakeBuildingGrbContext(options);
+            return new FakeBuildingGrbContext(options, _canBeDisposed);
         }
     }
 }
