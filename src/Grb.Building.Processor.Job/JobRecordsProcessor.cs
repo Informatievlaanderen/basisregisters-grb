@@ -35,12 +35,10 @@
                 .Select(x => new { x.Id, x.GrId, x.RecordNumber })
                 .ToListAsync(ct);
 
-            // filter out jobrecords grid == -9
             var createJobRecords = jobRecords.Where(x => x.GrId == -9)
                 .Select(x => x.Id)
                 .ToList();
 
-            // filter out jobrecords GrId != -9 and group them by GrId in concurrent dictionary
             var updateJobRecords = jobRecords.Where(x => x.GrId != -9)
                 .GroupBy(x => x.GrId)
                 .ToDictionary(x => x.Key, x => x
