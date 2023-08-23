@@ -1,3 +1,11 @@
+## [1.9.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.0...v1.9.1) (2023-08-23)
+
+
+### Performance Improvements
+
+* monitor in parallel ([e69a5aa](https://github.com/informatievlaanderen/basisregisters-grb/commit/e69a5aa43bf47f5edb50478d12f3e47d786fb572))
+* process in parallel ([07bd145](https://github.com/informatievlaanderen/basisregisters-grb/commit/07bd145c9a7f1eeff112fd0b230be21aec135857))
+
 # [1.9.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.8.2...v1.9.0) (2023-08-22)
 
 
