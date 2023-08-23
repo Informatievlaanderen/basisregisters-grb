@@ -53,7 +53,8 @@
                             .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending)
                             .OrderBy(x => x.Id)
                             .Skip(index * chunkSize)
-                            .Take(chunkSize);
+                            .Take(chunkSize)
+                            .ToList();
 
                         foreach (var jobRecord in jobRecords)
                         {
