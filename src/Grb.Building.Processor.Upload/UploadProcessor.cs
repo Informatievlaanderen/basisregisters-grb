@@ -108,7 +108,7 @@
                         await _notificationService.PublishToTopicAsync(new NotificationMessage(
                             nameof(Upload),
                             $"Job '{job.Id}' placed in error due to validation problems.",
-                            "Grb upload processor",
+                            "Building Import Upload Processor",
                             NotificationSeverity.Danger));
 
                         continue;
@@ -132,7 +132,7 @@
                     await _notificationService.PublishToTopicAsync(new NotificationMessage(
                         nameof(Upload),
                         errorMessage,
-                        "Grb upload processor",
+                        "Building Import Upload Processor",
                         NotificationSeverity.Danger));
                 }
                 catch (Exception ex)
@@ -145,7 +145,7 @@
                     await _notificationService.PublishToTopicAsync(new NotificationMessage(
                         nameof(Upload),
                         $"Unexpected exception for job '{job.Id}'.",
-                        "Grb upload processor",
+                        "Building Import Upload Processor",
                         NotificationSeverity.Danger));
                 }
             }
