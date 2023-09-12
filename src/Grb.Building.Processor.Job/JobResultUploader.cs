@@ -11,7 +11,6 @@
     using Be.Vlaanderen.Basisregisters.BlobStore;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
 
     public interface IJobResultUploader
     {

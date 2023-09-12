@@ -121,7 +121,7 @@
                 await _notificationService.PublishToTopicAsync(new NotificationMessage(
                     nameof(Job),
                     $"JobRecordErrors, Job: {job.Id} has {jobRecordErrors.Count} errors.",
-                    "Grb job processor",
+                    "Building Import Job Processor",
                     NotificationSeverity.Danger));
 
                 await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
@@ -152,7 +152,7 @@
                     numberOfWarnings > 0
                         ? $"JobCompleted, Job {job.Id} is completed with {numberOfWarnings} warnings."
                         : $"JobCompleted, Job {job.Id} is completed.",
-                    "Grb job processor",
+                    "Building Import Job Processor",
                     NotificationSeverity.Good));
 
             await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
@@ -169,9 +169,9 @@
 
             await _notificationService.PublishToTopicAsync(
                 new NotificationMessage(
-                    nameof(Grb.Building.Processor.Job),
+                    nameof(Job),
                     $"JobCancelled, Job {job.Id} is cancelled. (Expired)",
-                    "Grb job processor",
+                    "Building Import Job Processor",
                     NotificationSeverity.Low));
 
             _logger.LogWarning("Cancelled expired job '{jobId}'.", job.Id);
