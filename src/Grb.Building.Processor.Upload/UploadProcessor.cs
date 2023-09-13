@@ -137,7 +137,7 @@
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Unexpected exception for job '{job.Id}'", ex);
+                    _logger.LogError(ex, $"Unexpected exception for job '{job.Id}'");
 
                     await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", "OnverwachteFout"), stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
