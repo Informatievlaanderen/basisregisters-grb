@@ -1,3 +1,11 @@
+## [1.9.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.2...v1.9.3) (2023-09-13)
+
+
+### Bug Fixes
+
+* change notification service name for job processor notifications ([b90c9c7](https://github.com/informatievlaanderen/basisregisters-grb/commit/b90c9c768cdf938bb16fd8b898e7106593cf3810))
+* logging error upload grb ([0089e08](https://github.com/informatievlaanderen/basisregisters-grb/commit/0089e08b623e275ccb3895b46391b5e47e3b56d4))
+
 ## [1.9.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.1...v1.9.2) (2023-08-23)
 
 
