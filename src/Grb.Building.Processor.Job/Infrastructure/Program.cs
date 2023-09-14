@@ -139,6 +139,8 @@ namespace Grb.Building.Processor.Job.Infrastructure
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
             var configuration = host.Services.GetRequiredService<IConfiguration>();
 
+            var notificationService = host.Services.GetRequiredService<INotificationService>();
+
             try
             {
                 await DistributedLock<Program>.RunAsync(
@@ -161,6 +163,12 @@ namespace Grb.Building.Processor.Job.Infrastructure
             {
                 logger.LogCritical(e, "Encountered a fatal exception, exiting program.");
                 Log.CloseAndFlush();
+
+                await notificationService.PublishToTopicAsync(new NotificationMessage(
+                    nameof(Job),
+                    $"Encountered a fatal exception, exiting program. {Environment.NewLine}Unhandled Exception: {e.Message}",
+                    "Building Import Job Processor",
+                    NotificationSeverity.Danger));
 
                 // Allow some time for flushing before shutdown.
                 await Task.Delay(500, default);
