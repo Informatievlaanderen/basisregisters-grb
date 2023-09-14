@@ -1,3 +1,10 @@
+## [1.9.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.3...v1.9.4) (2023-09-14)
+
+
+### Bug Fixes
+
+* post notification when unhandled exception in job processor ([3d09b43](https://github.com/informatievlaanderen/basisregisters-grb/commit/3d09b4308587148b0921519e9613537c264061cf))
+
 ## [1.9.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.2...v1.9.3) (2023-09-13)
 
 
