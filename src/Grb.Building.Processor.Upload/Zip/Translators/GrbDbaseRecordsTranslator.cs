@@ -31,7 +31,7 @@
                     Idn = record.IDN.Value,
                     IdnVersion = record.IDNV.Value,
                     VersionDate = new DateTimeOffset(record.GVDV.Value!.Value),
-                    EndDate = record.GVDE.Value.HasValue ? new DateTimeOffset(record.GVDE.Value!.Value) : null,
+                    EndDate = record.GVDE.Value.HasValue ? new DateTimeOffset(record.GVDE.Value!.Value) : null, // GRB will always send 1990-01-01
                     EventType = (GrbEventType)record.EventType.Value,
                     GrbObject = (GrbObject)record.GRBOBJECT.Value,
                     GrId = grId,
