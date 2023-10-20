@@ -32,6 +32,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grb.Building.Tests", "test\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grb.Building.Api.Abstractions", "src\Grb.Building.Api.Abstractions\Grb.Building.Api.Abstractions.csproj", "{7DB96633-5934-4B50-9629-B11D8A128637}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{BD357543-E54A-4392-A43A-4D00494903C5}"
+	ProjectSection(SolutionItems) = preProject
+		docs\adr\0001-record-architecture-decisions.md = docs\adr\0001-record-architecture-decisions.md
+		docs\adr\0002-grb-building-separation.md = docs\adr\0002-grb-building-separation.md
+	EndProjectSection
+EndProject
 Global
 GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
