@@ -74,7 +74,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
 
                             foreach (var kvp in fileProblemsGrouped)
                             {
-                                problems.Add(new FileError(file, kvp.Key.ToString(),
+                                problems = problems.Add(new FileError(file, kvp.Key.ToString(),
                                     new ProblemParameter("recordnumbers", string.Join(",", kvp.Value))));
                             }
                         }

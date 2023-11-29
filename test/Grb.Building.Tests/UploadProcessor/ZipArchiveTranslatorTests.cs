@@ -35,7 +35,7 @@
             jobRecord.Idn.Should().Be(2857440);
             jobRecord.IdnVersion.Should().Be(1);
             jobRecord.VersionDate.Should().Be(new DateTimeOffset(new DateTime(2011,12,20)));
-            jobRecord.EndDate.Should().BeNull();
+            jobRecord.EndDate.Should().Be(new DateTimeOffset(new DateTime(1900,1,1)));
             jobRecord.EventType.Should().Be(GrbEventType.MeasureBuilding);
             jobRecord.GrbObject.Should().Be(GrbObject.BuildingAtGroundLevel);
             jobRecord.GrId.Should().Be(14207619);
