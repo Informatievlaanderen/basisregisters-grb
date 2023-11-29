@@ -17,8 +17,8 @@
         {
             DbaseField.CreateNumberField(new DbaseFieldName(nameof(GRBIDN)), new DbaseFieldLength(9), new DbaseDecimalCount(0)),
             DbaseField.CreateNumberField(new DbaseFieldName(nameof(IDNV)), new DbaseFieldLength(4), new DbaseDecimalCount(0)),
-            DbaseField.CreateDateField(new DbaseFieldName(nameof(GVDV))),
-            DbaseField.CreateDateField(new DbaseFieldName(nameof(GVDE))),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(GVDV)), new DbaseFieldLength(10)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(GVDE)), new DbaseFieldLength(10)),
             DbaseField.CreateNumberField(new DbaseFieldName(nameof(EventType)), new DbaseFieldLength(4), new DbaseDecimalCount(0)),
             DbaseField.CreateNumberField(new DbaseFieldName(nameof(GRBOBJECT)), new DbaseFieldLength(4), new DbaseDecimalCount(0)),
             DbaseField.CreateCharacterField(new DbaseFieldName(nameof(GRID)), new DbaseFieldLength(128)),

@@ -5,6 +5,8 @@
         GeometryIsNotPolygon,
         PolygonNotValid,
         UnknownEventType,
-        InvalidGrId
+        InvalidGrId,
+        InvalidVersionDate,
+        InvalidEndDate,
     }
 }

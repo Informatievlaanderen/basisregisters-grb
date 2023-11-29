@@ -9,24 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Grb\Upload\gebouw_ALL.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Grb\Upload\gebouw_dbf_missing.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UploadProcessor\gebouw_ALL.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UploadProcessor\gebouw_dbf_missing.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UploadProcessor\gebouw_shape_missing.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UploadProcessor\gebouw_grid_invalid.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Content Include="UploadProcessor\gebouw_ALL.zip" CopyToOutputDirectory="Always" />
+    <Content Include="UploadProcessor\gebouw_dbf_missing.zip" CopyToOutputDirectory="Always" />
+    <Content Include="UploadProcessor\gebouw_shape_missing.zip" CopyToOutputDirectory="Always" />
+    <Content Include="UploadProcessor\gebouw_grid_invalid.zip" CopyToOutputDirectory="Always" />
+    <Content Include="UploadProcessor\gebouw_versiondate_invalid.zip" CopyToOutputDirectory="Always" />
+    <Content Include="UploadProcessor\gebouw_enddate_invalid.zip" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -131,7 +131,6 @@
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
         }
 
-
         [Fact]
         public async Task WhenBlobObjectIsNull_ThenLogErrorAndContinue()
         {
@@ -358,6 +357,129 @@
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
 
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenDbaseRecordHasInvalidVersionDate_ThenTicketError()
+        {
+            var ct = CancellationToken.None;
+            var mockTicketing = new Mock<ITicketing>();
+            var mockIBlobClient = new Mock<IBlobClient>();
+            var mockAmazonClient = new Mock<IAmazonECS>();
+            var mockIHostApplicationLifeTime = new Mock<IHostApplicationLifetime>();
+
+            var ticketId = Guid.NewGuid();
+            var job = new Job(DateTimeOffset.Now, JobStatus.Created, ticketId);
+
+            _buildingGrbContext.Jobs.Add(job);
+            await _buildingGrbContext.SaveChangesAsync(ct);
+
+            var blobName = new BlobName(job.ReceivedBlobName);
+
+            mockIBlobClient
+                .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_versiondate_invalid.zip",
+                FileMode.Open, FileAccess.Read);
+
+            mockIBlobClient
+                .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)zipFileStream)));
+
+            var notificationsService = new Mock<INotificationService>();
+
+            var sut = new UploadProcessor(
+                _buildingGrbContext,
+                mockTicketing.Object,
+                mockIBlobClient.Object,
+                mockAmazonClient.Object,
+                new NullLoggerFactory(),
+                mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
+                Options.Create(new EcsTaskOptions()));
+
+            // Act
+            await sut.StartAsync(ct);
+
+            // Assert
+            mockTicketing.Verify(x => x.Error(
+                ticketId,
+                It.Is<TicketError>(ticketError =>
+                    ticketError.Errors.Any(y =>
+                        y.ErrorCode == "InvalidVersionDate" &&
+                        y.ErrorMessage == "Record number(s):1,2")),
+                It.IsAny<CancellationToken>()), Times.Once);
+
+            var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
+            jobRecords.Should().BeEmpty();
+
+            _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenDbaseRecordHasInvalidEndDate_ThenTicketError()
+        {
+            var ct = CancellationToken.None;
+            var mockTicketing = new Mock<ITicketing>();
+            var mockIBlobClient = new Mock<IBlobClient>();
+            var mockAmazonClient = new Mock<IAmazonECS>();
+            var mockIHostApplicationLifeTime = new Mock<IHostApplicationLifetime>();
+
+            var ticketId = Guid.NewGuid();
+            var job = new Job(DateTimeOffset.Now, JobStatus.Created, ticketId);
+
+            _buildingGrbContext.Jobs.Add(job);
+            await _buildingGrbContext.SaveChangesAsync(ct);
+
+            var blobName = new BlobName(job.ReceivedBlobName);
+
+            mockIBlobClient
+                .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var zipFileStream = new FileStream($"{AppContext.BaseDirectory}/UploadProcessor/gebouw_enddate_invalid.zip",
+                FileMode.Open, FileAccess.Read);
+
+            mockIBlobClient
+                .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)zipFileStream)));
+
+            var notificationsService = new Mock<INotificationService>();
+
+            var sut = new UploadProcessor(
+                _buildingGrbContext,
+                mockTicketing.Object,
+                mockIBlobClient.Object,
+                mockAmazonClient.Object,
+                new NullLoggerFactory(),
+                mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
+                Options.Create(new EcsTaskOptions()));
+
+            // Act
+            await sut.StartAsync(ct);
+
+            // Assert
+            mockTicketing.Verify(x => x.Error(
+                ticketId,
+                It.Is<TicketError>(ticketError =>
+                    ticketError.Errors.Any(y =>
+                        y.ErrorCode == "InvalidEndDate" &&
+                        y.ErrorMessage == "Record number(s):1,2")),
+                It.IsAny<CancellationToken>()), Times.Once);
+
+            var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
+            jobRecords.Should().BeEmpty();
+
+            _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
+
         }
 
         [Fact]

@@ -21,17 +21,23 @@
 
                 var grId = record.GRID.Value == "-9"
                     ? -9
-                    : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId)
+                    : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId) && persistentLocalId > 0
                         ? persistentLocalId
                         : throw new InvalidGrIdException(recordNumber, record.GRID.Value);
+
+                if(!record.GVDV.TryGetValueAsDateTime(out var versionDate))
+                    throw new InvalidDateException(recordNumber, record.GVDV.Value);
+
+                if(!record.GVDE.TryGetValueAsNullableDateTime(out var endDate) && !string.IsNullOrEmpty(record.GVDE.Value))
+                    throw new InvalidDateException(recordNumber, record.GVDE.Value);
 
                 jobRecords.Add(recordNumber, new JobRecord
                 {
                     RecordNumber = recordNumber.ToInt32(),
                     Idn = record.IDN.Value,
                     IdnVersion = record.IDNV.Value,
-                    VersionDate = new DateTimeOffset(record.GVDV.Value!.Value),
-                    EndDate = record.GVDE.Value.HasValue ? new DateTimeOffset(record.GVDE.Value!.Value) : null, // GRB will always send 1990-01-01
+                    VersionDate = versionDate,
+                    EndDate = endDate, // GRB will always send 1990-01-01
                     EventType = (GrbEventType)record.EventType.Value,
                     GrbObject = (GrbObject)record.GRBOBJECT.Value,
                     GrId = grId,
