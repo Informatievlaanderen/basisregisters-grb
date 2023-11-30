@@ -1,3 +1,10 @@
+## [1.9.5](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.4...v1.9.5) (2023-11-30)
+
+
+### Bug Fixes
+
+* change upload dbase schema field lengths ([029ee57](https://github.com/informatievlaanderen/basisregisters-grb/commit/029ee57357c63932a59311dc2d7085d030dde35c))
+
 ## [1.9.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.3...v1.9.4) (2023-09-14)
 
 
