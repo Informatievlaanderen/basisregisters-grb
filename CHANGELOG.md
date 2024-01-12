@@ -1,3 +1,10 @@
+## [1.9.6](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.5...v1.9.6) (2024-01-12)
+
+
+### Bug Fixes
+
+* Can't use Linq Any when using EF FromSqlRaw ([c7e8c31](https://github.com/informatievlaanderen/basisregisters-grb/commit/c7e8c31451a3fc6d1acf472ab66aa6f6e6d7f537))
+
 ## [1.9.5](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.4...v1.9.5) (2023-11-30)
 
 
