@@ -49,11 +49,13 @@
             var result = await query
                 .OrderBy(x => x.RecordNumber)
                 .Skip(request.Pagination.Offset.Value)
-                .Take(request.Pagination.Limit!.Value)
+                .Take(request.Pagination.Limit!.Value + 1)
                 .ToListAsync(cancellationToken);
 
             return new GetJobRecordsResponse(
-                result.Select(x =>
+                result
+                    .Take(request.Pagination.Limit!.Value)
+                    .Select(x =>
                     new JobRecordResponse
                     (
                         RecordNumber: x.RecordNumber,
@@ -65,7 +67,7 @@
                         VersionDate: x.VersionDate
                     )
                 ).ToArray(),
-                _pagedUriGenerator.NextPage(query, request.Pagination, $"v2/uploads/jobs/{request.JobId}/jobrecords"));
+                _pagedUriGenerator.NextPage(result, request.Pagination, $"v2/uploads/jobs/{request.JobId}/jobrecords"));
         }
     }
 }

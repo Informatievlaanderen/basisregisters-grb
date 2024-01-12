@@ -35,11 +35,13 @@
             var result = await query
                 .OrderBy(x => x.Created)
                 .Skip(request.Pagination.Offset.Value)
-                .Take(request.Pagination.Limit!.Value)
+                .Take(request.Pagination.Limit!.Value + 1)
                 .ToListAsync(cancellationToken);
 
             return new GetJobsResponse(
-                result.Select(x =>
+                result
+                    .Take(request.Pagination.Limit!.Value)
+                    .Select(x =>
                     new JobResponse
                     (
                         Id : x.Id,
@@ -50,7 +52,7 @@
                         GetJobRecords : _pagedUriGenerator.FirstPage($"/v2/uploads/jobs/{x.Id}/jobrecords")
                     )
                 ).ToArray(),
-                _pagedUriGenerator.NextPage(query, request.Pagination, "v2/uploads/jobs"));
+                _pagedUriGenerator.NextPage(result, request.Pagination, "v2/uploads/jobs"));
         }
     }
 }
