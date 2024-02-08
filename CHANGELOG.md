@@ -1,3 +1,10 @@
+## [1.9.8](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.7...v1.9.8) (2024-02-08)
+
+
+### Bug Fixes
+
+* **bump:** ci dependency in workflow ([aabc2cd](https://github.com/informatievlaanderen/basisregisters-grb/commit/aabc2cddbf0ead9efbd3a0cfe2fcce0e6c8a28c9))
+
 ## [1.9.7](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.6...v1.9.7) (2024-02-08)
 
 
