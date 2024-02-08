@@ -509,7 +509,7 @@ jobs:
 
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_test ]
+    needs: [ push_images ]
     name: Deploy to test started
     environment: test
     runs-on: ubuntu-latest
