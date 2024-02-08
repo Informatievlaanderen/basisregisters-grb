@@ -1,3 +1,10 @@
+## [1.9.7](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.6...v1.9.7) (2024-02-08)
+
+
+### Bug Fixes
+
+* **bump:** ci new pipeline ([ebc8a04](https://github.com/informatievlaanderen/basisregisters-grb/commit/ebc8a0485d5cb9ddbe51a855fa666fe40077adc2))
+
 ## [1.9.6](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.5...v1.9.6) (2024-01-12)
 
 
