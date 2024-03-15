@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.8...v2.0.0) (2024-03-15)
+
+
+### Features
+
+* move to dotnet 8.0.2 ([153a7b3](https://github.com/informatievlaanderen/basisregisters-grb/commit/153a7b317fe920ee5c280a911296c07e6981c9e0))
+
+
+### BREAKING CHANGES
+
+* move to dotnet 8.0.2
+
 ## [1.9.8](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.7...v1.9.8) (2024-02-08)
 
 
