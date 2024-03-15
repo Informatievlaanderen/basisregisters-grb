@@ -4,10 +4,10 @@ namespace Grb.Building.Api
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
-    using Grb.Building.Api.Handlers;
-    using Grb.Building.Api.Infrastructure.Query;
+    using Infrastructure.Query;
     using MediatR;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;

@@ -32,10 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Grb.Building.Api.Abstractions\Grb.Building.Api.Abstractions.csproj" />
     <ProjectReference Include="..\Grb\Grb.csproj" />
   </ItemGroup>
