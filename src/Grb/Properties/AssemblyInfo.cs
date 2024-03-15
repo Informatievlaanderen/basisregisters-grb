@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 [assembly: AssemblyProduct("Vlaamse basisregisters")]
-[assembly: AssemblyDescription("Grb Building Processor Job")]
+[assembly: AssemblyDescription("Grb Building Domain.")]
 [assembly: AssemblyCopyright("Copyright (c) Vlaamse overheid")]
 [assembly: AssemblyCompany("Vlaamse overheid")]
-[assembly: Guid("85932190-a6fb-44a2-ac88-9a33787e451d")]
+
+[assembly: Guid("b1e5b660-45a3-4bc7-ae04-1d54261b754d")]

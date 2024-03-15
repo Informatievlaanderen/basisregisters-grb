@@ -6,7 +6,7 @@ namespace Grb.Building.Api.IntegrationTests
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
+    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Xunit;
 
     public class IntegrationTests : IClassFixture<IntegrationTestFixture>

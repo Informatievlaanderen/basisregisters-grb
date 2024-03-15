@@ -17,5 +17,9 @@
     <ProjectReference Include="..\..\src\Grb.Building.Api\Grb.Building.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="xunit.assert" Version="2.7.0" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
