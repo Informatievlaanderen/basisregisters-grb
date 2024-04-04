@@ -11,10 +11,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.BlobStore;
     using Be.Vlaanderen.Basisregisters.BlobStore.Aws;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Destructurama;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -76,12 +73,9 @@ namespace Grb.Building.Processor.Job.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     services
-                        .AddScoped(s => new TraceDbConnection<BuildingGrbContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("BuildingGrb")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
-                        .AddDbContextFactory<BuildingGrbContext>((provider, options) => options
+                        .AddDbContextFactory<BuildingGrbContext>((_, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingGrbContext>>(), sqlServerOptions => sqlServerOptions
+                            .UseSqlServer(hostContext.Configuration.GetConnectionString("BuildingGrb"), sqlServerOptions => sqlServerOptions
                                 .EnableRetryOnFailure()
                                 .MigrationsHistoryTable(BuildingGrbContext.MigrationsTableName, BuildingGrbContext.Schema)
                             ))
@@ -127,7 +121,6 @@ namespace Grb.Building.Processor.Job.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     builder
-                        .RegisterModule(new DataDogModule(hostContext.Configuration))
                         .RegisterModule(new BuildingGrbModule(hostContext.Configuration, services, loggerFactory))
                         .RegisterModule(new TicketingModule(hostContext.Configuration, services));
 

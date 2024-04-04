@@ -87,7 +87,8 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [Moq](https://github.com/devlooped/moq) - _The most popular and friendly mocking framework for .NET._ - [BSD](https://choosealicense.com/licenses/bsd-3-clause/)
 * [AWSSDK](https://github.com/aws/aws-sdk-net) - _The official AWS SDK for .NET._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [MediatR](https://github.com/jbogard/MediatR) - _Simple, unambitious mediator implementation in .NET._ - [MIT](https://choosealicense.com/licenses/mit/)
-* [Dapper](https://github.com/DapperLib/Dapper) - _A simple object mapper for .Net._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/) 
+* [Dapper](https://github.com/DapperLib/Dapper) - _A simple object mapper for .Net._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
+* [DataDog](https://github.com/DataDog/dd-trace-dotnet) - _.NET Client Library for Datadog APM_ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 
 ### Tooling
 
@@ -113,7 +114,6 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 
 * [Be.Vlaanderen.Basisregisters.Build.Pipeline](https://github.com/informatievlaanderen/build-pipeline/blob/master/LICENSE) - _Contains generic files for all Basisregisters Vlaanderen pipelines._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events](https://github.com/informatievlaanderen/infrastructure-tests/blob/master/LICENSE) - _Infrastructure unit-tests to validate assemblies._ - [MIT](https://choosealicense.com/licenses/mit/)
-* [Be.Vlaanderen.Basisregisters.DataDog](https://github.com/Informatievlaanderen/datadog-tracing/blob/master/LICENSE) - _A C# Implementation of Data Dog Tracing._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Shaperon](https://github.com/Informatievlaanderen/shaperon/blob/master/LICENSE) - _Lightweight dbase and shape record handling._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.GrAr](https://github.com/Informatievlaanderen/grar-common/blob/master/LICENSE) - _Common code for all GR/AR base registries._ - [EUPL-1.2](https://choosealicense.com/licenses/eupl-1.2/)
 * [Be.Vlaanderen.Basisregisters.Auth.AcmIdm](https://github.com/Informatievlaanderen/basisregisters-acmidm) - _ACM/IDM utilities for C#._ - [MIT](https://choosealicense.com/licenses/mit/)
