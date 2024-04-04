@@ -4,7 +4,6 @@ namespace Grb.Building.Api.Infrastructure.Modules
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Grb;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -28,8 +27,6 @@ namespace Grb.Building.Api.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
