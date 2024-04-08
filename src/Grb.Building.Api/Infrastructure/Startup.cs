@@ -168,6 +168,7 @@ namespace Grb.Building.Api.Infrastructure
                     },
                     MiddlewareHooks =
                     {
+                        EnableAuthorization = true,
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
                     }
                 });
