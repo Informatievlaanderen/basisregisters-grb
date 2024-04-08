@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.1...v2.0.2) (2024-04-08)
+
+
+### Bug Fixes
+
+* enable authorization ([af00ad1](https://github.com/informatievlaanderen/basisregisters-grb/commit/af00ad1ef9b8cf487888d8978b3aacfd06f33aed))
+
 ## [2.0.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.0...v2.0.1) (2024-04-08)
 
 # [2.0.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v1.9.8...v2.0.0) (2024-03-15)
