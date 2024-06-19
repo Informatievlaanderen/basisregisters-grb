@@ -588,7 +588,7 @@ jobs:
 
   deploy_to_staging_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images, deploy_to_test_finish_slack ]
+    needs: [ deploy_to_test_finish_slack ]
     name: Deploy to staging started
     environment: stg
     runs-on: ubuntu-latest
@@ -607,35 +607,72 @@ jobs:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
         REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
-  deploy_to_staging:
+
+  deploy_services_to_staging:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_to_staging_start_slack, release ]
-    name: Deploy to staging
+    name: Deploy services to staging
     runs-on: ubuntu-latest
     strategy:
       matrix:
         services: [
-            'building-registry-grb-api',
-            'building-registry-grb-processor-upload',
-            'building-registry-grb-processor-job'
-          ]
+          'building-grb-api'
+        ]
     steps:
-    - name: CD services
+    - name: Deploy services
       env:
-        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
-        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
       uses: informatievlaanderen/awscurl-polling-action/polling-action@main
       with:
           environment: stg
           version: ${{ needs.release.outputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
-          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
-          region: eu-west-1
+          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+          deploy-target: 'agb_ecs_service'
           interval: 2
+          domain: 'basisregisters'
+          project: 'basisregisters'
 
-    - name: output CD services
+    - name: Deploy services output
+      shell: bash
+      run: |
+        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
+  deploy_tasks_to_staging:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_to_staging_start_slack, release ]
+    name: Deploy tasks to staging
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services: [
+          'building-grb-processor-upload',
+          'building-grb-processor-job'
+        ]
+    steps:
+    - name: Deploy services
+      env:
+        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
+      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+      with:
+          environment: stg
+          version: ${{ needs.release.outputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+          deploy-target: 'ecs_scheduled_task'
+          interval: 2
+          domain: 'basisregisters'
+          project: 'basisregisters'
+
+    - name: Deploy services output
       shell: bash
       run: |
         echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
@@ -644,7 +681,7 @@ jobs:
 
   deploy_to_staging_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_staging ]
+    needs: [ deploy_services_to_staging, deploy_tasks_to_staging ]
     name: Deploy to staging finished
     runs-on: ubuntu-latest
 
