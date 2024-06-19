@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.2...v2.0.3) (2024-06-19)
+
+
+### Bug Fixes
+
+* **ci:** add new staging pipeline ([3e495c4](https://github.com/informatievlaanderen/basisregisters-grb/commit/3e495c41e55e6715b82bb3e8f0b2e9391e30393c))
+
 ## [2.0.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.1...v2.0.2) (2024-04-08)
 
 
