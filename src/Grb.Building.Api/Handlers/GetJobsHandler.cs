@@ -28,12 +28,16 @@
             var query = _buildingGrbContext.Jobs.AsQueryable();
 
             if (request.JobStatuses.Any())
-            {
                 query = query.Where(x => request.JobStatuses.Contains(x.Status));
-            }
+
+            if (request.FromDate.HasValue)
+                query = query.Where(x => x.Created >= request.FromDate.Value);
+
+            if (request.ToDate.HasValue)
+                query = query.Where(x => x.Created <= request.ToDate.Value);
 
             var result = await query
-                .OrderBy(x => x.Created)
+                .OrderByDescending(x => x.Created)
                 .Skip(request.Pagination.Offset.Value)
                 .Take(request.Pagination.Limit!.Value + 1)
                 .ToListAsync(cancellationToken);
