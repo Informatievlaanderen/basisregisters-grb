@@ -1,6 +1,7 @@
 namespace Grb.Building.Api
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
@@ -39,8 +40,24 @@ namespace Grb.Building.Api
         {
             var pagination = new Pagination(HttpContext.Request.Query);
             var statusesFilter = new EnumFilter<JobStatus>(HttpContext.Request.Query, "statuses");
+            HttpContext.Request.Query.TryGetValue("fromDate", out var fromDateAsString);
+            HttpContext.Request.Query.TryGetValue("toDate", out var toDateAsString);
 
-            return Ok(await _mediator.Send(new GetJobsRequest(pagination, statusesFilter), cancellationToken));
+            var fromDate = DateTime.MinValue;
+            if(!string.IsNullOrWhiteSpace(fromDateAsString.FirstOrDefault()))
+                DateTime.TryParse(fromDateAsString.FirstOrDefault(), out fromDate);
+
+            var toDate = DateTime.MinValue;
+            if(!string.IsNullOrWhiteSpace(toDateAsString.FirstOrDefault()))
+                DateTime.TryParse(toDateAsString.FirstOrDefault(), out toDate);
+
+            return Ok(await _mediator.Send(
+                new GetJobsRequest(
+                    pagination,
+                    statusesFilter,
+                    fromDate == DateTime.MinValue ? null : fromDate,
+                    toDate == DateTime.MinValue ? null : toDate),
+                cancellationToken));
         }
 
         [HttpGet("jobs/active")]
