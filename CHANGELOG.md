@@ -1,3 +1,15 @@
+# [2.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.3...v2.1.0) (2024-09-10)
+
+
+### Bug Fixes
+
+* fix integration tests ([66b1526](https://github.com/informatievlaanderen/basisregisters-grb/commit/66b15262a89700d0f34af6aba492315192962424))
+
+
+### Features
+
+* **api:** add datefilters for jobs endpoint + sort by date desc ([dd03308](https://github.com/informatievlaanderen/basisregisters-grb/commit/dd03308f6de52bfaa0c0391e1227187ce0eac047))
+
 ## [2.0.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.2...v2.0.3) (2024-06-19)
 
 
