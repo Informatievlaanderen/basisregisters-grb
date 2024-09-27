@@ -9,6 +9,7 @@
         public Guid Id { get; set; }
         public DateTimeOffset Created { get; private set; }
         public DateTimeOffset LastChanged { get; private set; }
+        public bool ForceProcessing { get; set; } = false;
         public JobStatus Status { get; private set; }
         public Guid? TicketId { get; set; }
 

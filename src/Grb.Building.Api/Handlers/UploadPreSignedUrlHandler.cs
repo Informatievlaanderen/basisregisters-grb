@@ -6,9 +6,8 @@ namespace Grb.Building.Api.Handlers
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Abstractions.Responses;
-    using Grb;
-    using Grb.Building.Api.Infrastructure;
-    using Grb.Building.Api.Infrastructure.Options;
+    using Infrastructure;
+    using Infrastructure.Options;
     using MediatR;
     using Microsoft.Extensions.Options;
     using NodaTime;
