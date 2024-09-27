@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.1.0...v2.2.0) (2024-09-27)
+
+
+### Features
+
+* use job processing time window ([f0556ce](https://github.com/informatievlaanderen/basisregisters-grb/commit/f0556ce4c115a6e7940b7e8ed0ca00861a827e9c))
+
 # [2.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.0.3...v2.1.0) (2024-09-10)
 
 
