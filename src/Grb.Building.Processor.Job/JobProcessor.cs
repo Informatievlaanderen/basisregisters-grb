@@ -4,12 +4,15 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using NodaTime;
     using Notifications;
     using TicketingService.Abstractions;
+    using Job = Grb.Job;
 
     public sealed class JobProcessor : BackgroundService
     {
@@ -20,6 +23,8 @@
         private readonly IJobResultUploader _jobResultUploader;
         private readonly IJobRecordsArchiver _jobRecordsArchiver;
         private readonly GrbApiOptions _grbApiOptions;
+        private readonly ProcessWindowOptions _processWindowOptions;
+        private readonly IClock _clock;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly INotificationService _notificationService;
         private readonly ILogger<JobProcessor> _logger;
@@ -32,6 +37,8 @@
             IJobRecordsArchiver jobRecordsArchiver,
             ITicketing ticketing,
             IOptions<GrbApiOptions> grbApiOptions,
+            IOptions<ProcessWindowOptions> processWindowOptions,
+            IClock clock,
             IHostApplicationLifetime hostApplicationLifetime,
             INotificationService notificationService,
             ILoggerFactory loggerFactory)
@@ -43,6 +50,8 @@
             _jobResultUploader = jobResultUploader;
             _jobRecordsArchiver = jobRecordsArchiver;
             _grbApiOptions = grbApiOptions.Value;
+            _processWindowOptions = processWindowOptions.Value;
+            _clock = clock;
             _hostApplicationLifetime = hostApplicationLifetime;
             _notificationService = notificationService;
             _logger = loggerFactory.CreateLogger<JobProcessor>();
@@ -80,6 +89,13 @@
                     break;
                 }
 
+                if (!AllowedToProcessJob(job))
+                {
+                    _logger.LogWarning("Job '{jobId}' cannot be processed because we're not within process window: {fromHour} - {untilHour}.",
+                        job.Id, _processWindowOptions.FromHour, _processWindowOptions.UntilHour);
+                    break;
+                }
+
                 await ProcessJob(job, stoppingToken);
 
                 if (job.Status is JobStatus.Error)
@@ -93,7 +109,17 @@
             await Task.FromResult(stoppingToken);
         }
 
-        private async Task ProcessJob(Grb.Job job, CancellationToken stoppingToken)
+        private bool AllowedToProcessJob(Job job)
+        {
+            if (job.ForceProcessing)
+                return true;
+
+            var localTime = _clock.GetCurrentInstant().ToBelgianDateTimeOffset();
+
+            return localTime.Hour >= _processWindowOptions.FromHour || localTime.Hour < _processWindowOptions.UntilHour;
+        }
+
+        private async Task ProcessJob(Job job, CancellationToken stoppingToken)
         {
             await UpdateJobStatus(job, JobStatus.Processing, stoppingToken);
 
@@ -158,7 +184,7 @@
             await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
         }
 
-        private async Task CancelJob(Grb.Job job, CancellationToken stoppingToken)
+        private async Task CancelJob(Job job, CancellationToken stoppingToken)
         {
             await _ticketing.Complete(
                 job.TicketId!.Value,
@@ -177,7 +203,7 @@
             _logger.LogWarning("Cancelled expired job '{jobId}'.", job.Id);
         }
 
-        private async Task UpdateJobStatus(Grb.Job job, JobStatus jobStatus, CancellationToken stoppingToken)
+        private async Task UpdateJobStatus(Job job, JobStatus jobStatus, CancellationToken stoppingToken)
         {
             job.UpdateStatus(jobStatus);
             await _buildingGrbContext.SaveChangesAsync(stoppingToken);

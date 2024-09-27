@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
+    using NodaTime;
     using Notifications;
     using Processor.Job;
     using TicketingService.Abstractions;
@@ -34,6 +35,8 @@
                 mockJobRecordsArchiver.Object,
                 Mock.Of<ITicketing>(),
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be" }),
+                new OptionsWrapper<ProcessWindowOptions>(new ProcessWindowOptions { FromHour = 0, UntilHour = 24 }),
+                SystemClock.Instance,
                 hostApplicationLifetime.Object,
                 notificationsService.Object,
                 new NullLoggerFactory());
