@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.0...v2.2.1) (2024-10-14)
+
+
+### Bug Fixes
+
+* **processor:** inject clock correctly ([#104](https://github.com/informatievlaanderen/basisregisters-grb/issues/104)) ([2ab0ecc](https://github.com/informatievlaanderen/basisregisters-grb/commit/2ab0ecc6f050fd24cb85024615d03a727e636274))
+
 # [2.2.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.1.0...v2.2.0) (2024-09-27)
 
 
