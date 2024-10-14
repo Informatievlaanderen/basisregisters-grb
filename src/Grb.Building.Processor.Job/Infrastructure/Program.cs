@@ -106,7 +106,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         .AddSingleton<IBackOfficeApiProxy, BackOfficeApiProxy>()
                         .AddSingleton<IJobRecordsProcessor, JobRecordsProcessor>()
                         .AddSingleton<IJobRecordsMonitor, JobRecordsMonitor>()
-                        .AddSingleton<IClock, SystemClock>()
+                        .AddSingleton<IClock>(SystemClock.Instance)
                         .AddSingleton<IJobResultUploader>(c
                             => new JobResultUploader(
                                 c.GetRequiredService<BuildingGrbContext>(),
