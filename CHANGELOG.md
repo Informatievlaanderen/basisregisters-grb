@@ -1,3 +1,10 @@
+## [2.2.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.3...v2.2.4) (2024-10-14)
+
+
+### Bug Fixes
+
+* **processor:** correct reading processwindow options ([7e21994](https://github.com/informatievlaanderen/basisregisters-grb/commit/7e219943cd769410bb2a9c53b0a283e9e508a608))
+
 ## [2.2.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.2...v2.2.3) (2024-10-14)
 
 
