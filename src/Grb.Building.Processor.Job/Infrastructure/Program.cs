@@ -17,6 +17,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using NodaTime;
     using Notifications;
     using Serilog;
     using Serilog.Debugging;
@@ -105,6 +106,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         .AddSingleton<IBackOfficeApiProxy, BackOfficeApiProxy>()
                         .AddSingleton<IJobRecordsProcessor, JobRecordsProcessor>()
                         .AddSingleton<IJobRecordsMonitor, JobRecordsMonitor>()
+                        .AddSingleton<IClock, SystemClock>()
                         .AddSingleton<IJobResultUploader>(c
                             => new JobResultUploader(
                                 c.GetRequiredService<BuildingGrbContext>(),
