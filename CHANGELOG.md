@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.2...v2.2.3) (2024-10-14)
+
+
+### Bug Fixes
+
+* add logging processing window ([a075928](https://github.com/informatievlaanderen/basisregisters-grb/commit/a075928caa97dbc1608a1a991b95953ebadbd154))
+
 ## [2.2.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.1...v2.2.2) (2024-10-14)
 
 
