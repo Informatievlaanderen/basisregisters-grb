@@ -86,7 +86,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                         });
 
                     services.Configure<GrbApiOptions>(hostContext.Configuration);
-                    services.Configure<ProcessWindowOptions>(hostContext.Configuration);
+                    services.Configure<ProcessWindowOptions>(hostContext.Configuration.GetSection(ProcessWindowOptions.ProcessWindowConfigurationKey));
 
                     services.AddAWSService<IAmazonSimpleNotificationService>();
                     services.AddScoped<INotificationService>(provider =>
