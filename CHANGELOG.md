@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.1...v2.2.2) (2024-10-14)
+
+
+### Bug Fixes
+
+* correct SystemClock registration ([55811fc](https://github.com/informatievlaanderen/basisregisters-grb/commit/55811fc30653ffbbde6f372028890dc7bf36979c))
+
 ## [2.2.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.0...v2.2.1) (2024-10-14)
 
 
