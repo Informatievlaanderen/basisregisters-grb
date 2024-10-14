@@ -62,6 +62,7 @@
             const int maxLifeTimeJob = 65;
 
             _logger.LogInformation("JobProcessor started");
+            _logger.LogInformation("Processing window: {fromHour} - {untilHour}", _processWindowOptions.FromHour, _processWindowOptions.UntilHour);
 
             var inactiveJobStatuses = new[] {JobStatus.Completed, JobStatus.Cancelled};
             var jobsToProcess = await _buildingGrbContext.Jobs
@@ -112,7 +113,10 @@
         private bool AllowedToProcessJob(Job job)
         {
             if (job.ForceProcessing)
+            {
+                _logger.LogInformation("Job '{jobId}' is forced to process.", job.Id);
                 return true;
+            }
 
             var localTime = _clock.GetCurrentInstant().ToBelgianDateTimeOffset();
 
