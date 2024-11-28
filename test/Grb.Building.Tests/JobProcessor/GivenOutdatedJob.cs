@@ -5,13 +5,12 @@
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Grb.Building.Processor.Job;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
-    using NodaTime;
     using Notifications;
+    using Processor.Job;
     using TicketingService.Abstractions;
     using Xunit;
 
@@ -38,8 +37,6 @@
                 jobRecordsArchiver.Object,
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
-                new OptionsWrapper<ProcessWindowOptions>(new ProcessWindowOptions { FromHour = 0, UntilHour = 24 }),
-                SystemClock.Instance,
                 hostApplicationLifetime.Object,
                 notificationsService.Object,
                 new NullLoggerFactory());
@@ -56,7 +53,7 @@
 
             //assert
             buildingGrbContext.Jobs.All(x => x.Status == JobStatus.Cancelled).Should().BeTrue();
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<CancellationToken>()), Times.Never);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Never);
             jobResultsUploader.Verify(x => x.UploadJobResults(job.Id, It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsArchiver.Verify(x => x.Archive(job.Id, It.IsAny<CancellationToken>()), Times.Never);

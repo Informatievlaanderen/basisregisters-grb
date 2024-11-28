@@ -4,12 +4,10 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using NodaTime;
     using Notifications;
     using TicketingService.Abstractions;
     using Job = Grb.Job;
@@ -23,8 +21,6 @@
         private readonly IJobResultUploader _jobResultUploader;
         private readonly IJobRecordsArchiver _jobRecordsArchiver;
         private readonly GrbApiOptions _grbApiOptions;
-        private readonly ProcessWindowOptions _processWindowOptions;
-        private readonly IClock _clock;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly INotificationService _notificationService;
         private readonly ILogger<JobProcessor> _logger;
@@ -37,8 +33,6 @@
             IJobRecordsArchiver jobRecordsArchiver,
             ITicketing ticketing,
             IOptions<GrbApiOptions> grbApiOptions,
-            IOptions<ProcessWindowOptions> processWindowOptions,
-            IClock clock,
             IHostApplicationLifetime hostApplicationLifetime,
             INotificationService notificationService,
             ILoggerFactory loggerFactory)
@@ -50,8 +44,6 @@
             _jobResultUploader = jobResultUploader;
             _jobRecordsArchiver = jobRecordsArchiver;
             _grbApiOptions = grbApiOptions.Value;
-            _processWindowOptions = processWindowOptions.Value;
-            _clock = clock;
             _hostApplicationLifetime = hostApplicationLifetime;
             _notificationService = notificationService;
             _logger = loggerFactory.CreateLogger<JobProcessor>();
@@ -62,7 +54,6 @@
             const int maxLifeTimeJob = 65;
 
             _logger.LogInformation("JobProcessor started");
-            _logger.LogInformation("Processing window: {fromHour} - {untilHour}", _processWindowOptions.FromHour, _processWindowOptions.UntilHour);
 
             var inactiveJobStatuses = new[] {JobStatus.Completed, JobStatus.Cancelled};
             var jobsToProcess = await _buildingGrbContext.Jobs
@@ -90,13 +81,6 @@
                     break;
                 }
 
-                if (!AllowedToProcessJob(job))
-                {
-                    _logger.LogWarning("Job '{jobId}' cannot be processed because we're not within process window: {fromHour} - {untilHour}.",
-                        job.Id, _processWindowOptions.FromHour, _processWindowOptions.UntilHour);
-                    break;
-                }
-
                 await ProcessJob(job, stoppingToken);
 
                 if (job.Status is JobStatus.Error)
@@ -110,24 +94,11 @@
             await Task.FromResult(stoppingToken);
         }
 
-        private bool AllowedToProcessJob(Job job)
-        {
-            if (job.ForceProcessing)
-            {
-                _logger.LogInformation("Job '{jobId}' is forced to process.", job.Id);
-                return true;
-            }
-
-            var localTime = _clock.GetCurrentInstant().ToBelgianDateTimeOffset();
-
-            return localTime.Hour >= _processWindowOptions.FromHour || localTime.Hour < _processWindowOptions.UntilHour;
-        }
-
         private async Task ProcessJob(Job job, CancellationToken stoppingToken)
         {
             await UpdateJobStatus(job, JobStatus.Processing, stoppingToken);
 
-            await _jobRecordsProcessor.Process(job.Id, stoppingToken);
+            await _jobRecordsProcessor.Process(job.Id, job.ForceProcessing, stoppingToken);
             await _jobRecordsMonitor.Monitor(job.Id, stoppingToken);
 
             var jobRecordErrors = await _buildingGrbContext.JobRecords

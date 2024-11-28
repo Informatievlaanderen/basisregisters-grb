@@ -7,7 +7,6 @@
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
-    using NodaTime;
     using Notifications;
     using Processor.Job;
     using TicketingService.Abstractions;
@@ -35,8 +34,6 @@
                 mockJobRecordsArchiver.Object,
                 Mock.Of<ITicketing>(),
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be" }),
-                new OptionsWrapper<ProcessWindowOptions>(new ProcessWindowOptions { FromHour = 0, UntilHour = 24 }),
-                SystemClock.Instance,
                 hostApplicationLifetime.Object,
                 notificationsService.Object,
                 new NullLoggerFactory());
@@ -50,7 +47,7 @@
             await jobProcessor.ExecuteTask;
 
             //assert
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<CancellationToken>()), Times.Never);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Never);
             mockJobResultsUploader.Verify(x => x.UploadJobResults(job.Id, It.IsAny<CancellationToken>()), Times.Never);
             mockJobRecordsArchiver.Verify(x => x.Archive(job.Id, It.IsAny<CancellationToken>()), Times.Never);
