@@ -5,78 +5,92 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using BuildingRegistry.Api.BackOffice.Abstractions.Building.Requests;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using NodaTime;
 
     public interface IJobRecordsProcessor
     {
-        Task Process(Guid jobId, CancellationToken ct);
+        Task Process(Guid jobId, bool skipOfficeHours = false, CancellationToken ct = default);
     }
 
     public sealed class JobRecordsProcessor : IJobRecordsProcessor
     {
         private readonly IDbContextFactory<BuildingGrbContext> _buildingGrbContextFactory;
         private readonly IBackOfficeApiProxy _backOfficeApiProxy;
+        private readonly IClock _clock;
+        private readonly OutsideOfficeHoursOptions _outsideOfficeHoursOptions;
+        private readonly ILogger<JobRecordsProcessor> _logger;
 
         public JobRecordsProcessor(
             IDbContextFactory<BuildingGrbContext> buildingGrbContextFactory,
-            IBackOfficeApiProxy backOfficeApiProxy)
+            IBackOfficeApiProxy backOfficeApiProxy,
+            IClock clock,
+            IOptions<OutsideOfficeHoursOptions> processWindowOptions,
+            ILoggerFactory loggerFactory)
         {
             _buildingGrbContextFactory = buildingGrbContextFactory;
             _backOfficeApiProxy = backOfficeApiProxy;
+            _clock = clock;
+            _outsideOfficeHoursOptions = processWindowOptions.Value;
+            _logger = loggerFactory.CreateLogger<JobRecordsProcessor>();
         }
 
-        public async Task Process(Guid jobId, CancellationToken ct)
+        public async Task Process(Guid jobId, bool skipOfficeHours = false, CancellationToken ct = default)
         {
             await using var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
-            var jobRecords = await buildingGrbContext.JobRecords
+            var jobRecords = (await buildingGrbContext.JobRecords
                 .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Created)
                 .Select(x => new { x.Id, x.GrId, x.RecordNumber })
-                .ToListAsync(ct);
-
-            var createJobRecords = jobRecords.Where(x => x.GrId == -9)
-                .Select(x => x.Id)
+                .ToListAsync(ct))
+                .OrderBy(x => x.RecordNumber)
                 .ToList();
 
-            var updateJobRecords = jobRecords.Where(x => x.GrId != -9)
-                .GroupBy(x => x.GrId)
-                .ToDictionary(x => x.Key, x => x
-                    .OrderBy(record => record.RecordNumber)
-                    .Select(record => record.Id)
-                    .ToList());
-
-            var maxJobRecords = createJobRecords.Count + updateJobRecords.Count;
-
-            if (maxJobRecords == 0)
+            if (jobRecords.Count == 0)
             {
                 return;
             }
 
-            var maxDegreeOfParallelism = 10.0;
+            var maxUsedBuildingRegistryId = jobRecords.Max(x => x.GrId);
 
-            var percentageCreatedJobRecords = createJobRecords.Count / maxJobRecords;
-            var percentageUpdatedJobRecords = updateJobRecords.Count / maxJobRecords;
+            var batches = jobRecords.SplitBySize(2500).ToList();
 
-            var maxDegreeOfParallelismOfCreated = Math.Max((int) Math.Round(maxDegreeOfParallelism * percentageCreatedJobRecords), 1);
-            var maxDegreeOfParallelismOfUpdated = Math.Max((int) Math.Round(maxDegreeOfParallelism * percentageUpdatedJobRecords), 1);
+            foreach (var batch in batches)
+            {
+                var maxDegreeOfParallelism = IsOutsideOfOfficeHours() || skipOfficeHours ? 10 : 1;
+                _logger.LogInformation(
+                    "Processing batch of {numberOfRecords} records with {maxDegreeOfParallelism} threads.",
+                    batch.Count,
+                    maxDegreeOfParallelism);
 
-            var createTask = Parallel.ForEachAsync(createJobRecords,
-                new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelismOfCreated, CancellationToken = ct },
-                async (record, innerCt) =>
-                {
-                    await ProcessJobRecords(new List<long> { record }, innerCt);
-                });
+                var groupedJobRecords = batch
+                    .GroupBy(x => x.GrId != -9 ? x.GrId : maxUsedBuildingRegistryId + x.RecordNumber)
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x
+                            .OrderBy(record => record.RecordNumber)
+                            .Select(record => record.Id)
+                            .ToList());
 
-            var updateTask = Parallel.ForEachAsync(updateJobRecords.Keys,
-                new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelismOfUpdated, CancellationToken = ct },
-                async (key, innerCt) =>
-                {
-                    var records = updateJobRecords[key];
-                    await ProcessJobRecords(records, innerCt);
-                });
+                await Parallel.ForEachAsync(groupedJobRecords.Keys,
+                    new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism, CancellationToken = ct },
+                    async (key, innerCt) =>
+                    {
+                        var records = groupedJobRecords[key];
+                        await ProcessJobRecords(records, innerCt);
+                    });
+            }
+        }
 
-            Task.WaitAll(new[] { createTask, updateTask }, cancellationToken: ct);
+        private bool IsOutsideOfOfficeHours()
+        {
+            var localTime = _clock.GetCurrentInstant().ToBelgianDateTimeOffset();
+
+            return localTime.Hour >= _outsideOfficeHoursOptions.FromHour || localTime.Hour < _outsideOfficeHoursOptions.UntilHour;
         }
 
         private async Task ProcessJobRecords(List<long> jobRecordIds, CancellationToken ct)
@@ -84,12 +98,11 @@
             foreach (var jobRecordId in jobRecordIds)
             {
                 await using var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
-                var jobRecord =
-                    await buildingGrbContext.JobRecords.FindAsync(new object?[] { jobRecordId }, cancellationToken: ct);
+                var jobRecord = await buildingGrbContext.JobRecords.FindAsync([jobRecordId], cancellationToken: ct);
 
                 BackOfficeApiResult backOfficeApiResult;
 
-                switch (jobRecord.EventType)
+                switch (jobRecord!.EventType)
                 {
                     case GrbEventType.DefineBuilding:
                         backOfficeApiResult = await _backOfficeApiProxy.RealizeAndMeasureUnplannedBuilding(

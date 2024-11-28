@@ -9,8 +9,11 @@
     using BuildingRegistry.Api.BackOffice.Abstractions.Building.Requests;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging.Abstractions;
+    using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
+    using NodaTime;
     using Processor.Job;
     using Xunit;
 
@@ -52,10 +55,13 @@
 
             var jobRecordsProcessor = new JobRecordsProcessor(
                 mockFactory.Object,
-                backOfficeApiProxy.Object);
+                backOfficeApiProxy.Object,
+                SystemClock.Instance,
+                new OptionsWrapper<OutsideOfficeHoursOptions>(new OutsideOfficeHoursOptions { FromHour = 0, UntilHour = 24 }),
+                NullLoggerFactory.Instance);
 
             //act
-            await jobRecordsProcessor.Process(job.Id, CancellationToken.None);
+            await jobRecordsProcessor.Process(job.Id, false, CancellationToken.None);
 
             //assert
             var jobRecordEntity = buildingGrbContext.JobRecords.First(x => x.Id == jobRecord.Id);

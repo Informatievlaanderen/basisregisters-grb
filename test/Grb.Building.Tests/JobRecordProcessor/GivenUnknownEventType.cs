@@ -9,8 +9,11 @@
     using FluentAssertions;
     using Grb.Building.Processor.Job;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging.Abstractions;
+    using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
+    using NodaTime;
     using Xunit;
 
     public class GivenUnknown
@@ -52,10 +55,13 @@
 
             var jobRecordsProcessor = new JobRecordsProcessor(
                 mockFactory.Object,
-                backOfficeApiProxy.Object);
+                backOfficeApiProxy.Object,
+                SystemClock.Instance,
+                new OptionsWrapper<OutsideOfficeHoursOptions>(new OutsideOfficeHoursOptions { FromHour = 0, UntilHour = 24 }),
+                NullLoggerFactory.Instance);
 
             //act
-            var func = async () => await jobRecordsProcessor.Process(job.Id, CancellationToken.None);
+            var func = async () => await jobRecordsProcessor.Process(job.Id, false, CancellationToken.None);
 
             //assert
             await func.Should().ThrowAsync<NotImplementedException>();

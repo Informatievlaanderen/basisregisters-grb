@@ -5,14 +5,13 @@
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Grb.Building.Processor.Job;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
-    using NodaTime;
     using Notifications;
+    using Processor.Job;
     using TicketingService.Abstractions;
     using Xunit;
 
@@ -40,8 +39,6 @@
                 jobRecordsArchiver.Object,
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = grbApiBaseUrl }),
-                new OptionsWrapper<ProcessWindowOptions>(new ProcessWindowOptions { FromHour = 0, UntilHour = 24 }),
-                SystemClock.Instance,
                 hostApplicationLifetime.Object,
                 notificationsService.Object,
                 new NullLoggerFactory());
@@ -59,7 +56,7 @@
             jobEntity.Should().NotBeNull();
             jobEntity!.Status.Should().Be(JobStatus.Completed);
 
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
             jobResultsUploader.Verify(x => x.UploadJobResults(job.Id, It.IsAny<CancellationToken>()));
 
@@ -99,8 +96,6 @@
                 jobRecordsArchiver.Object,
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be" }),
-                new OptionsWrapper<ProcessWindowOptions>(new ProcessWindowOptions { FromHour = 0, UntilHour = 24 }),
-                SystemClock.Instance,
                 hostApplicationLifetime.Object,
                 notificationsService.Object,
                 new NullLoggerFactory());
@@ -143,7 +138,7 @@
             jobEntity.Should().NotBeNull();
             jobEntity!.Status.Should().Be(JobStatus.Error);
 
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
 
             ticketing.Verify(x => x.Error(
@@ -180,8 +175,6 @@
                 jobRecordsArchiver.Object,
                 ticketing.Object,
                 new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be" }),
-                new OptionsWrapper<ProcessWindowOptions>(new ProcessWindowOptions { FromHour = 0, UntilHour = 24 }),
-                SystemClock.Instance,
                 hostApplicationLifetime.Object,
                 notificationsService.Object,
                 new NullLoggerFactory());
@@ -226,10 +219,10 @@
             jobEntity.Should().NotBeNull();
             jobEntity!.Status.Should().Be(JobStatus.Error);
 
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
 
-            jobRecordsProcessor.Verify(x => x.Process(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
+            jobRecordsProcessor.Verify(x => x.Process(secondJob.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsMonitor.Verify(x => x.Monitor(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
 
             ticketing.Verify(x => x.Error(
