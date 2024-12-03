@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.4...v2.3.0) (2024-12-03)
+
+
+### Features
+
+* parallel processing according to office hours ([8209581](https://github.com/informatievlaanderen/basisregisters-grb/commit/820958191519b5906819d0b211cf4e0f3fbf9b12))
+
 ## [2.2.4](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.3...v2.2.4) (2024-10-14)
 
 
