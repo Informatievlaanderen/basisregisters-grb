@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.3.0...v2.4.0) (2025-01-22)
+
+
+### Features
+
+* **job:** add delay while processing requests during officehours ([ef917d7](https://github.com/informatievlaanderen/basisregisters-grb/commit/ef917d7af3c1362ecd9eec61eab000c9dce86c64))
+
 # [2.3.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.2.4...v2.3.0) (2024-12-03)
 
 
