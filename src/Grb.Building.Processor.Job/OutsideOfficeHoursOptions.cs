@@ -6,5 +6,7 @@
 
         public int FromHour { get; set; }
         public int UntilHour { get; set; }
+
+        public int RequestDelayInMillisecondsInOfficeHours { get; set; }
     }
 }
