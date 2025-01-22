@@ -63,7 +63,7 @@
             {
                 var maxDegreeOfParallelism = IsOutsideOfOfficeHours() || skipOfficeHours ? 10 : 1;
                 _logger.LogInformation(
-                    "Processing batch of {numberOfRecords} records with {maxDegreeOfParallelism} threads.",
+                    "Processing batch of {numberOfRecords} records with {maxDegreeOfParallelism} thread(s).",
                     batch.Count,
                     maxDegreeOfParallelism);
 
@@ -146,6 +146,9 @@
                 }
 
                 await buildingGrbContext.SaveChangesAsync(ct);
+
+                if (!IsOutsideOfOfficeHours())
+                    await Task.Delay(_outsideOfficeHoursOptions.RequestDelayInMillisecondsInOfficeHours, ct);
             }
         }
     }
