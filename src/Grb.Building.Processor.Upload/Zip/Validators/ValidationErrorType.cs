@@ -8,5 +8,6 @@
         InvalidGrId,
         InvalidVersionDate,
         InvalidEndDate,
+        DuplicateNewBuilding,
     }
 }

@@ -16,6 +16,7 @@
     using Microsoft.Extensions.Options;
     using Moq;
     using Notifications;
+    using Processor.Upload.Zip.Validators;
     using TicketingService.Abstractions;
     using Xunit;
     using Task = System.Threading.Tasks.Task;
@@ -23,10 +24,17 @@
     public class UploadProcessorTests
     {
         private readonly FakeBuildingGrbContext _buildingGrbContext;
+        private readonly IDuplicateJobRecordValidator _duplicateJobRecordValidator;
 
         public UploadProcessorTests()
         {
             _buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+            var mockDuplicateJobRecordValidator = new Mock<IDuplicateJobRecordValidator>();
+            mockDuplicateJobRecordValidator.Setup(x =>
+                    x.HasDuplicateNewBuilding(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<GrbObject>()))
+                .Returns(false);
+
+            _duplicateJobRecordValidator = mockDuplicateJobRecordValidator.Object;
         }
 
         [Fact]
@@ -67,6 +75,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -115,6 +124,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -160,6 +170,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -210,6 +221,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -270,6 +282,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -331,6 +344,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -392,6 +406,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -453,6 +468,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,
@@ -479,7 +495,75 @@
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
 
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
+        }
 
+        [Fact]
+        public async Task WhenDbaseRecordHasDuplicateNewBuilding_ThenTicketError()
+        {
+            var mockTicketing = new Mock<ITicketing>();
+            var mockIBlobClient = new Mock<IBlobClient>();
+            var mockAmazonClient = new Mock<IAmazonECS>();
+            var mockIHostApplicationLifeTime = new Mock<IHostApplicationLifetime>();
+
+            var ticketId = Guid.NewGuid();
+            var job = new Job(DateTimeOffset.Now, JobStatus.Created, ticketId);
+
+            _buildingGrbContext.Jobs.Add(job);
+            await _buildingGrbContext.SaveChangesAsync(CancellationToken.None);
+
+            var blobName = new BlobName(job.ReceivedBlobName);
+
+            mockIBlobClient
+                .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            mockIBlobClient
+                .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new BlobObject(
+                    blobName,
+                    null,
+                    ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)new FileStream(
+                        $"{AppContext.BaseDirectory}/UploadProcessor/gebouw_ALL.zip", FileMode.Open,
+                        FileAccess.Read))));
+
+            mockAmazonClient
+                .Setup(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new RunTaskResponse { HttpStatusCode = HttpStatusCode.OK });
+
+            var notificationsService = new Mock<INotificationService>();
+            var mockDuplicateJobRecordValidator = new Mock<IDuplicateJobRecordValidator>();
+            mockDuplicateJobRecordValidator.Setup(x => x.HasDuplicateNewBuilding(47280, 1, (GrbObject)2)).Returns(true);
+
+            var sut = new UploadProcessor(
+                _buildingGrbContext,
+                mockDuplicateJobRecordValidator.Object,
+                mockTicketing.Object,
+                mockIBlobClient.Object,
+                mockAmazonClient.Object,
+                new NullLoggerFactory(),
+                mockIHostApplicationLifeTime.Object,
+                notificationsService.Object,
+                Options.Create(new EcsTaskOptions { Subnets = "subnet-1234", SecurityGroups = "sg-5678" }));
+
+            // Act
+            await sut.StartAsync(CancellationToken.None);
+
+            // Assert
+            mockTicketing.Verify(x => x.Error(
+                ticketId,
+                It.Is<TicketError>(ticketError =>
+                    ticketError.Errors.Any(y =>
+                        y.ErrorCode == "DuplicateNewBuilding" &&
+                        y.ErrorMessage == "Record number(s):3")),
+                It.IsAny<CancellationToken>()), Times.Once);
+
+            var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
+            jobRecords.Should().BeEmpty();
+
+            _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Error);
+
+            notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
         }
 
         [Fact]
@@ -512,6 +596,7 @@
 
             var sut = new UploadProcessor(
                 _buildingGrbContext,
+                _duplicateJobRecordValidator,
                 mockTicketing.Object,
                 mockIBlobClient.Object,
                 mockAmazonClient.Object,

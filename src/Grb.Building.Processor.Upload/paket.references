@@ -4,6 +4,8 @@ AWSSDK.ECS
 
 Autofac.Extensions.DependencyInjection
 
+Dapper
+
 Datadog.Trace
 Datadog.Trace.Bundle
 

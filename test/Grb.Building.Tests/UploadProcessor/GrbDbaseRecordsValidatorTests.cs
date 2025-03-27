@@ -3,19 +3,30 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Amazon.S3;
     using AutoFixture;
     using FluentAssertions;
+    using Moq;
     using Processor.Upload.Zip;
     using Processor.Upload.Zip.Exceptions;
     using Processor.Upload.Zip.Validators;
     using Xunit;
 
-    public class GrbDbaseRecordsValidatorTests
+    public sealed class GrbDbaseRecordsValidatorTests
     {
+        private readonly GrbDbaseRecordsValidator _sut;
+        private readonly Mock<IDuplicateJobRecordValidator> _mockDuplicateJobRecordValidator;
+
+        public GrbDbaseRecordsValidatorTests()
+        {
+            _mockDuplicateJobRecordValidator = new Mock<IDuplicateJobRecordValidator>();
+            _sut = new GrbDbaseRecordsValidator(_mockDuplicateJobRecordValidator.Object);
+        }
+
         [Fact]
         public void WhenRecordsNull_ThrowException()
         {
-            var func = () => new GrbDbaseRecordsValidator().Validate("dummy", null);
+            var func = () => _sut.Validate("dummy", null);
             func.Should().Throw<ArgumentNullException>();
         }
 
@@ -23,7 +34,7 @@
         public void WhenRecordsEmpty_ThrowException()
         {
             var func = () =>
-                new GrbDbaseRecordsValidator().Validate("dummy", new List<GrbDbaseRecord>().GetEnumerator());
+                _sut.Validate("dummy", new List<GrbDbaseRecord>().GetEnumerator());
             func.Should().Throw<NoDbaseRecordsException>();
         }
 
@@ -46,7 +57,7 @@
             var recordWithEventTypeNull = GetCreateValidRecord();
             recordWithEventTypeNull.EventType.Reset();
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -64,7 +75,7 @@
             var recordWithEventTypeNull = GetCreateValidRecord();
             recordWithEventTypeNull.EventType.Value = 11;
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -88,7 +99,7 @@
             var recordWithInvalidGrId = GetCreateValidRecord();
             recordWithInvalidGrId.GRID.Value = grid;
 
-            Assert.Throws<InvalidGrIdException>(() => new GrbDbaseRecordsValidator().Validate(
+            Assert.Throws<InvalidGrIdException>(() => _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -105,7 +116,7 @@
             var recordWithValidGrId = GetCreateValidRecord();
             recordWithValidGrId.GRID.Value = grid;
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -125,7 +136,7 @@
             var recordWithInvalidVersionDate = GetCreateValidRecord();
             recordWithInvalidVersionDate.GVDV.Value = versionDate;
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -143,7 +154,7 @@
             var recordWithValidVersionDate = GetCreateValidRecord();
             recordWithValidVersionDate.GVDV.Value = new Fixture().Create<DateTime>().ToString("yyyy-MM-dd");
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -163,7 +174,7 @@
             var recordWithInvalidEndDate = GetCreateValidRecord();
             recordWithInvalidEndDate.GVDE.Value = endDate;
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -183,7 +194,7 @@
             var recordWithValidEndDate = GetCreateValidRecord();
             recordWithValidEndDate.GVDE.Value = endDate;
 
-            var validationResult =  new GrbDbaseRecordsValidator().Validate(
+            var validationResult =  _sut.Validate(
                 "dummy",
                 new List<GrbDbaseRecord>
                 {
@@ -191,6 +202,27 @@
                 }.GetEnumerator());
 
             validationResult.Should().BeNullOrEmpty();
+        }
+
+        [Fact]
+        public void WhenRecordIsDuplicate_ThenValidationError()
+        {
+            var duplicateNewBuildingRecord = GetCreateValidRecord();
+            duplicateNewBuildingRecord.GRID.Value = "-9";
+            duplicateNewBuildingRecord.EventType.Value = (int)GrbEventType.DefineBuilding;
+
+            _mockDuplicateJobRecordValidator.Setup(x => x.HasDuplicateNewBuilding(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<GrbObject>())).Returns(true);
+
+            var validationResult =  _sut.Validate(
+                "dummy",
+                new List<GrbDbaseRecord>
+                {
+                    duplicateNewBuildingRecord
+                }.GetEnumerator());
+
+            var v = validationResult.FirstOrDefault();
+            v.Should().NotBeNull();
+            v.Value.Should().Contain(ValidationErrorType.DuplicateNewBuilding);
         }
     }
 }

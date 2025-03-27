@@ -28,6 +28,7 @@
     public sealed class UploadProcessor : BackgroundService
     {
         private readonly BuildingGrbContext _buildingGrbContext;
+        private readonly IDuplicateJobRecordValidator _duplicateJobRecordValidator;
         private readonly ITicketing _ticketing;
         private readonly IBlobClient _blobClient;
         private readonly IAmazonECS _amazonEcs;
@@ -38,6 +39,7 @@
 
         public UploadProcessor(
             BuildingGrbContext buildingGrbContext,
+            IDuplicateJobRecordValidator duplicateJobRecordValidator,
             ITicketing ticketing,
             IBlobClient blobClient,
             IAmazonECS amazonEcs,
@@ -47,6 +49,7 @@
             IOptions<EcsTaskOptions> ecsTaskOptions)
         {
             _buildingGrbContext = buildingGrbContext;
+            _duplicateJobRecordValidator = duplicateJobRecordValidator;
             _ticketing = ticketing;
             _blobClient = blobClient;
             _amazonEcs = amazonEcs;
@@ -228,7 +231,7 @@
             }
         }
 
-        public static Dictionary<string, IZipArchiveEntryValidator> GrbArchiveEntryStructure =>
+        public Dictionary<string, IZipArchiveEntryValidator> GrbArchiveEntryStructure =>
             new Dictionary<string, IZipArchiveEntryValidator>(StringComparer.InvariantCultureIgnoreCase)
             {
                 {
@@ -237,7 +240,7 @@
                         Encoding.UTF8,
                         new DbaseFileHeaderReadBehavior(true),
                         new GrbDbaseSchema(),
-                        new GrbDbaseRecordsValidator())
+                        new GrbDbaseRecordsValidator(_duplicateJobRecordValidator))
                 },
                 {
                     ZipArchiveConstants.SHP_FILENAME,
