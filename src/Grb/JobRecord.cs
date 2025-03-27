@@ -7,6 +7,8 @@ namespace Grb
 
     public sealed class JobRecord
     {
+        public const int DefaultNewBuildingGrId = -9;
+
         public long Id { get; set; }
         public Guid JobId { get; set; }
 
@@ -82,6 +84,9 @@ namespace Grb
             builder.Property(x => x.BuildingPersistentLocalId);
 
             builder.HasIndex(x => x.JobId);
+
+            builder.HasIndex(x => new { x.GrbObject, x.Idn, x.IdnVersion, x.EventType, x.GrId })
+                .HasFilter("[EventType] = 1 AND [GrId] = -9");
         }
     }
 }

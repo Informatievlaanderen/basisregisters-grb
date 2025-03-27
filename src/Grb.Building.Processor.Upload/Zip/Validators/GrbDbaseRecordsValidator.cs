@@ -11,6 +11,13 @@
 
     public class GrbDbaseRecordsValidator : IZipArchiveDbaseRecordsValidator<GrbDbaseRecord>
     {
+        private readonly IDuplicateJobRecordValidator _duplicateJobRecordValidator;
+
+        public GrbDbaseRecordsValidator(IDuplicateJobRecordValidator duplicateJobRecordValidator)
+        {
+            _duplicateJobRecordValidator = duplicateJobRecordValidator;
+        }
+
         public IDictionary<RecordNumber, List<ValidationErrorType>> Validate(
             string zipArchiveEntryName,
             IEnumerator<GrbDbaseRecord> records)
@@ -37,7 +44,7 @@
                     validationErrorTypes.Add(ValidationErrorType.UnknownEventType);
                 }
 
-                if (record.GRID.Value != "-9" &&
+                if (record.GRID.Value != $"{JobRecord.DefaultNewBuildingGrId}" &&
                     !(OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) &&
                       int.TryParse(stringId, out var persistentLocalId) &&
                       persistentLocalId > 0))
@@ -50,6 +57,16 @@
 
                 if(!record.GVDE.TryGetValueAsNullableDateTime(out _) && !string.IsNullOrEmpty(record.GVDE.Value))
                     validationErrorTypes.Add(ValidationErrorType.InvalidEndDate);
+
+                if (record.EventType is { HasValue: true, Value: (int)GrbEventType.DefineBuilding }
+                    && record.GRID.Value == $"{JobRecord.DefaultNewBuildingGrId}"
+                    && _duplicateJobRecordValidator.HasDuplicateNewBuilding(
+                        record.IDN.Value,
+                        record.IDNV.Value,
+                        (GrbObject)record.GRBOBJECT.Value))
+                {
+                    validationErrorTypes.Add(ValidationErrorType.DuplicateNewBuilding);
+                }
 
                 if(validationErrorTypes.Any())
                     validationErrors.Add(new RecordNumber(index), validationErrorTypes);

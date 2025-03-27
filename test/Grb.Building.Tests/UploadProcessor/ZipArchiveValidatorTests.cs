@@ -6,6 +6,7 @@
     using System.IO.Compression;
     using System.Linq;
     using System.Text;
+    using Be.Vlaanderen.Basisregisters.Shaperon;
     using FluentAssertions;
     using Moq;
     using Processor.Upload;
@@ -32,7 +33,21 @@
             using var archive = new ZipArchive(zipFile, ZipArchiveMode.Read, false);
 
             // Act
-            var sut = new ZipArchiveValidator(UploadProcessor.GrbArchiveEntryStructure);
+            var sut = new ZipArchiveValidator(new Dictionary<string, IZipArchiveEntryValidator>(StringComparer.InvariantCultureIgnoreCase)
+            {
+                {
+                    ZipArchiveConstants.DBF_FILENAME,
+                    new ZipArchiveDbaseEntryValidator<GrbDbaseRecord>(
+                        Encoding.UTF8,
+                        new DbaseFileHeaderReadBehavior(true),
+                        new GrbDbaseSchema(),
+                        new GrbDbaseRecordsValidator(new DuplicateJobRecordValidator(new FakeBuildingGrbContextFactory().CreateDbContext())))
+                },
+                {
+                    ZipArchiveConstants.SHP_FILENAME,
+                    new ZipArchiveShapeEntryValidator(Encoding.UTF8, new GrbShapeRecordsValidator())
+                }
+            });
             var zipArchiveProblems = sut.Validate(archive);
 
             // Assert
