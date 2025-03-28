@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.4.0...v2.5.0) (2025-03-28)
+
+
+### Features
+
+* **upload:** add new building duplicate validation ([e52ef0d](https://github.com/informatievlaanderen/basisregisters-grb/commit/e52ef0d70d64a32f0b10810f6fda0ed25054f60e))
+
 # [2.4.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.3.0...v2.4.0) (2025-01-22)
 
 
