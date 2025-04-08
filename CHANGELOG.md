@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.5.0...v2.5.1) (2025-04-08)
+
+
+### Bug Fixes
+
+* **upload:** ioc registration duplicationvalidator ([f3be9e3](https://github.com/informatievlaanderen/basisregisters-grb/commit/f3be9e37090f26905d7c2d5f7d4686878a81d8fd))
+
 # [2.5.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.4.0...v2.5.0) (2025-03-28)
 
 
