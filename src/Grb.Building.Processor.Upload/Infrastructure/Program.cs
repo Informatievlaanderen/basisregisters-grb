@@ -21,6 +21,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
+    using Zip.Validators;
 
     public sealed class Program
     {
@@ -97,6 +98,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
                             hostContext.Configuration["BucketName"]))
                         .AddSingleton<IAmazonECS, AmazonECSClient>();
 
+                    services.AddSingleton<IDuplicateJobRecordValidator, DuplicateJobRecordValidator>();
                     services.AddHostedService<UploadProcessor>();
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
