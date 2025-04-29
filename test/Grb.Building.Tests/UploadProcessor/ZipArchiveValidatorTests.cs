@@ -9,7 +9,6 @@
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using FluentAssertions;
     using Moq;
-    using Processor.Upload;
     using Processor.Upload.Zip;
     using Processor.Upload.Zip.Core;
     using Processor.Upload.Zip.Exceptions;
@@ -53,7 +52,7 @@
             // Assert
             var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "RequiredFileMissing");
             fileProblem.Should().NotBeNull();
-            fileProblem.Message.Should().Be($"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF.");
+            fileProblem!.Message.Should().Be($"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF.");
         }
 
         [Fact]
@@ -81,7 +80,7 @@
             // Assert
             var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == ZipArchiveConstants.DBF_FILENAME);
             fileProblem.Should().NotBeNull();
-            fileProblem.Message.Should().Be("ShapeHeaderFormatException");
+            fileProblem!.Message.Should().Be("ShapeHeaderFormatException");
         }
 
         [Fact]
@@ -109,7 +108,7 @@
             // Assert
             var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == ZipArchiveConstants.DBF_FILENAME);
             fileProblem.Should().NotBeNull();
-            fileProblem.Message.Should().Be("DbaseHeaderFormatException");
+            fileProblem!.Message.Should().Be("DbaseHeaderFormatException");
         }
 
         [Fact]
@@ -137,7 +136,7 @@
             // Assert
             var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "DbaseHeaderSchemaMismatchException");
             fileProblem.Should().NotBeNull();
-            fileProblem.Message.Should().Be("De kolomnamen komen niet overeen met de verwachte kolomstructuur.");
+            fileProblem!.Message.Should().Be("De kolomnamen komen niet overeen met de verwachte kolomstructuur.");
             fileProblem.Code.Should().Be("DbaseHeaderSchemaMismatchException");
         }
 
@@ -166,7 +165,7 @@
             // Assert
             var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "DbaseRecordFileLeeg");
             fileProblem.Should().NotBeNull();
-            fileProblem.Message.Should().Be($"De meegegeven dbase record file ({ZipArchiveConstants.DBF_FILENAME}) is leeg.");
+            fileProblem!.Message.Should().Be($"De meegegeven dbase record file ({ZipArchiveConstants.DBF_FILENAME}) is leeg.");
             fileProblem.Code.Should().Be("DbaseRecordFileLeeg");
         }
 
@@ -195,7 +194,7 @@
             // Assert
             var fileProblem = zipArchiveProblems.FirstOrDefault(x => x is FileError error && error.Code == "ShapefileLeeg");
             fileProblem.Should().NotBeNull();
-            fileProblem.Message.Should().Be($"De meegegeven shapefile ({ZipArchiveConstants.SHP_FILENAME}) is leeg.");
+            fileProblem!.Message.Should().Be($"De meegegeven shapefile ({ZipArchiveConstants.SHP_FILENAME}) is leeg.");
             fileProblem.Code.Should().Be("ShapefileLeeg");
         }
     }

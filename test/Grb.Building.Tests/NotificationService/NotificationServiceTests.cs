@@ -18,11 +18,11 @@
             var mockSns = new Mock<IAmazonSimpleNotificationService>();
             var sut = new NotificationService(mockSns.Object, "topic");
 
-            PublishRequest publishRequest = null;
+            PublishRequest? publishRequest = null;
 
             mockSns.Setup(x => x.PublishAsync(It.IsAny<PublishRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PublishResponse())
-                .Callback<PublishRequest, CancellationToken>((pr, ct) => publishRequest = pr);
+                .Callback<PublishRequest, CancellationToken>((pr, _) => publishRequest = pr);
 
             var notificationMessage = new NotificationMessage(
                 nameof(Grb.Building.Processor.Job),
@@ -34,12 +34,12 @@
 
             var expectedMessageAttributes = new Dictionary<string, MessageAttributeValue>
             {
-                { "MessageType", new MessageAttributeValue { DataType = "String", StringValue = nameof(Grb.Building.Processor.Job) } },
+                { "MessageType", new MessageAttributeValue { DataType = "String", StringValue = nameof(Processor.Job) } },
                 { "service", new MessageAttributeValue { DataType = "String", StringValue = "Grb job processor" } },
                 { "warning", new MessageAttributeValue { DataType = "String", StringValue = "danger" } }
             };
 
-            publishRequest.Message.Should().Be(@"{""basisregistersError"":""JobRecordErrors, Job: 1001 has 5 errors."",""service"":""Grb job processor"",""warning"":""danger""}");
+            publishRequest!.Message.Should().Be(@"{""basisregistersError"":""JobRecordErrors, Job: 1001 has 5 errors."",""service"":""Grb job processor"",""warning"":""danger""}");
             publishRequest.TopicArn.Should().Be("topic");
             publishRequest.MessageAttributes.Should().BeEquivalentTo(expectedMessageAttributes);
         }

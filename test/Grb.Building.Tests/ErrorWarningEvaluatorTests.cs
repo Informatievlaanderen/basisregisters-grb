@@ -34,7 +34,7 @@
         {
             var validationErrors = new List<ValidationError>
             {
-                new ValidationError(null, "reason")
+                new ValidationError(null!, "reason")
             };
 
             // Act

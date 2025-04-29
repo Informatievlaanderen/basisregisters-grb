@@ -10,7 +10,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.BlobStore;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using FluentAssertions;
     using Moq;

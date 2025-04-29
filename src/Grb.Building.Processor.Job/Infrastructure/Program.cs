@@ -82,7 +82,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                             ))
                         .AddHttpClient(nameof(BackOfficeApiProxy), client =>
                         {
-                            client.BaseAddress = new Uri(hostContext.Configuration["BackOfficeApiUrl"]);
+                            client.BaseAddress = new Uri(hostContext.Configuration["BackOfficeApiUrl"]!);
                         });
 
                     services.Configure<GrbApiOptions>(hostContext.Configuration);
@@ -92,7 +92,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                     services.AddScoped<INotificationService>(provider =>
                     {
                         var snsService = provider.GetRequiredService<IAmazonSimpleNotificationService>();
-                        var topicArn = hostContext.Configuration["TopicArn"];
+                        var topicArn = hostContext.Configuration["TopicArn"]!;
                         return new NotificationService(snsService, topicArn);
                     });
 
@@ -102,7 +102,7 @@ namespace Grb.Building.Processor.Job.Infrastructure
                             {
                                 RegionEndpoint = hostContext.Configuration.GetAWSOptions().Region
                             }),
-                            hostContext.Configuration["BucketName"]))
+                            hostContext.Configuration["BucketName"]!))
                         .AddSingleton<IBackOfficeApiProxy, BackOfficeApiProxy>()
                         .AddSingleton<IJobRecordsProcessor, JobRecordsProcessor>()
                         .AddSingleton<IJobRecordsMonitor, JobRecordsMonitor>()
@@ -111,9 +111,9 @@ namespace Grb.Building.Processor.Job.Infrastructure
                             => new JobResultUploader(
                                 c.GetRequiredService<BuildingGrbContext>(),
                                 c.GetRequiredService<IBlobClient>(),
-                                hostContext.Configuration["ReadBuildingUrl"]))
+                                hostContext.Configuration["ReadBuildingUrl"]!))
                         .AddSingleton<IJobRecordsArchiver>(_
-                            => new JobRecordsArchiver(hostContext.Configuration.GetConnectionString("BuildingGrb"), loggerFactory));
+                            => new JobRecordsArchiver(hostContext.Configuration.GetConnectionString("BuildingGrb")!, loggerFactory));
 
                     services.AddHostedService<JobProcessor>();
                 })

@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Runtime.Serialization;
 
-    [Serializable]
     public sealed class DbRecordsWithMissingShapeException : Exception
     {
         public List<int> RecordNumbers { get; }
@@ -14,9 +13,5 @@
         {
             RecordNumbers = recordNumbers.ToList();
         }
-
-        private DbRecordsWithMissingShapeException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
     }
 }

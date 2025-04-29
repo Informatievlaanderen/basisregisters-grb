@@ -49,7 +49,7 @@
             await buildingGrbContext.SaveChangesAsync();
 
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             jobRecordsProcessor.Verify(x => x.Process(It.IsAny<Guid>(), false, It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsMonitor.Verify(x => x.Monitor(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -100,7 +100,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             jobRecordsProcessor.Verify(x =>
@@ -163,7 +163,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             jobRecordsProcessor.Verify(x =>

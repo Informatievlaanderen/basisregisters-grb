@@ -95,7 +95,7 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
                 problems += new FileError(ex.FileName, nameof(DbaseHeaderFormatException),
                     new ProblemParameter("Exception", ex.InnerException!.ToString()));
             }
-            catch (DbaseHeaderSchemaMismatchException ex)
+            catch (DbaseHeaderSchemaMismatchException)
             {
                 problems += new FileError(nameof(DbaseHeaderSchemaMismatchException), "De kolomnamen komen niet overeen met de verwachte kolomstructuur.");
             }

@@ -45,7 +45,7 @@
             {
                 xmlwriter.WriteStartElement("gml", "Polygon", "http://www.opengis.net/gml/3.2");
                 xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
-                WriteRing(polygon.ExteriorRing as LinearRing, xmlwriter);
+                WriteRing((polygon!.ExteriorRing as LinearRing)!, xmlwriter);
                 WriteInteriorRings(polygon.InteriorRings, polygon.NumInteriorRings, xmlwriter);
                 xmlwriter.WriteEndElement();
             }
@@ -88,7 +88,7 @@
 
             foreach (var ring in rings)
             {
-                WriteRing(ring as LinearRing, writer, true);
+                WriteRing((ring as LinearRing)!, writer, true);
             }
         }
     }

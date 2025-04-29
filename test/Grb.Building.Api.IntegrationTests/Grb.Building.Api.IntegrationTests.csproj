@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
 
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
@@ -16,10 +16,17 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Grb.Building.Api\Grb.Building.Api.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="xunit.assert" Version="2.7.0" />
-  </ItemGroup>
+<!-- AspNetCore.HealthChecks.SqlServer -->
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Auth.AcmIdm" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.DockerUtilities" />
+
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
+  </ItemGroup>
 </Project>

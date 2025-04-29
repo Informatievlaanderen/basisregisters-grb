@@ -1,6 +1,7 @@
 namespace Grb.Building.Api.Infrastructure
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Amazon.S3;
@@ -10,6 +11,7 @@ namespace Grb.Building.Api.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Configuration;
+    using FluentValidation;
     using IdentityModel.AspNetCore.OAuth2Introspection;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -28,7 +30,7 @@ namespace Grb.Building.Api.Infrastructure
     {
         private const string DatabaseTag = "db";
 
-        private IContainer _applicationContainer;
+        private IContainer _applicationContainer = null!;
 
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
@@ -49,12 +51,15 @@ namespace Grb.Building.Api.Infrastructure
                 .GetSection(nameof(OAuth2IntrospectionOptions))
                 .Get<OAuth2IntrospectionOptions>();
 
-            var baseUrl = _configuration.GetValue<string>("BaseUrl");
+            var baseUrl = _configuration.GetValue<string>("BaseUrl")!;
             var baseUrlForExceptions = baseUrl.EndsWith("/")
                 ? baseUrl.Substring(0, baseUrl.Length - 1)
                 : baseUrl;
 
-            services.AddAcmIdmAuthentication(oAuth2IntrospectionOptions!);
+            services
+                .AddDistributedMemoryCache()
+                .AddAcmIdmAuthentication(oAuth2IntrospectionOptions!);
+
             services
                 .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
                     {
@@ -64,7 +69,7 @@ namespace Grb.Building.Api.Infrastructure
                                 .GetSection("Cors")
                                 .GetChildren()
                                 .Select(c => c.Value)
-                                .ToArray()
+                                .ToArray()!
                         },
                         Server =
                         {
@@ -84,13 +89,10 @@ namespace Grb.Building.Api.Infrastructure
                                     Url = new Uri("https://backoffice.basisregisters.vlaanderen")
                                 }
                             },
-                            XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
+                            XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}!
                         },
                         MiddlewareHooks =
                         {
-                            FluentValidation = fv => fv
-                                .RegisterValidatorsFromAssemblyContaining<Startup>(),
-
                             AfterHealthChecks = health =>
                             {
                                 var connectionStrings = _configuration
@@ -99,17 +101,18 @@ namespace Grb.Building.Api.Infrastructure
 
                                 foreach (var connectionString in connectionStrings)
                                     health.AddSqlServer(
-                                        connectionString.Value,
+                                        connectionString.Value!,
                                         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
                                         tags: new[] {DatabaseTag, "sql", "sqlserver"});
                             },
                             Authorization = options =>
                             {
-                                options.AddAcmIdmAuthorization();
+                                options.AddBuildingPolicies(new List<string>());
                             }
                         }
                     }
                     .EnableJsonErrorActionFilterOption())
+                .AddValidatorsFromAssemblyContaining<Startup>()
                 .Configure<TicketingOptions>(_configuration.GetSection(TicketingModule.TicketingServiceConfigKey))
                 .Configure<BucketOptions>(_configuration.GetSection(BucketOptions.ConfigKey))
                 .AddTransient<IAmazonS3Extended>(c => new AmazonS3ExtendedClient(c.GetRequiredService<ILoggerFactory>(),
@@ -174,8 +177,8 @@ namespace Grb.Building.Api.Infrastructure
                 });
 
             MigrationsHelper.Run(
-                _configuration.GetConnectionString("BuildingGrbAdmin"),
-                serviceProvider.GetService<ILoggerFactory>());
+                _configuration.GetConnectionString("BuildingGrbAdmin")!,
+                serviceProvider.GetRequiredService<ILoggerFactory>());
 
             StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
         }

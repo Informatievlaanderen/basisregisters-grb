@@ -17,7 +17,7 @@ namespace Grb.Building.Processor.Upload.Zip.Core
         public IReadOnlyCollection<ProblemParameter> Parameters { get; }
         public string Message { get; }
 
-        public bool Equals(FileProblem x, FileProblem y)
+        public bool Equals(FileProblem? x, FileProblem? y)
         {
             if (ReferenceEquals(x, y)) return true;
 
@@ -32,7 +32,7 @@ namespace Grb.Building.Processor.Upload.Zip.Core
                    && Equals(x.Parameters, y.Parameters);
         }
 
-        public virtual bool Equals(FileProblem other)
+        public virtual bool Equals(FileProblem? other)
         {
             return other != null
                    && GetType() == other.GetType()
@@ -41,7 +41,7 @@ namespace Grb.Building.Processor.Upload.Zip.Core
                    && Parameters.SequenceEqual(other.Parameters);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is FileProblem other && Equals(other);
         }

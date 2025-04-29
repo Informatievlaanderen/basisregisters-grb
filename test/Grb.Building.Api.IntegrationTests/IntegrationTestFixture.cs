@@ -8,7 +8,6 @@ namespace Grb.Building.Api.IntegrationTests
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.DockerUtilities;
     using IdentityModel;
-    using IdentityModel.AspNetCore.OAuth2Introspection;
     using IdentityModel.Client;
     using Infrastructure;
     using Microsoft.AspNetCore.Hosting;
@@ -20,12 +19,12 @@ namespace Grb.Building.Api.IntegrationTests
 
     public class IntegrationTestFixture : IAsyncLifetime
     {
-        private string _clientId;
-        private string _clientSecret;
+        private string _clientId = null!;
+        private string _clientSecret = null!;
         private readonly IDictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
 
-        public TestServer TestServer { get; private set; }
-        public SqlConnection SqlConnection { get; private set; }
+        public TestServer TestServer { get; private set; } = null!;
+        public SqlConnection SqlConnection { get; private set; } = null!;
 
         public async Task<string> GetAccessToken(string requiredScopes)
         {
@@ -60,8 +59,8 @@ namespace Grb.Building.Api.IntegrationTests
                 .AddEnvironmentVariables()
                 .Build();
 
-            _clientId = configuration.GetValue<string>("ClientId");
-            _clientSecret = configuration.GetValue<string>("ClientSecret");
+            _clientId = configuration.GetValue<string>("ClientId")!;
+            _clientSecret = configuration.GetValue<string>("ClientSecret")!;
 
             using var _ = DockerComposer.Compose("sqlserver.yml", "building-grb-integration-tests");
             await WaitForSqlServerToBecomeAvailable();

@@ -55,15 +55,14 @@
         }
 
         [Fact]
-        public void WithNonExistingJob_ThenThrowsApiException()
+        public async Task WithNonExistingJob_ThenThrowsApiException()
         {
             var request = new JobResultsPreSignedUrlRequest(Guid.NewGuid());
             var act = async () => await _handler.Handle(request, CancellationToken.None);
 
-            act
+            await act
                 .Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.Message.Contains("Onbestaande upload job.")
                     && x.StatusCode == StatusCodes.Status404NotFound);
@@ -72,7 +71,7 @@
         [Theory]
         [InlineData(JobStatus.Cancelled)]
         [InlineData(JobStatus.Error)]
-        public void WithCancelledOrErrorJob_ThenThrowsApiException(JobStatus jobStatus)
+        public async Task WithCancelledOrErrorJob_ThenThrowsApiException(JobStatus jobStatus)
         {
             var job = new Job(DateTimeOffset.Now, jobStatus) { Id = Guid.NewGuid() };
             _fakeBuildingGrbContext.Jobs.Add(job);
@@ -81,10 +80,9 @@
             var request = new JobResultsPreSignedUrlRequest(job.Id);
             var act = async () => await _handler.Handle(request, CancellationToken.None);
 
-            act
+            await act
                 .Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.Message.Contains($"De status van de upload job '{job.Id}' is {job.Status.ToString().ToLower()}, hierdoor zijn er voor deze job geen resultaten beschikbaar.")
                     && x.StatusCode == StatusCodes.Status400BadRequest);
@@ -95,7 +93,7 @@
         [InlineData(JobStatus.Preparing)]
         [InlineData(JobStatus.Prepared)]
         [InlineData(JobStatus.Processing)]
-        public void WithUncompletedJob_ThenThrowsApiException(JobStatus jobStatus)
+        public async Task WithUncompletedJob_ThenThrowsApiException(JobStatus jobStatus)
         {
             var job = new Job(DateTimeOffset.Now, jobStatus) { Id = Guid.NewGuid() };
             _fakeBuildingGrbContext.Jobs.Add(job);
@@ -104,10 +102,9 @@
             var request = new JobResultsPreSignedUrlRequest(job.Id);
             var act = async () => await _handler.Handle(request, CancellationToken.None);
 
-            act
+            await act
                 .Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.Message.Contains($"Upload job '{job.Id}' wordt verwerkt en resultaten zijn nog niet beschikbaar.")
                     && x.StatusCode == StatusCodes.Status400BadRequest);

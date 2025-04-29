@@ -6,7 +6,6 @@
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Shaperon;
 
-    [Serializable]
     public sealed class InvalidGrIdException : Exception
     {
         public RecordNumber RecordNumber { get; }
@@ -17,9 +16,5 @@
             RecordNumber = recordNumber;
             GrId = grId;
         }
-
-        private InvalidGrIdException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
     }
 }

@@ -48,7 +48,7 @@
 
             var result = await query
                 .OrderBy(x => x.RecordNumber)
-                .Skip(request.Pagination.Offset.Value)
+                .Skip(request.Pagination.Offset!.Value)
                 .Take(request.Pagination.Limit!.Value + 1)
                 .ToListAsync(cancellationToken);
 

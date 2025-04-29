@@ -3,7 +3,6 @@ namespace Grb.Building.Processor.Upload.Zip.Exceptions
     using System;
     using System.Runtime.Serialization;
 
-    [Serializable]
     public sealed class DbaseHeaderSchemaMismatchException : Exception
     {
         public string FileName { get; }
@@ -12,9 +11,5 @@ namespace Grb.Building.Processor.Upload.Zip.Exceptions
         {
             FileName = fileName;
         }
-
-        private DbaseHeaderSchemaMismatchException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
     }
 }

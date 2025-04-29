@@ -109,10 +109,10 @@
                         if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
                             var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-                            var validationProblemDetails = JsonConvert.DeserializeObject<ValidationProblemDetails>(jsonResponse);
+                            var validationProblemDetails = JsonConvert.DeserializeObject<ValidationProblemDetails>(jsonResponse)!;
 
                             var validationErrors =
-                                validationProblemDetails.ValidationErrors.SelectMany(x => x.Value).ToList();
+                                validationProblemDetails.ValidationErrors!.SelectMany(x => x.Value).ToList();
 
                             return new BackOfficeApiResult(null, validationErrors);
                         }
@@ -122,12 +122,12 @@
                             var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
                             var validationProblemDetails = JsonConvert.DeserializeObject<ProblemDetails>(jsonResponse);
 
-                            return new BackOfficeApiResult(null, new[] { new ValidationError("OnbestaandGebouw", validationProblemDetails.Detail) });
+                            return new BackOfficeApiResult(null, new[] { new ValidationError("OnbestaandGebouw", validationProblemDetails!.Detail) });
                         }
 
                         response.EnsureSuccessStatusCode();
 
-                        var ticketUrl = response.Headers.Location;
+                        var ticketUrl = response.Headers.Location!;
                         return new BackOfficeApiResult(ticketUrl.ToString(), null);
                     });
             }

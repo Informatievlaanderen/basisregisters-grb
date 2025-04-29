@@ -78,7 +78,7 @@
             response.TicketUrl.Should().Be(ticketUrl);
             response.UploadUrl.Should().Be(preSignedUrl.ToString());
 
-            var transaction = (FakeDbContextTransaction)buildingGrbContext.Database.CurrentTransaction;
+            var transaction = (FakeDbContextTransaction)buildingGrbContext.Database.CurrentTransaction!;
             transaction.Status.Should().Be(FakeDbContextTransaction.TransactionStatus.Committed);
         }
 
@@ -97,11 +97,12 @@
             {
                 await handler.Handle(new UploadPreSignedUrlRequest(), CancellationToken.None);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                e.Should().NotBeNull();
             }
 
-            var transaction = (FakeDbContextTransaction)buildingGrbContext.Database.CurrentTransaction;
+            var transaction = (FakeDbContextTransaction)buildingGrbContext.Database.CurrentTransaction!;
             transaction.Status.Should().Be(FakeDbContextTransaction.TransactionStatus.Rolledback);
         }
     }

@@ -97,7 +97,7 @@
         }
 
         [Fact]
-        public Task WithUnexistingJob_ThenThrowsApiException()
+        public async Task WithUnexistingJob_ThenThrowsApiException()
         {
             var jobId = _fixture.Create<Guid>();
             var jobRecordId = _fixture.Create<long>();
@@ -106,13 +106,11 @@
             var act = async () => await handler.Handle(
                 new ResolveJobRecordErrorRequest(jobId, jobRecordId), CancellationToken.None);
 
-            act.Should()
+            await act.Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
                     && x.Message == "Onbestaande upload job.");
-            return Task.CompletedTask;
         }
 
         [Fact]
@@ -127,9 +125,8 @@
             var act = async () => await handler.Handle(
                 new ResolveJobRecordErrorRequest(job.Id, jobRecordId), CancellationToken.None);
 
-            act.Should()
+            await act.Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
                     && x.Message == "Onbestaande upload job record.");

@@ -3,7 +3,6 @@
     using System;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
     using FluentAssertions;
     using Processor.Upload.Zip.Translators;
     using Xunit;
@@ -19,7 +18,7 @@
         }
 
         [Fact]
-        public async Task ExtractingGebouwAllZip_ReturnsJobRecords()
+        public void ExtractingGebouwAllZip_ReturnsJobRecords()
         {
             // Arrange
             var zipArchiveTranslator = new ZipArchiveTranslator(Encoding.UTF8);

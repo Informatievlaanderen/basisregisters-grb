@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Abstractions.Requests;
@@ -29,7 +28,7 @@
         }
 
         [Fact]
-        public void WithNotExistingJobId_ThenReturnsNotFound()
+        public async Task WithNotExistingJobId_ThenReturnsNotFound()
         {
             var jobId = _fixture.Create<Guid>();
             var request = new CancelJobRequest(jobId);
@@ -37,9 +36,8 @@
 
             var act = () => handler.Handle(request, CancellationToken.None);
 
-            act.Should()
+            await act.Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
                     && x.Message == "Onbestaande upload job.");
@@ -50,7 +48,7 @@
         [InlineData(JobStatus.Prepared)]
         [InlineData(JobStatus.Processing)]
         [InlineData(JobStatus.Completed)]
-        public void WithJobBeingProcessedOrCompleted_ThenReturnsBadRequest(JobStatus jobStatus)
+        public async Task WithJobBeingProcessedOrCompleted_ThenReturnsBadRequest(JobStatus jobStatus)
         {
             // Arrange
             var job = _fixture.Create<Job>();
@@ -64,9 +62,8 @@
             var act = () => handler.Handle(request, CancellationToken.None);
 
             // Assert
-            act.Should()
+            await act.Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status400BadRequest
                     && x.Message == $"De status van de upload job '{job.Id}' is {job.Status.ToString().ToLower()}, hierdoor kan deze job niet geannuleerd worden.");
@@ -190,9 +187,8 @@
             var act = () => handler.Handle(request, CancellationToken.None);
 
             // Assert
-            act.Should()
+            await act.Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status400BadRequest
                     && x.Message == $"De status van de upload job '{job.Id}' is {job.Status.ToString().ToLower()}, hierdoor kan deze job niet geannuleerd worden.");
