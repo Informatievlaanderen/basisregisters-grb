@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.5.1...v3.0.0) (2025-04-29)
+
+
+### Code Refactoring
+
+* use renovate and nuget + update pipeline ([203a35f](https://github.com/informatievlaanderen/basisregisters-grb/commit/203a35f3807a9e0ebe9b9842c6a819669a55fa09))
+
+
+### BREAKING CHANGES
+
+* update to dotnet 9
+
 ## [2.5.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.5.0...v2.5.1) (2025-04-08)
 
 
