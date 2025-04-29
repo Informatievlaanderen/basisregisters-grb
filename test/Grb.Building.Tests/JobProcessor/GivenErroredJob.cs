@@ -44,7 +44,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);

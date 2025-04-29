@@ -38,7 +38,7 @@
 
             var result = await query
                 .OrderByDescending(x => x.Created)
-                .Skip(request.Pagination.Offset.Value)
+                .Skip(request.Pagination.Offset!.Value)
                 .Take(request.Pagination.Limit!.Value + 1)
                 .ToListAsync(cancellationToken);
 
@@ -56,7 +56,7 @@
                         GetJobRecords : _pagedUriGenerator.FirstPage($"/v2/uploads/jobs/{x.Id}/jobrecords")
                     )
                 ).ToArray(),
-                _pagedUriGenerator.NextPage(result, request.Pagination, "v2/uploads/jobs"));
+                _pagedUriGenerator.NextPage(result, request.Pagination, "v2/uploads/jobs")!);
         }
     }
 }

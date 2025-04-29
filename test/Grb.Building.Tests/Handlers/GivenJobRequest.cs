@@ -70,7 +70,7 @@
         }
 
         [Fact]
-        public Task WithUnexistingJob_ThenThrowsApiException()
+        public async Task WithUnexistingJob_ThenThrowsApiException()
         {
             var jobId = _fixture.Create<Guid>();
 
@@ -78,13 +78,11 @@
             var handler = new GetJobByIdHandler(_buildingGrbContext, _ticketingUrl.Object, mockPagedUriGenerator.Object);
             var act = async () => await handler.Handle(new GetJobByIdRequest(jobId), CancellationToken.None);
 
-            act.Should()
+            await act.Should()
                 .ThrowAsync<ApiException>()
-                .Result
                 .Where(x =>
                     x.StatusCode == StatusCodes.Status404NotFound
                     && x.Message == "Onbestaande upload job.");
-            return Task.CompletedTask;
         }
 
         private JobRecord CreateJobRecord(Guid jobId)

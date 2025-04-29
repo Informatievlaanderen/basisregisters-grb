@@ -7,15 +7,15 @@
     using System.Threading;
     using Amazon.ECS;
     using Amazon.ECS.Model;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.BlobStore;
     using FluentAssertions;
-    using Grb.Building.Processor.Upload;
-    using Grb.Building.Processor.Upload.Zip;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
     using Notifications;
+    using Processor.Upload;
     using Processor.Upload.Zip.Validators;
     using TicketingService.Abstractions;
     using Xunit;
@@ -25,6 +25,7 @@
     {
         private readonly FakeBuildingGrbContext _buildingGrbContext;
         private readonly IDuplicateJobRecordValidator _duplicateJobRecordValidator;
+        private readonly Fixture _fixture = new Fixture();
 
         public UploadProcessorTests()
         {
@@ -61,7 +62,7 @@
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new BlobObject(
                     blobName,
-                    null,
+                    Metadata.None,
                     ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)new FileStream(
                         $"{AppContext.BaseDirectory}/UploadProcessor/gebouw_ALL.zip", FileMode.Open,
@@ -82,7 +83,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions { Subnets = "subnet-1234", SecurityGroups = "sg-5678" }));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(CancellationToken.None);
@@ -131,7 +132,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(CancellationToken.None);
@@ -177,7 +178,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);
@@ -214,7 +215,7 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                .ReturnsAsync(new BlobObject(blobName, Metadata.None, ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
@@ -228,7 +229,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);
@@ -236,9 +237,9 @@
             // Assert
             mockTicketing.Verify(x => x.Error(
                 ticketId,
-                It.Is<TicketError>(x =>
-                    x.Errors.First().ErrorCode == "RequiredFileMissing"
-                    && x.Errors.First().ErrorMessage == $"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF."),
+                It.Is<TicketError>(ticketError =>
+                    ticketError.Errors!.First().ErrorCode == "RequiredFileMissing"
+                    && ticketError.Errors!.First().ErrorMessage == $"Er ontbreekt een verplichte file in de zip: GEBOUW_ALL.DBF."),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
@@ -275,7 +276,7 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                .ReturnsAsync(new BlobObject(blobName, Metadata.None, ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
@@ -289,7 +290,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);
@@ -297,9 +298,9 @@
             // Assert
             mockTicketing.Verify(x => x.Error(
                 ticketId,
-                It.Is<TicketError>(x =>
-                    x.ErrorCode == "OntbrekendeGeometriePolygoonShapeFile"
-                    && x.ErrorMessage ==
+                It.Is<TicketError>(ticketError =>
+                    ticketError.ErrorCode == "OntbrekendeGeometriePolygoonShapeFile"
+                    && ticketError.ErrorMessage ==
                     $"In de meegegeven shape file hebben niet alle gebouwen een geometriePolygoon. Record nummers: 2"),
                 It.IsAny<CancellationToken>()), Times.Once);
 
@@ -337,7 +338,7 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                .ReturnsAsync(new BlobObject(blobName, Metadata.None, ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
@@ -351,7 +352,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);
@@ -359,8 +360,8 @@
             // Assert
             mockTicketing.Verify(x => x.Error(
                 ticketId,
-                It.Is<TicketError>(x =>
-                    x.Errors.Any(y =>
+                It.Is<TicketError>(ticketError =>
+                    ticketError.Errors!.Any(y =>
                         y.ErrorCode == "GebouwIdOngeldig" &&
                         y.ErrorMessage == "De meegegeven waarde in de kolom 'GRID' is ongeldig. Record nummer: 1, GRID: invalid puri")),
                 It.IsAny<CancellationToken>()), Times.Once);
@@ -399,7 +400,7 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                .ReturnsAsync(new BlobObject(blobName, Metadata.None, ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
@@ -413,7 +414,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);
@@ -422,7 +423,7 @@
             mockTicketing.Verify(x => x.Error(
                 ticketId,
                 It.Is<TicketError>(ticketError =>
-                    ticketError.Errors.Any(y =>
+                    ticketError.Errors!.Any(y =>
                         y.ErrorCode == "InvalidVersionDate" &&
                         y.ErrorMessage == "Record number(s):1,2")),
                 It.IsAny<CancellationToken>()), Times.Once);
@@ -461,7 +462,7 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                .ReturnsAsync(new BlobObject(blobName, Metadata.None, ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)zipFileStream)));
 
             var notificationsService = new Mock<INotificationService>();
@@ -475,7 +476,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);
@@ -484,7 +485,7 @@
             mockTicketing.Verify(x => x.Error(
                 ticketId,
                 It.Is<TicketError>(ticketError =>
-                    ticketError.Errors.Any(y =>
+                    ticketError.Errors!.Any(y =>
                         y.ErrorCode == "InvalidEndDate" &&
                         y.ErrorMessage == "Record number(s):1,2")),
                 It.IsAny<CancellationToken>()), Times.Once);
@@ -521,7 +522,7 @@
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new BlobObject(
                     blobName,
-                    null,
+                    Metadata.None,
                     ContentType.Parse("X-multipart/abc"),
                     _ => Task.FromResult((Stream)new FileStream(
                         $"{AppContext.BaseDirectory}/UploadProcessor/gebouw_ALL.zip", FileMode.Open,
@@ -544,7 +545,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions { Subnets = "subnet-1234", SecurityGroups = "sg-5678" }));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(CancellationToken.None);
@@ -553,7 +554,7 @@
             mockTicketing.Verify(x => x.Error(
                 ticketId,
                 It.Is<TicketError>(ticketError =>
-                    ticketError.Errors.Any(y =>
+                    ticketError.Errors!.Any(y =>
                         y.ErrorCode == "DuplicateNewBuilding" &&
                         y.ErrorMessage == "Record number(s):3")),
                 It.IsAny<CancellationToken>()), Times.Once);
@@ -589,7 +590,7 @@
 
             mockIBlobClient
                 .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new BlobObject(blobName, null, ContentType.Parse("X-multipart/abc"),
+                .ReturnsAsync(new BlobObject(blobName, Metadata.None, ContentType.Parse("X-multipart/abc"),
                     _ => throw new BlobNotFoundException(blobName)));
 
             var notificationsService = new Mock<INotificationService>();
@@ -603,7 +604,7 @@
                 new NullLoggerFactory(),
                 mockIHostApplicationLifeTime.Object,
                 notificationsService.Object,
-                Options.Create(new EcsTaskOptions()));
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
 
             // Act
             await sut.StartAsync(ct);

@@ -14,7 +14,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
             IConfiguration configuration,
             IServiceCollection services)
         {
-            _baseUrl = configuration["TicketingUrl"];
+            _baseUrl = configuration["TicketingUrl"]!;
             services
                 .AddHttpProxyTicketing(_baseUrl);
         }

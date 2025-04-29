@@ -19,12 +19,12 @@ namespace Grb.Building.Processor.Upload.Zip
 
         public int Count => _problems.Count;
 
-        public bool Equals(ZipArchiveProblems other)
+        public bool Equals(ZipArchiveProblems? other)
         {
             return other != null && _problems.SequenceEqual(other._problems);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ZipArchiveProblems other && Equals(other);
         }

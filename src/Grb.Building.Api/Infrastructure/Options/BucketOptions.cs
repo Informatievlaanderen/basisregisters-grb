@@ -4,7 +4,7 @@
     {
         public const string ConfigKey = "Bucket";
 
-        public string BucketName { get; set; }
+        public required string BucketName { get; set; }
         public int UrlExpirationInMinutes { get; set; }
     }
 }

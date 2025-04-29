@@ -17,6 +17,7 @@
         public FakeBuildingGrbContext(DbContextOptions<BuildingGrbContext> options, bool canBeDisposed) : base(options)
         {
             _canBeDisposed = canBeDisposed;
+            FakeDatabase = new FakeDatabaseFacade(this);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -26,7 +27,7 @@
             base.OnConfiguring(optionsBuilder);
         }
 
-        public override DatabaseFacade Database => FakeDatabase ??= new FakeDatabaseFacade(this);
+        public override DatabaseFacade Database => FakeDatabase;
 
         public override void Dispose()
         {
@@ -47,7 +48,7 @@
 
     public class FakeDatabaseFacade : DatabaseFacade
     {
-        private IDbContextTransaction _currentTransaction;
+        private IDbContextTransaction? _currentTransaction;
 
         public FakeDatabaseFacade(DbContext context) : base(context)
         { }
@@ -65,6 +66,11 @@
 
     public class FakeDbContextTransaction : IDbContextTransaction
     {
+        public FakeDbContextTransaction()
+        {
+            TransactionId = Guid.NewGuid();
+        }
+
         public TransactionStatus Status { get; private set; } = TransactionStatus.Started;
 
         public enum TransactionStatus

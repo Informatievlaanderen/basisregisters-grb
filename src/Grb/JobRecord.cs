@@ -23,7 +23,7 @@ namespace Grb
         public GrbObjectType GrbObjectType { get; set; }
         public GrbEventType EventType { get; set; }
         public int GrId { get; set; }
-        public Polygon Geometry { get; set; }
+        public Polygon Geometry { get; set; } = null!;
         public decimal? Overlap { get; set; }
 
         public Guid? TicketId { get; set; }

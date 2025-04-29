@@ -17,13 +17,13 @@ namespace Grb.Building.Api.Infrastructure.Modules
         {
             _configuration = configuration;
 
-            var baseUrl = _configuration.GetSection(TicketingServiceConfigKey)["InternalBaseUrl"];
+            var baseUrl = _configuration.GetSection(TicketingServiceConfigKey)["InternalBaseUrl"]!;
             services.AddHttpProxyTicketing(baseUrl);
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            var baseUrl = _configuration.GetSection(TicketingServiceConfigKey)["PublicBaseUrl"];
+            var baseUrl = _configuration.GetSection(TicketingServiceConfigKey)["PublicBaseUrl"]!;
             builder
                 .Register(c => new TicketingUrl(baseUrl))
                 .As<ITicketingUrl>()

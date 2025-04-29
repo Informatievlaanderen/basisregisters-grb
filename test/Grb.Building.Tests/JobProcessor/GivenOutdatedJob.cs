@@ -49,7 +49,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             buildingGrbContext.Jobs.All(x => x.Status == JobStatus.Cancelled).Should().BeTrue();

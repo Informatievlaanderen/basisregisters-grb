@@ -19,13 +19,13 @@
                 .Where(x => x.Code is null || !Warnings.Contains(x.Code))
                 .ToList();
 
-            return errors.Any()
+            return (errors.Any()
                 ? (JobRecordStatus.Error,
                     errors.Select(x => x.Code).Aggregate((result, error) => $"{result}{Environment.NewLine}{error}"),
                     errors.Select(x => x.Reason).Aggregate((result, error) => $"{result}{Environment.NewLine}{error}"))
                 : (JobRecordStatus.Warning,
                     validationErrors.Select(x => x.Code).Aggregate((result, error) => $"{result}{Environment.NewLine}{error}"),
-                    validationErrors.Select(x => x.Reason).Aggregate((warning, result) => $"{result}{Environment.NewLine}{warning}"));
+                    validationErrors.Select(x => x.Reason).Aggregate((warning, result) => $"{result}{Environment.NewLine}{warning}")))!;
         }
 
         public static (JobRecordStatus jobRecordStatus, TicketError ticketError) Evaluate(TicketError ticketError)

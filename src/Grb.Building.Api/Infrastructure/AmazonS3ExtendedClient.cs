@@ -2,11 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Globalization;
     using System.Text;
     using System.Text.Json;
     using System.Text.Json.Serialization;
+    using Amazon.Extensions.NETCore.Setup;
     using Amazon.Runtime;
     using Amazon.Runtime.Internal.Auth;
     using Amazon.S3;
@@ -157,50 +157,4 @@
             writer.WriteEndObject();
         }
     }
-    //
-    // public sealed class StartsWithMatchConditionConverter : JsonConverter<StartsWithMatchCondition>
-    // {
-    //     public override StartsWithMatchCondition? Read(
-    //         ref Utf8JsonReader reader,
-    //         Type typeToConvert,
-    //         JsonSerializerOptions options)
-    //     {
-    //         throw new NotImplementedException();
-    //     }
-    //
-    //     public override void Write(
-    //         Utf8JsonWriter writer,
-    //         StartsWithMatchCondition value,
-    //         JsonSerializerOptions options)
-    //     {
-    //         writer.WriteStartArray();
-    //         writer.WriteStringValue("starts-with");
-    //         writer.WriteStringValue(value.Key);
-    //         writer.WriteStringValue(value.Value);
-    //         writer.WriteEndArray();
-    //     }
-    // }
-    //
-    // public sealed class RangeMatchConditionConverter : JsonConverter<RangeMatchCondition>
-    // {
-    //     public override RangeMatchCondition? Read(
-    //         ref Utf8JsonReader reader,
-    //         Type typeToConvert,
-    //         JsonSerializerOptions options)
-    //     {
-    //         throw new NotImplementedException();
-    //     }
-    //
-    //     public override void Write(
-    //         Utf8JsonWriter writer,
-    //         RangeMatchCondition value,
-    //         JsonSerializerOptions options)
-    //     {
-    //         writer.WriteStartArray();
-    //         writer.WriteStringValue(value.Key);
-    //         writer.WriteNumberValue(value.ValueStart);
-    //         writer.WriteNumberValue(value.ValueEnd);
-    //         writer.WriteEndArray();
-    //     }
-    // }
 }

@@ -4,7 +4,6 @@
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Shaperon;
 
-    [Serializable]
     public sealed class InvalidDateException : Exception
     {
         public RecordNumber RecordNumber { get; }
@@ -15,9 +14,5 @@
             RecordNumber = recordNumber;
             DateAsCharacter = dateAsCharacter;
         }
-
-        private InvalidDateException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
     }
 }

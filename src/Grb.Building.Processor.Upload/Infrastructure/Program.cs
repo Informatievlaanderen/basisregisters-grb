@@ -85,7 +85,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
                     services.AddScoped<INotificationService>(provider =>
                     {
                         var snsService = provider.GetRequiredService<IAmazonSimpleNotificationService>();
-                        var topicArn = hostContext.Configuration["TopicArn"];
+                        var topicArn = hostContext.Configuration["TopicArn"]!;
                         return new NotificationService(snsService, topicArn);
                     });
 
@@ -95,7 +95,7 @@ namespace Grb.Building.Processor.Upload.Infrastructure
                             {
                                 RegionEndpoint = hostContext.Configuration.GetAWSOptions().Region,
                             }),
-                            hostContext.Configuration["BucketName"]))
+                            hostContext.Configuration["BucketName"]!))
                         .AddSingleton<IAmazonECS, AmazonECSClient>();
 
                     services.AddSingleton<IDuplicateJobRecordValidator, DuplicateJobRecordValidator>();

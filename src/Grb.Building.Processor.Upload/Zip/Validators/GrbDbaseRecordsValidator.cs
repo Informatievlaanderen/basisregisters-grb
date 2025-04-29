@@ -45,11 +45,11 @@
                 }
 
                 if (record.GRID.Value != $"{JobRecord.DefaultNewBuildingGrId}" &&
-                    !(OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) &&
+                    !(OsloPuriValidator.TryParseIdentifier(record.GRID.Value!, out var stringId) &&
                       int.TryParse(stringId, out var persistentLocalId) &&
                       persistentLocalId > 0))
                 {
-                    throw new InvalidGrIdException(new RecordNumber(index), record.GRID.Value);
+                    throw new InvalidGrIdException(new RecordNumber(index), record.GRID.Value!);
                 }
 
                 if(!record.GVDV.TryGetValueAsDateTime(out _))

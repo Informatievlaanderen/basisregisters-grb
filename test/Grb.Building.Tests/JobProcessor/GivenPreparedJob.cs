@@ -49,7 +49,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             var jobEntity = buildingGrbContext.Jobs.FirstOrDefault(x => x.Id == job.Id);
@@ -131,7 +131,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             var jobEntity = buildingGrbContext.Jobs.FirstOrDefault(x => x.Id == job.Id);
@@ -212,7 +212,7 @@
 
             //act
             await jobProcessor.StartAsync(CancellationToken.None);
-            await jobProcessor.ExecuteTask;
+            await jobProcessor.ExecuteTask!;
 
             //assert
             var jobEntity = buildingGrbContext.Jobs.FirstOrDefault(x => x.Id == job.Id);

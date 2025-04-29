@@ -21,12 +21,12 @@
 
                 var grId = record.GRID.Value == "-9"
                     ? -9
-                    : OsloPuriValidator.TryParseIdentifier(record.GRID.Value, out var stringId) && int.TryParse(stringId, out int persistentLocalId) && persistentLocalId > 0
+                    : OsloPuriValidator.TryParseIdentifier(record.GRID.Value!, out var stringId) && int.TryParse(stringId, out int persistentLocalId) && persistentLocalId > 0
                         ? persistentLocalId
-                        : throw new InvalidGrIdException(recordNumber, record.GRID.Value);
+                        : throw new InvalidGrIdException(recordNumber, record.GRID.Value!);
 
                 if(!record.GVDV.TryGetValueAsDateTime(out var versionDate))
-                    throw new InvalidDateException(recordNumber, record.GVDV.Value);
+                    throw new InvalidDateException(recordNumber, record.GVDV.Value!);
 
                 if(!record.GVDE.TryGetValueAsNullableDateTime(out var endDate) && !string.IsNullOrEmpty(record.GVDE.Value))
                     throw new InvalidDateException(recordNumber, record.GVDE.Value);

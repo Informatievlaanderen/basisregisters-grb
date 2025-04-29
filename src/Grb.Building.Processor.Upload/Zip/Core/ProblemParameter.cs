@@ -14,7 +14,7 @@ namespace Grb.Building.Processor.Upload.Zip.Core
         public string Name { get; }
         public string Value { get; }
 
-        public bool Equals(ProblemParameter x, ProblemParameter y)
+        public bool Equals(ProblemParameter? x, ProblemParameter? y)
         {
             if (ReferenceEquals(x, y)) return true;
 
@@ -28,14 +28,14 @@ namespace Grb.Building.Processor.Upload.Zip.Core
                    && x.Value == y.Value;
         }
 
-        public virtual bool Equals(ProblemParameter other)
+        public virtual bool Equals(ProblemParameter? other)
         {
             return other != null
                    && string.Equals(Name, other.Name)
                    && string.Equals(Value, other.Value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ProblemParameter other && Equals(other);
         }

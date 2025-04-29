@@ -26,7 +26,7 @@
         [Fact]
         public void WhenRecordsNull_ThrowException()
         {
-            var func = () => _sut.Validate("dummy", null);
+            var func = () => _sut.Validate("dummy", null!);
             func.Should().Throw<ArgumentNullException>();
         }
 

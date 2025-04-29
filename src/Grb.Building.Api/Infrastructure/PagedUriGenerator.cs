@@ -18,7 +18,7 @@ namespace Grb.Building.Api.Infrastructure
 
         public PagedUriGenerator(IConfiguration configuration)
         {
-            _baseUri = new Uri(configuration.GetValue<string>("BaseUrl"));
+            _baseUri = new Uri(configuration.GetValue<string>("BaseUrl")!);
         }
 
         public Uri? NextPage<T>(IEnumerable<T> query, Pagination pagination, string path)

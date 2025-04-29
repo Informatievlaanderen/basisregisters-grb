@@ -3,7 +3,6 @@
     using System;
     using System.Runtime.Serialization;
 
-    [Serializable]
     public sealed class DbaseHeaderFormatException : Exception
     {
         public string FileName { get; }
@@ -12,9 +11,5 @@
         {
             FileName = fileName;
         }
-
-        private DbaseHeaderFormatException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
     }
 }

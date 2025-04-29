@@ -53,7 +53,7 @@
             await _ticketing.Complete(
                 job.TicketId!.Value,
                 ticket!.Result is not null && ticket.Status == TicketStatus.Error
-                    ? new TicketResult(new {JobStatus = "Cancelled", Error = System.Text.Json.JsonSerializer.Deserialize<TicketError>(ticket.Result.ResultAsJson)})
+                    ? new TicketResult(new {JobStatus = "Cancelled", Error = System.Text.Json.JsonSerializer.Deserialize<TicketError>(ticket.Result.ResultAsJson!)})
                     : new TicketResult(new {JobStatus = "Cancelled"}),
                 cancellationToken);
 
