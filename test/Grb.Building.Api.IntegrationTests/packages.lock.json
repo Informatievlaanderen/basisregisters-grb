@@ -159,8 +159,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "3.7.402.35",
-        "contentHash": "9Jby5BBQTzZOqzQiFjJyr3zCe5GVi64U8gxOlPk3vTTuVJqtkisBJ0Jh1RBj2fNqnWmJLfaWSCLvX1L06zwHnQ=="
+        "resolved": "3.7.402.56",
+        "contentHash": "EUdZKHbr5JDYiGim0i6BCcq9bKTwfpb/MufTWSlNH2jqB09kjzZUGDPlsZY7tmvj6D2FIx/mhqeWutUp+tq11w=="
       },
       "AWSSDK.DynamoDBv2": {
         "type": "Transitive",
@@ -1644,7 +1644,7 @@
       "grb": {
         "type": "Project",
         "dependencies": {
-          "AWSSDK.SimpleNotificationService": "[3.7.400, )",
+          "AWSSDK.SimpleNotificationService": "[3.7.400.150, )",
           "Autofac": "[8.2.1, )",
           "Be.Vlaanderen.Basisregisters.Shaperon": "[11.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.4, )",
@@ -1655,7 +1655,7 @@
         "type": "Project",
         "dependencies": {
           "AWSSDK.Extensions.NETCore.Setup": "[3.7.400, )",
-          "AWSSDK.S3": "[3.7.416.4, )",
+          "AWSSDK.S3": "[3.7.416.26, )",
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
           "Be.Vlaanderen.Basisregisters.Api": "[24.0.0, )",
           "Be.Vlaanderen.Basisregisters.Auth.AcmIdm": "[4.0.1, )",
@@ -1712,20 +1712,20 @@
       },
       "AWSSDK.S3": {
         "type": "CentralTransitive",
-        "requested": "[3.7.416.4, )",
-        "resolved": "3.7.416.4",
-        "contentHash": "rC3SrwEeR2WB3ob4wiDIyl1lOG3x+9BCCgzK33krzPi8p5QMvqX0Hc7Z7diL2kipwy+8aEg6FAoQWGZE7y0TYA==",
+        "requested": "[3.7.416.26, )",
+        "resolved": "3.7.416.26",
+        "contentHash": "WQ11hA3FN2Yr1vCqs3J8g1AsWZLKN7WKNDhG26w7q+v7ohKacI/sZbrIIiZM/QmMIZPGRpQLhTkTvM7syHVXGA==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.402.34, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.56, 4.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "x5jqxMywc4/WEh3Mz5qFPi3YaqIgYpPpJLyAWSi1Ie5jpOsqeWKqJ/BZYQV4OvbNnlOMWoEwHIN85p3cLp5KhQ==",
+        "requested": "[3.7.400.150, )",
+        "resolved": "3.7.400.150",
+        "contentHash": "Eknvv3GVZxqfbViaXkLR7alGGDYlml2SjPJzKVMdrR50YbzJEK5E7n02F3/QsrldQx3nTtoROHHHMn76vKzeiA==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.400, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.56, 4.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": {
