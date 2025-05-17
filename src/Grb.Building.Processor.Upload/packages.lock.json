@@ -14,11 +14,11 @@
       },
       "AWSSDK.ECS": {
         "type": "Direct",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "U6mLqnWt/XIWGQRW21ii/lxTgtyQYZkruSDeHFIkyxOBDfCsd+DpIadpwHkEkM1C/2CJCJWhEq43tAh9ivVy4Q==",
+        "requested": "[3.7.411.1, )",
+        "resolved": "3.7.411.1",
+        "contentHash": "JQEbzGjEYGp7W2RWsCPR3NPiAxYOMV6wi1V33zlePYddNyDQ0NljRBdc/xK/dIjbY4xKw3PF7wSOT8gNZxfjig==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.400, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.58, 4.0.0)"
         }
       },
       "AWSSDK.Extensions.NETCore.Setup": {
@@ -35,11 +35,11 @@
       },
       "AWSSDK.S3": {
         "type": "Direct",
-        "requested": "[3.7.416.4, )",
-        "resolved": "3.7.416.4",
-        "contentHash": "rC3SrwEeR2WB3ob4wiDIyl1lOG3x+9BCCgzK33krzPi8p5QMvqX0Hc7Z7diL2kipwy+8aEg6FAoQWGZE7y0TYA==",
+        "requested": "[3.7.416.28, )",
+        "resolved": "3.7.416.28",
+        "contentHash": "hqtZFzCZoSMKXMbNPGmNCvvR2xfZWBqV4dQ2Z6kurtvOCrwhZ9M4Cv4h3nBmFwBm2dyR3hKFY1hF3Y//FovYmQ==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.402.34, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.58, 4.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": {
@@ -304,8 +304,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "3.7.402.35",
-        "contentHash": "9Jby5BBQTzZOqzQiFjJyr3zCe5GVi64U8gxOlPk3vTTuVJqtkisBJ0Jh1RBj2fNqnWmJLfaWSCLvX1L06zwHnQ=="
+        "resolved": "3.7.402.58",
+        "contentHash": "fxXHQbm0MIyneSgmP+7Xrd4DJ14f6dqQRAozUdBecOCNTt9cYpQuWYVVRU1ydQHNkxceLEggdPiZ7OcJBS8Y0w=="
       },
       "AWSSDK.DynamoDBv2": {
         "type": "Transitive",
@@ -790,7 +790,7 @@
       "grb": {
         "type": "Project",
         "dependencies": {
-          "AWSSDK.SimpleNotificationService": "[3.7.400, )",
+          "AWSSDK.SimpleNotificationService": "[3.7.400.152, )",
           "Autofac": "[8.2.1, )",
           "Be.Vlaanderen.Basisregisters.Shaperon": "[11.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.4, )",
@@ -808,11 +808,11 @@
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "x5jqxMywc4/WEh3Mz5qFPi3YaqIgYpPpJLyAWSi1Ie5jpOsqeWKqJ/BZYQV4OvbNnlOMWoEwHIN85p3cLp5KhQ==",
+        "requested": "[3.7.400.152, )",
+        "resolved": "3.7.400.152",
+        "contentHash": "2HqNrZ36Uph2F7Xl94LpU+rllBWm42vA6ASsvGrEFK4Cx//kKVRdCM/54TTIBG7xEVRyBesX8NXBMSPCYuo8cw==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.400, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.58, 4.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Common": {
