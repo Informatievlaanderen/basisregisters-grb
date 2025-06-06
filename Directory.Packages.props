@@ -6,9 +6,9 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
-        <PackageVersion Include="AWSSDK.S3" Version="3.7.416.4" />
-        <PackageVersion Include="AWSSDK.ECS" Version="3.7.400" />
-        <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.400" />
+        <PackageVersion Include="AWSSDK.S3" Version="3.7.417.5" />
+        <PackageVersion Include="AWSSDK.ECS" Version="3.7.411.10" />
+        <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.400.161" />
 
         <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
 
