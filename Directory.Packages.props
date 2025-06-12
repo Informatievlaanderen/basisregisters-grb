@@ -23,16 +23,16 @@
         <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
         <PackageVersion Include="NetTopologySuite" Version="2.6.0" />
 
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
 
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.BuildingRegistry.Api.BackOffice.Abstractions" Version="5.0.0" />
 
@@ -64,8 +64,8 @@
         <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
 
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.DockerUtilities" Version="4.0.0" />
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
-        <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.6" />
+        <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.6" />
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageVersion Include="xunit" Version="2.9.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
