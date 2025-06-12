@@ -34,7 +34,7 @@
         <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
         <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
 
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.BuildingRegistry.Api.BackOffice.Abstractions" Version="5.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.BuildingRegistry.Api.BackOffice.Abstractions" Version="5.1.1" />
 
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="24.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Auth.AcmIdm" Version="4.0.1" />
