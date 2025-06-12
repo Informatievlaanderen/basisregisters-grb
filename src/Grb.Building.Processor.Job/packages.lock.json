@@ -57,9 +57,9 @@
       },
       "Be.Vlaanderen.Basisregisters.BuildingRegistry.Api.BackOffice.Abstractions": {
         "type": "Direct",
-        "requested": "[5.0.0, )",
-        "resolved": "5.0.0",
-        "contentHash": "1pZ+UM7mIR6uYlsi0l0ZxQl4scl+QZUZ/tJ6+TQZYeF3PG6lw6SZfTNT6uuvZ/knNHPWnhSX/cvFkKqtY/1JhA==",
+        "requested": "[5.1.1, )",
+        "resolved": "5.1.1",
+        "contentHash": "/JZcWzGip6m8Gv4oqddLpRIzVF/YQHQ7X77mYXyfTIwHRlU4/RAe6tc/hyQzCIu0ilUOnNnS14CqNMYnH2DY0w==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.Api": "24.0.0",
           "Be.Vlaanderen.Basisregisters.GrAr.Edit": "22.0.0",
