@@ -26,11 +26,11 @@
       },
       "AWSSDK.S3": {
         "type": "Direct",
-        "requested": "[3.7.416.4, )",
-        "resolved": "3.7.416.4",
-        "contentHash": "rC3SrwEeR2WB3ob4wiDIyl1lOG3x+9BCCgzK33krzPi8p5QMvqX0Hc7Z7diL2kipwy+8aEg6FAoQWGZE7y0TYA==",
+        "requested": "[3.7.420.1, )",
+        "resolved": "3.7.420.1",
+        "contentHash": "iYe5nB8cEUS+gFLSeBZ3k3NLiSzawbmMRR6bqTdwe5Caz48mWE4n/l9J7+EP0n1iTpGe7S6Me6pJhuXQYdaRLA==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.402.34, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.79, 4.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.Api": {
@@ -209,8 +209,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "3.7.402.35",
-        "contentHash": "9Jby5BBQTzZOqzQiFjJyr3zCe5GVi64U8gxOlPk3vTTuVJqtkisBJ0Jh1RBj2fNqnWmJLfaWSCLvX1L06zwHnQ=="
+        "resolved": "3.7.402.79",
+        "contentHash": "nma7vdDfDlwx4nZbFjdp9G1nlwpHKhJdPcfRJj2v5siN8MBIFypgYldbRbvONfe5Re0KVpHYVzZuDt3mXcadZw=="
       },
       "AWSSDK.DynamoDBv2": {
         "type": "Transitive",
@@ -1546,7 +1546,7 @@
       "grb": {
         "type": "Project",
         "dependencies": {
-          "AWSSDK.SimpleNotificationService": "[3.7.400, )",
+          "AWSSDK.SimpleNotificationService": "[3.7.400.173, )",
           "Autofac": "[8.2.1, )",
           "Be.Vlaanderen.Basisregisters.Shaperon": "[11.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.4, )",
@@ -1574,11 +1574,11 @@
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "x5jqxMywc4/WEh3Mz5qFPi3YaqIgYpPpJLyAWSi1Ie5jpOsqeWKqJ/BZYQV4OvbNnlOMWoEwHIN85p3cLp5KhQ==",
+        "requested": "[3.7.400.173, )",
+        "resolved": "3.7.400.173",
+        "contentHash": "XjD69dJJVlK8rUfEfc1DrYIfyF23nU5TAlTOnji1UhUp6XZWp9IU1QB94T6bQpVDrt24Ezix9qceqfwsDdznBQ==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.400, 4.0.0)"
+          "AWSSDK.Core": "[3.7.402.79, 4.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": {
