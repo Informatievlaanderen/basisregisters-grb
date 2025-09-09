@@ -56,8 +56,8 @@
             jobEntity.Should().NotBeNull();
             jobEntity!.Status.Should().Be(JobStatus.Completed);
 
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<Func<JobGrbRecord, bool>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
             jobResultsUploader.Verify(x => x.UploadJobResults(job.Id, It.IsAny<CancellationToken>()));
 
             var expectedTicketResultAsJson = new TicketResult(new
@@ -138,8 +138,8 @@
             jobEntity.Should().NotBeNull();
             jobEntity!.Status.Should().Be(JobStatus.Error);
 
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<Func<JobGrbRecord, bool>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             ticketing.Verify(x => x.Error(
                     job.TicketId!.Value,
@@ -219,10 +219,10 @@
             jobEntity.Should().NotBeNull();
             jobEntity!.Status.Should().Be(JobStatus.Error);
 
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Once);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<Func<JobGrbRecord, bool>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
 
-            jobRecordsProcessor.Verify(x => x.Process(secondJob.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
+            jobRecordsProcessor.Verify(x => x.Process(secondJob.Id, It.IsAny<Func<JobGrbRecord, bool>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsMonitor.Verify(x => x.Monitor(secondJob.Id, It.IsAny<CancellationToken>()), Times.Never);
 
             ticketing.Verify(x => x.Error(

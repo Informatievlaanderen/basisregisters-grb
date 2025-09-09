@@ -61,7 +61,7 @@
                 NullLoggerFactory.Instance);
 
             //act
-            var func = async () => await jobRecordsProcessor.Process(job.Id, false, CancellationToken.None);
+            var func = async () => await jobRecordsProcessor.Process(job.Id, _ => true, false, CancellationToken.None);
 
             //assert
             await func.Should().ThrowAsync<NotImplementedException>();

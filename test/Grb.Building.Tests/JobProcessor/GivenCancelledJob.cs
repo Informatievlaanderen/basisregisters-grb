@@ -47,7 +47,7 @@
             await jobProcessor.ExecuteTask!;
 
             //assert
-            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
+            jobRecordsProcessor.Verify(x => x.Process(job.Id, It.IsAny<Func<JobGrbRecord, bool>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             jobRecordsMonitor.Verify(x => x.Monitor(job.Id, It.IsAny<CancellationToken>()), Times.Never);
             mockJobResultsUploader.Verify(x => x.UploadJobResults(job.Id, It.IsAny<CancellationToken>()), Times.Never);
             mockJobRecordsArchiver.Verify(x => x.Archive(job.Id, It.IsAny<CancellationToken>()), Times.Never);
