@@ -61,7 +61,7 @@
                 NullLoggerFactory.Instance);
 
             //act
-            await jobRecordsProcessor.Process(job.Id, false, CancellationToken.None);
+            await jobRecordsProcessor.Process(job.Id, _ => true, false, CancellationToken.None);
 
             //assert
             var jobRecordEntity = buildingGrbContext.JobRecords.First(x => x.Id == jobRecord.Id);

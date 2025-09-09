@@ -15,8 +15,10 @@
 
     public interface IJobRecordsProcessor
     {
-        Task Process(Guid jobId, bool skipOfficeHours = false, CancellationToken ct = default);
+        Task Process(Guid jobId, Func<JobGrbRecord, bool> predicate, bool skipOfficeHours = false, CancellationToken ct = default);
     }
+
+    public sealed record JobGrbRecord(long RecordId, int GrId, int RecordNumber, GrbEventType EventType);
 
     public sealed class JobRecordsProcessor : IJobRecordsProcessor
     {
@@ -40,13 +42,14 @@
             _logger = loggerFactory.CreateLogger<JobRecordsProcessor>();
         }
 
-        public async Task Process(Guid jobId, bool skipOfficeHours = false, CancellationToken ct = default)
+        public async Task Process(Guid jobId, Func<JobGrbRecord, bool> predicate, bool skipOfficeHours = false, CancellationToken ct = default)
         {
             await using var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
             var jobRecords = (await buildingGrbContext.JobRecords
                 .Where(x => x.JobId == jobId && x.Status == JobRecordStatus.Created)
-                .Select(x => new { x.Id, x.GrId, x.RecordNumber })
+                .Select(x => new JobGrbRecord(x.Id, x.GrId, x.RecordNumber, x.EventType))
                 .ToListAsync(ct))
+                .Where(predicate)
                 .OrderBy(x => x.RecordNumber)
                 .ToList();
 
@@ -56,7 +59,6 @@
             }
 
             var maxUsedBuildingRegistryId = jobRecords.Max(x => x.GrId);
-
             var batches = jobRecords.SplitBySize(2500).ToList();
 
             foreach (var batch in batches)
@@ -73,7 +75,7 @@
                         x => x.Key,
                         x => x
                             .OrderBy(record => record.RecordNumber)
-                            .Select(record => record.Id)
+                            .Select(record => record.RecordId)
                             .ToList());
 
                 await Parallel.ForEachAsync(groupedJobRecords.Keys,

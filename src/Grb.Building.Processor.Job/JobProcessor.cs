@@ -98,7 +98,11 @@
         {
             await UpdateJobStatus(job, JobStatus.Processing, stoppingToken);
 
-            await _jobRecordsProcessor.Process(job.Id, job.ForceProcessing, stoppingToken);
+            // Process demolish first
+            await _jobRecordsProcessor.Process(job.Id, record => record.EventType == GrbEventType.DemolishBuilding, job.ForceProcessing, stoppingToken);
+            await _jobRecordsMonitor.Monitor(job.Id, stoppingToken);
+
+            await _jobRecordsProcessor.Process(job.Id, record => record.EventType != GrbEventType.DemolishBuilding, job.ForceProcessing, stoppingToken);
             await _jobRecordsMonitor.Monitor(job.Id, stoppingToken);
 
             var jobRecordErrors = await _buildingGrbContext.JobRecords

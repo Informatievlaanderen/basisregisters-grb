@@ -62,7 +62,7 @@
                 NullLoggerFactory.Instance);
 
             //act
-            await jobRecordsProcessor.Process(job.Id, false, CancellationToken.None);
+            await jobRecordsProcessor.Process(job.Id, _ => true, false, CancellationToken.None);
 
             //assert
             backOfficeApiProxy.Verify(x => x.MeasureBuilding(
