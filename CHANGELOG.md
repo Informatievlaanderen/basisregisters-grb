@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v3.0.0...v3.1.0) (2025-09-10)
+
+
+### Features
+
+* process demolish first GAWR-7038 ([905a047](https://github.com/informatievlaanderen/basisregisters-grb/commit/905a047f77ee07dd6a35f36746eb8641143bcf49))
+
 # [3.0.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v2.5.1...v3.0.0) (2025-04-29)
 
 
