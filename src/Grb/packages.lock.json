@@ -13,11 +13,11 @@
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "Direct",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "x5jqxMywc4/WEh3Mz5qFPi3YaqIgYpPpJLyAWSi1Ie5jpOsqeWKqJ/BZYQV4OvbNnlOMWoEwHIN85p3cLp5KhQ==",
+        "requested": "[3.7.502.60, )",
+        "resolved": "3.7.502.60",
+        "contentHash": "4r4p3WoUq4Yqzd/Lzbjgo+da702XNhZG1TsTeqExNfuJXNR1E68UE5zAe8sc/nbZAg+igKVW0jIzNeu7DyYEyg==",
         "dependencies": {
-          "AWSSDK.Core": "[3.7.400, 4.0.0)"
+          "AWSSDK.Core": "[3.7.501, 4.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.Shaperon": {
@@ -72,8 +72,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "3.7.400",
-        "contentHash": "qw+WGhxcYtZ6wc1uibOu9XXLsfUpQ1r+gWa0euFnm1e9HowQbcwvKvOqQzwBNqIBO7S5IJ26T9kV/eFiwvZAkQ=="
+        "resolved": "3.7.501",
+        "contentHash": "Yky0lnLmPl/EMmtFviI+NYU/EyG+CvXFGYvZh6kczI882R2NLLc6K/lPFaM6WbgSZDsIm0hk4UfLPLK0gPGrdg=="
       },
       "Azure.Core": {
         "type": "Transitive",
