@@ -3,6 +3,9 @@ name: Release
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+
 concurrency: Release
 
 jobs:
@@ -59,7 +62,7 @@ jobs:
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: '${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/building-registry'
+      registry: '${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/building'
       image-file: api-grb-image.tar
       image-name: api-grb
       build-project: Grb.Building.Api
@@ -70,11 +73,11 @@ jobs:
 
   build-job-processor:
     name: Build GRB.Building.Processor.Job
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main    
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: '${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/building-registry'
+      registry: '${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/building'
       image-file: grb-processor-job-image.tar
       image-name: grb-processor-job
       test-project: Grb.Building.Tests
@@ -86,11 +89,11 @@ jobs:
 
   build-upload-processor:
     name: Build GRB.Building.Processor.Upload
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main    
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: '${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/building-registry'
+      registry: '${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/building'
       image-file: grb-processor-upload-image.tar
       image-name: grb-processor-upload
       test-project: Grb.Building.Tests
@@ -303,7 +306,7 @@ jobs:
         if: needs.release.outputs.version != 'none'
         shell: bash
         run: |
-          docker push $BUILD_DOCKER_REGISTRY/building-registry/api-grb:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/building/api-grb:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
@@ -314,7 +317,7 @@ jobs:
         if: needs.release.outputs.version != 'none'
         shell: bash
         run: |
-          docker push $BUILD_DOCKER_REGISTRY/building-registry/grb-processor-job:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/building/grb-processor-job:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
@@ -325,56 +328,12 @@ jobs:
         if: needs.release.outputs.version != 'none'
         shell: bash
         run: |
-          docker push $BUILD_DOCKER_REGISTRY/building-registry/grb-processor-upload:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/building/grb-processor-upload:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
-
-  publish_to_atlassian:
-    needs: [ release ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
-    name: Publish to Atlassian
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Parse repository name
-        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
-        shell: bash
-
-      - name: Cache Python
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install Python dependencies
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests markdown argparse
-
-      - name: Restore build-pipeline
-        shell: bash
-        run: ./pre-restore.sh
-
-      - name: Publish to Confluence
-        shell: bash
-        run: bash ./.build/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
-        env:
-          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
 
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -397,75 +356,27 @@ jobs:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_to_test_start_slack, release ]
     name: Deploy services to test
-    runs-on: ubuntu-latest
+    uses: informatievlaanderen/build-pipeline/.github/workflows/deploy-v4.1.yml@main
     strategy:
       matrix:
         services: [
-          'building-grb-api'
+          'grb-api',
+          'grb-processor-upload',
+          'grb-processor-job'
         ]
-    steps:
-    - name: Deploy services
-      env:
-        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: tst
-          version: ${{ needs.release.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          deploy-target: 'agb_ecs_service'
-          interval: 2
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-    - name: Deploy services output
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
-  deploy_tasks_to_test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_test_start_slack, release ]
-    name: Deploy tasks to test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services: [
-          'building-grb-processor-upload',
-          'building-grb-processor-job'
-        ]
-    steps:
-    - name: Deploy services
-      env:
-        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: tst
-          version: ${{ needs.release.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          deploy-target: 'ecs_scheduled_task'
-          interval: 2
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-    - name: Deploy services output
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+    with:
+      environment: 'test'
+      service-name: ${{ matrix.services }}
+      application: ${{ matrix.services }}
+      version: ${{ needs.release.outputs.version }}
+      domain: 'building'
+      project: 'grawr'
+      use-subfolder: true
+    secrets: inherit
 
   deploy_to_test_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_services_to_test, deploy_tasks_to_test ]
+    needs: [ deploy_services_to_test ]
     name: Deploy to test finished
     runs-on: ubuntu-latest
 
@@ -500,76 +411,27 @@ jobs:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_to_staging_start_slack, release ]
     name: Deploy services to staging
-    runs-on: ubuntu-latest
+    uses: informatievlaanderen/build-pipeline/.github/workflows/deploy-v4.1.yml@main
     strategy:
       matrix:
         services: [
-          'building-grb-api'
+          'grb-api',
+          'grb-processor-upload',
+          'grb-processor-job'
         ]
-    steps:
-    - name: Deploy services
-      env:
-        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: stg
-          version: ${{ needs.release.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          deploy-target: 'agb_ecs_service'
-          interval: 2
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-    - name: Deploy services output
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
-
-  deploy_tasks_to_staging:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_staging_start_slack, release ]
-    name: Deploy tasks to staging
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services: [
-          'building-grb-processor-upload',
-          'building-grb-processor-job'
-        ]
-    steps:
-    - name: Deploy services
-      env:
-        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: stg
-          version: ${{ needs.release.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          deploy-target: 'ecs_scheduled_task'
-          interval: 2
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-    - name: Deploy services output
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+    with:
+      environment: 'stg'
+      service-name: ${{ matrix.services }}
+      application: ${{ matrix.services }}
+      version: ${{ needs.release.outputs.version }}
+      domain: 'building'
+      project: 'grawr'
+      use-subfolder: true
+    secrets: inherit
 
   deploy_to_staging_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_services_to_staging, deploy_tasks_to_staging ]
+    needs: [ deploy_services_to_staging ]
     name: Deploy to staging finished
     runs-on: ubuntu-latest
 
