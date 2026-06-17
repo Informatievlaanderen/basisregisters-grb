@@ -28,13 +28,17 @@
             {
                 TopicArn = _topicArn,
                 Message = JsonSerializer.Serialize(message, options),
-                MessageAttributes =
-                {
-                    { "MessageType", new MessageAttributeValue { DataType = "String", StringValue = message.MessageType } },
-                    { "service", new MessageAttributeValue { DataType = "String", StringValue = message.Service } },
-                    { "warning", new MessageAttributeValue { DataType = "String", StringValue = message.Warning } }
-                }
+                MessageAttributes = []
             };
+
+            request.MessageAttributes.Add("MessageType",
+                new MessageAttributeValue { DataType = "String", StringValue = message.MessageType });
+
+            request.MessageAttributes.Add("service",
+                new MessageAttributeValue { DataType = "String", StringValue = message.Service });
+
+            request.MessageAttributes.Add("warning",
+                new MessageAttributeValue { DataType = "String", StringValue = message.Warning });
 
             await _amazonSimpleNotificationService.PublishAsync(request);
         }

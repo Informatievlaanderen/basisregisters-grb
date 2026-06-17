@@ -6,7 +6,8 @@ namespace Grb.Building.Api.Handlers
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Abstractions.Responses;
-    using Infrastructure;
+    using Amazon.S3;
+    using Amazon.S3.Model;
     using Infrastructure.Options;
     using MediatR;
     using Microsoft.Extensions.Options;
@@ -18,20 +19,20 @@ namespace Grb.Building.Api.Handlers
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly ITicketing _ticketing;
         private readonly ITicketingUrl _ticketingUrl;
-        private readonly IAmazonS3Extended _s3Extended;
+        private readonly IAmazonS3 _s3;
         private readonly BucketOptions _bucketOptions;
 
         public UploadPreSignedUrlHandler(
             BuildingGrbContext buildingGrbContext,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,
-            IAmazonS3Extended s3Extended,
+            IAmazonS3 s3,
             IOptions<BucketOptions> bucketOptions)
         {
             _buildingGrbContext = buildingGrbContext;
             _ticketing = ticketing;
             _ticketingUrl = ticketingUrl;
-            _s3Extended = s3Extended;
+            _s3 = s3;
             _bucketOptions = bucketOptions.Value ?? throw new ArgumentNullException(nameof(bucketOptions));
         }
 
@@ -45,12 +46,13 @@ namespace Grb.Building.Api.Handlers
             {
                 var job = await CreateJob(cancellationToken);
 
-                var preSignedUrl = _s3Extended.CreatePresignedPost(
-                    new CreatePresignedPostRequest(
-                        _bucketOptions.BucketName,
-                        job.UploadBlobName,
-                        new List<ExactMatchCondition>(),
-                        TimeSpan.FromMinutes(_bucketOptions.UrlExpirationInMinutes)));
+                var preSignedUrl = await _s3.CreatePresignedPostAsync(
+                    new CreatePresignedPostRequest
+                    {
+                        BucketName = _bucketOptions.BucketName,
+                        Key = job.UploadBlobName,
+                        Expires = DateTime.UtcNow.AddMinutes(_bucketOptions.UrlExpirationInMinutes)
+                    });
 
                 var ticketId= await _ticketing.CreateTicket(
                     new Dictionary<string, string>
@@ -66,7 +68,7 @@ namespace Grb.Building.Api.Handlers
                 await UpdateJobWithTicketUrl(job, ticketId, cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return new UploadPreSignedUrlResponse(job.Id, preSignedUrl.Url.ToString(), preSignedUrl.Fields, ticketUrl);
+                return new UploadPreSignedUrlResponse(job.Id, preSignedUrl.Url, preSignedUrl.Fields, ticketUrl);
             }
             catch (Exception)
             {

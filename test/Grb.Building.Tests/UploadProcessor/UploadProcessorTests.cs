@@ -87,11 +87,12 @@
 
             // Act
             await sut.StartAsync(CancellationToken.None);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Pending(ticketId, It.IsAny<CancellationToken>()), Times.Once);
 
-            var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
+            var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id).ToList();
             jobRecords.Should().HaveCount(10);
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Prepared);
 
@@ -136,6 +137,7 @@
 
             // Act
             await sut.StartAsync(CancellationToken.None);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Pending(ticketId, It.IsAny<CancellationToken>()), Times.Never);
@@ -182,6 +184,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);
@@ -233,6 +236,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Error(
@@ -294,6 +298,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Error(
@@ -356,6 +361,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Error(
@@ -418,6 +424,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Error(
@@ -480,6 +487,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Error(
@@ -549,6 +557,7 @@
 
             // Act
             await sut.StartAsync(CancellationToken.None);
+            await sut.ExecuteTask!;
 
             // Assert
             mockTicketing.Verify(x => x.Error(
@@ -608,6 +617,7 @@
 
             // Act
             await sut.StartAsync(ct);
+            await sut.ExecuteTask!;
 
             // Assert
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id);

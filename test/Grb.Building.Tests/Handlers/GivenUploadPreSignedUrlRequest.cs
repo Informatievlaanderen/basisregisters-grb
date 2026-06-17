@@ -4,9 +4,10 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Amazon.S3;
+    using Amazon.S3.Model;
     using Api.Abstractions.Requests;
     using Api.Handlers;
-    using Api.Infrastructure;
     using Api.Infrastructure.Options;
     using AutoFixture;
     using FluentAssertions;
@@ -22,7 +23,7 @@
 
         private readonly Mock<ITicketingUrl> _ticketingUrl;
         private readonly Mock<ITicketing> _ticketing;
-        private readonly Mock<IAmazonS3Extended> _s3Extended;
+        private readonly Mock<IAmazonS3> _s3;
 
         public GivenUploadPreSignedUrlRequest()
         {
@@ -30,7 +31,7 @@
 
             _ticketingUrl = new Mock<ITicketingUrl>();
             _ticketing = new Mock<ITicketing>();
-            _s3Extended = new Mock<IAmazonS3Extended>();
+            _s3 = new Mock<IAmazonS3>();
         }
 
         private UploadPreSignedUrlHandler CreatePreSignedUrlHandler(BuildingGrbContext buildingGrbContext)
@@ -39,7 +40,7 @@
                 buildingGrbContext,
                 _ticketing.Object,
                 _ticketingUrl.Object,
-                _s3Extended.Object,
+                _s3.Object,
                 Options.Create(new BucketOptions
                 {
                     BucketName = "Test",
@@ -60,9 +61,13 @@
             _ticketingUrl
                 .Setup(x => x.For(ticketId))
                 .Returns(new Uri(ticketUrl));
-            _s3Extended
-                .Setup(x => x.CreatePresignedPost(It.IsAny<CreatePresignedPostRequest>()))
-                .Returns(new CreatePresignedPostResponse(preSignedUrl, _fixture.Create<Dictionary<string, string>>()));
+            _s3
+                .Setup(x => x.CreatePresignedPostAsync(It.IsAny<CreatePresignedPostRequest>()))
+                .ReturnsAsync(new CreatePresignedPostResponse
+                {
+                    Url = preSignedUrl.ToString(),
+                    Fields = new Dictionary<string, string>()
+                });
 
             var databaseName = nameof(ReturnsGetPreSignedUrlResponse);
             var buildingGrbContext = new FakeBuildingGrbContextFactory(databaseName).CreateDbContext(Array.Empty<string>());

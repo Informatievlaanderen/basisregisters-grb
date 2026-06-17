@@ -3,10 +3,10 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Amazon.S3;
     using Amazon.S3.Model;
     using Api.Abstractions.Requests;
     using Api.Handlers;
-    using Api.Infrastructure;
     using Api.Infrastructure.Options;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
@@ -19,18 +19,18 @@
     {
         private readonly FakeBuildingGrbContext _fakeBuildingGrbContext;
         private readonly BucketOptions _bucketOptions;
-        private readonly Mock<IAmazonS3Extended> _s3Extended;
+        private readonly Mock<IAmazonS3> _s3;
         private readonly JobResultsPreSignedUrlHandler _handler;
 
         public GivenJobResultPreSignedUrlRequest()
         {
             _fakeBuildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
-            _s3Extended = new Mock<IAmazonS3Extended>();
+            _s3 = new Mock<IAmazonS3>();
             _bucketOptions = new BucketOptions { BucketName = "Test", UrlExpirationInMinutes = 60 };
             _handler = new JobResultsPreSignedUrlHandler(
                 _fakeBuildingGrbContext,
                 Options.Create(_bucketOptions),
-                _s3Extended.Object);
+                _s3.Object);
         }
 
         [Fact]
@@ -42,10 +42,10 @@
 
             const string expectedPresignedUrl = "https://presignedurl.com";
 
-            _s3Extended
-                .Setup(x => x.GetPreSignedURL(It.Is<GetPreSignedUrlRequest>(
-                    x => x.BucketName == _bucketOptions.BucketName && x.Key == $"jobresults/{job.Id:D}")))
-                .Returns(expectedPresignedUrl);
+            _s3
+                .Setup(x => x.GetPreSignedURLAsync(It.Is<GetPreSignedUrlRequest>(
+                    request => request.BucketName == _bucketOptions.BucketName && request.Key == $"jobresults/{job.Id:D}")))
+                .ReturnsAsync(expectedPresignedUrl);
 
             var request = new JobResultsPreSignedUrlRequest(job.Id);
             var result = await _handler.Handle(request, CancellationToken.None);
