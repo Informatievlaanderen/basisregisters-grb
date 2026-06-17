@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.0.1...v4.1.0) (2026-06-17)
+
+
+### Features
+
+* bump blobstore ([6acf39e](https://github.com/informatievlaanderen/basisregisters-grb/commit/6acf39e3ed2fb6f168abfdd6610d6503310f2079))
+
 ## [4.0.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.0.0...v4.0.1) (2026-06-17)
 
 
