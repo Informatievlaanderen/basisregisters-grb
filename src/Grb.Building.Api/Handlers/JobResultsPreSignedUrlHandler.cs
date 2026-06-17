@@ -5,9 +5,9 @@
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Abstractions.Responses;
+    using Amazon.S3;
     using Amazon.S3.Model;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Infrastructure;
     using Infrastructure.Options;
     using MediatR;
     using Microsoft.AspNetCore.Http;
@@ -18,16 +18,16 @@
     {
         private readonly BuildingGrbContext _buildingGrbContext;
         private readonly BucketOptions _bucketOptions;
-        private readonly IAmazonS3Extended _s3Extended;
+        private readonly IAmazonS3 _s3;
 
         public JobResultsPreSignedUrlHandler(
             BuildingGrbContext buildingGrbContext,
             IOptions<BucketOptions> bucketOptions,
-            IAmazonS3Extended s3Extended)
+            IAmazonS3 s3)
         {
             _buildingGrbContext = buildingGrbContext;
             _bucketOptions = bucketOptions.Value;
-            _s3Extended = s3Extended;
+            _s3 = s3;
         }
 
         public async Task<JobResultsPreSignedUrlResponse> Handle(
@@ -52,15 +52,15 @@
             {
                 throw new ApiException(
                     $"Upload job '{request.JobId}' wordt verwerkt en resultaten zijn nog niet beschikbaar.",
-                    StatusCodes.Status400BadRequest);
-            }
+                    StatusCodes.Status400BadRequest); }
 
-            var urlString = _s3Extended.GetPreSignedURL(new GetPreSignedUrlRequest
-            {
-                BucketName = _bucketOptions.BucketName,
-                Key = Job.JobResultsBlobName(request.JobId),
-                Expires = DateTime.UtcNow.AddHours(_bucketOptions.UrlExpirationInMinutes)
-            });
+            var urlString = await _s3.GetPreSignedURLAsync(
+                new GetPreSignedUrlRequest
+                {
+                    BucketName = _bucketOptions.BucketName,
+                    Key = Job.JobResultsBlobName(request.JobId),
+                    Expires = DateTime.UtcNow.AddHours(_bucketOptions.UrlExpirationInMinutes)
+                });
 
             return new JobResultsPreSignedUrlResponse(
                 request.JobId,

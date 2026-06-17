@@ -195,7 +195,7 @@
 
             string FailureToString(Failure failure) => $"Reason: {failure.Reason}{Environment.NewLine}Failure: {failure.Detail}";
 
-            if (taskResponse.Failures.Any())
+            if (taskResponse.Failures is not null && taskResponse.Failures.Any())
             {
                 foreach (var failure in taskResponse.Failures)
                 {
