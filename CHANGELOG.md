@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.0.0...v4.0.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **ci:** registry api + to trigger build ([b37fdf1](https://github.com/informatievlaanderen/basisregisters-grb/commit/b37fdf1a9b0256eeb1f951acae33cec370a447df))
+
 # [4.0.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v3.1.0...v4.0.0) (2026-06-17)
 
 
