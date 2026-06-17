@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v3.1.0...v4.0.0) (2026-06-17)
+
+
+### Features
+
+* update packages + upgrade to dotnet 10 ([be2d4b2](https://github.com/informatievlaanderen/basisregisters-grb/commit/be2d4b28c249b133462a195323b279ea8f511584))
+
+
+### BREAKING CHANGES
+
+* update to dotnet 10
+
 # [3.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v3.0.0...v3.1.0) (2025-09-10)
 
 
