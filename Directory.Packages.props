@@ -13,7 +13,7 @@
         <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
 
         <PackageVersion Include="Autofac" Version="9.2.0" />
-        <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="11.0.0" />
+        <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="11.0.1" />
 
         <PackageVersion Include="Datadog.Trace.Bundle" Version="3.46.0" />
 
