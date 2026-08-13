@@ -62,6 +62,8 @@
                             .Take(chunkSize)
                             .ToList();
 
+                        _logger.LogInformation("Processing job '{jobId}' batch {Batch}/{TotalBatches}: {Count} pending records.", jobId, index + 1, numberOfChunks, jobRecords.Count);
+
                         foreach (var jobRecord in jobRecords)
                         {
                             var ticket = await _ticketing.Get(jobRecord.TicketId!.Value, innerCt);
@@ -97,6 +99,8 @@
                 await using var buildingGrbContext = await _buildingGrbContextFactory.CreateDbContextAsync(ct);
                 pendingJobRecordsCount = await buildingGrbContext.JobRecords
                     .CountAsync(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending, cancellationToken: ct);
+
+                _logger.LogInformation("Processing {Count} pending records.", pendingJobRecordsCount);
 
                 if (pendingJobRecordsCount > 0)
                 {
