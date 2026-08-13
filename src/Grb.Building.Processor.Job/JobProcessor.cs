@@ -126,14 +126,13 @@
 
                 await _ticketing.Error(job.TicketId!.Value, jobTicketError, stoppingToken);
 
+                await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
+
                 await _notificationService.PublishToTopicAsync(new NotificationMessage(
                     nameof(Job),
                     $"JobRecordErrors, Job: {job.Id} has {jobRecordErrors.Count} errors.",
                     "Building Import Job Processor",
                     NotificationSeverity.Danger));
-
-                await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
-
                 return;
             }
 
@@ -154,6 +153,8 @@
                     x.JobId == job.Id
                     && x.Status == JobRecordStatus.Warning);
 
+            await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
+
             await _notificationService.PublishToTopicAsync(
                 new NotificationMessage(
                     nameof(Job),
@@ -162,8 +163,6 @@
                         : $"JobCompleted, Job {job.Id} is completed.",
                     "Building Import Job Processor",
                     NotificationSeverity.Good));
-
-            await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
 
             _logger.LogInformation("Processed job '{jobId}'.", job.Id);
         }
