@@ -1,3 +1,10 @@
+## [4.1.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.1.0...v4.1.1) (2026-08-13)
+
+
+### Bug Fixes
+
+* extra logging when processing a job ([d535366](https://github.com/informatievlaanderen/basisregisters-grb/commit/d535366aff2004de8b8c2b93d66970d4f2df4b3c))
+
 # [4.1.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.0.1...v4.1.0) (2026-06-17)
 
 
