@@ -55,6 +55,7 @@
 
             if (jobRecords.Count == 0)
             {
+                _logger.LogInformation("No records found.");
                 return;
             }
 

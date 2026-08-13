@@ -96,12 +96,15 @@
 
         private async Task ProcessJob(Job job, CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Processing job '{jobId}'.", job.Id);
             await UpdateJobStatus(job, JobStatus.Processing, stoppingToken);
 
             // Process demolish first
+            _logger.LogInformation("Processing {Type} records", GrbEventType.DemolishBuilding);
             await _jobRecordsProcessor.Process(job.Id, record => record.EventType == GrbEventType.DemolishBuilding, job.ForceProcessing, stoppingToken);
             await _jobRecordsMonitor.Monitor(job.Id, stoppingToken);
 
+            _logger.LogInformation("Processing not {Type} records", GrbEventType.DemolishBuilding);
             await _jobRecordsProcessor.Process(job.Id, record => record.EventType != GrbEventType.DemolishBuilding, job.ForceProcessing, stoppingToken);
             await _jobRecordsMonitor.Monitor(job.Id, stoppingToken);
 
@@ -161,6 +164,8 @@
                     NotificationSeverity.Good));
 
             await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
+
+            _logger.LogInformation("Processed job '{jobId}'.", job.Id);
         }
 
         private async Task CancelJob(Job job, CancellationToken stoppingToken)

@@ -8,6 +8,7 @@
     using FluentAssertions;
     using Grb.Building.Processor.Job;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using NetTopologySuite.Geometries;
     using TicketingService.Abstractions;
@@ -37,7 +38,7 @@
                     new Dictionary<string, string>(),
                     new TicketResult(new ETagResponse($"https://building.be/{buildingPersistentLocalId}", "etag"))));
 
-            var monitor = new JobRecordsMonitor(mockFactory.Object, ticketing.Object);
+            var monitor = new JobRecordsMonitor(mockFactory.Object, ticketing.Object, NullLoggerFactory.Instance);
 
             //act
             await monitor.Monitor(job.Id, CancellationToken.None);
@@ -75,7 +76,7 @@
                     new Dictionary<string, string>(),
                     new TicketResult(new ETagResponse($"https://building.be/{buildingPersistentLocalId}", "etag"))));
 
-            var monitor = new JobRecordsMonitor(mockFactory.Object, ticketing.Object);
+            var monitor = new JobRecordsMonitor(mockFactory.Object, ticketing.Object, NullLoggerFactory.Instance);
 
             //act
             await monitor.Monitor(job.Id, CancellationToken.None);
