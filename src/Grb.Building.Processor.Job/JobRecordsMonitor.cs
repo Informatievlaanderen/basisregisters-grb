@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using TicketingService.Abstractions;
 
@@ -20,13 +21,16 @@
     {
         private readonly IDbContextFactory<BuildingGrbContext> _buildingGrbContextFactory;
         private readonly ITicketing _ticketing;
+        private readonly ILogger _logger;
 
         public JobRecordsMonitor(
             IDbContextFactory<BuildingGrbContext> buildingGrbContextFactory,
-            ITicketing ticketing)
+            ITicketing ticketing,
+            ILoggerFactory loggerFactory)
         {
             _buildingGrbContextFactory = buildingGrbContextFactory;
             _ticketing = ticketing;
+            _logger = loggerFactory.CreateLogger<JobRecordsProcessor>();
         }
 
         public async Task Monitor(Guid jobId, CancellationToken ct)
@@ -37,6 +41,8 @@
                 pendingJobRecordsCount = await buildingGrbContext.JobRecords
                     .CountAsync(x => x.JobId == jobId && x.Status == JobRecordStatus.Pending, cancellationToken: ct);
             }
+
+            _logger.LogInformation("Processing {Count} pending records.", pendingJobRecordsCount);
 
             while (pendingJobRecordsCount > 0)
             {
