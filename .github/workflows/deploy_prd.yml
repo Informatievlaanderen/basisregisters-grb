@@ -30,69 +30,23 @@ jobs:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_to_production_start_slack ]
     name: Deploy services to Production
-    runs-on: ubuntu-latest
+    uses: informatievlaanderen/build-pipeline/.github/workflows/deploy-v4.1.yml@main
     strategy:
       matrix:
-        services: ['building-grb-api']
-
-    steps:
-    - name: CD services
-      env:
-        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: prd
-          version: ${{ github.event.inputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          interval: 2
-          deploy-target: 'agb_ecs_service'
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-    - name: output CD services
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
-
-  deploy_tasks_to_production:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_production_start_slack ]
-    name: Deploy tasks to Production
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services: ['building-grb-processor-job', 'building-grb-processor-upload']
-
-    steps:
-    - name: CD tasks
-      env:
-        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: prd
-          version: ${{ github.event.inputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          interval: 2
-          deploy-target: 'ecs_scheduled_task'
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-    - name: output CD tasks
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+        services: [
+          'grb-api',
+          'grb-processor-upload',
+          'grb-processor-job'
+        ]
+    with:
+      environment: 'prd'
+      service-name: ${{ matrix.services }}
+      application: ${{ matrix.services }}
+      version: ${{ github.event.inputs.version }}
+      domain: 'building'
+      project: 'grawr'
+      use-subfolder: true
+    secrets: inherit
 
   deploy_to_production_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -101,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Notify deployment started
+    - name: Notify deployment finished
       uses: slackapi/slack-github-action@v3
       with:
         method: chat.postMessage
