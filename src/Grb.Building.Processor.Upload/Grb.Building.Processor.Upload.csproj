@@ -31,6 +31,7 @@
 
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.BlobStore" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Shaperon.Geometries" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" />

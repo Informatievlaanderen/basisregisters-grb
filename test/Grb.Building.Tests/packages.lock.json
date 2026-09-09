@@ -969,6 +969,14 @@
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
       },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
+      },
       "NetTopologySuite.IO.SqlServerBytes": {
         "type": "Transitive",
         "resolved": "2.1.0",
@@ -1362,6 +1370,7 @@
           "Autofac.Extensions.DependencyInjection": "[11.0.0, )",
           "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": "[5.1.0, )",
           "Be.Vlaanderen.Basisregisters.BlobStore": "[5.1.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[24.1.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Edit": "[24.1.0, )",
           "Be.Vlaanderen.Basisregisters.Shaperon.Geometries": "[11.1.0, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[4.0.0, )",
@@ -1559,6 +1568,16 @@
           "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
           "NetTopologySuite": "2.6.0",
           "NodaTime": "3.3.2"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "CentralTransitive",
+        "requested": "[24.1.0, )",
+        "resolved": "24.1.0",
+        "contentHash": "m5f15aXBfskISdPW1PISUXs1wZJriF+VwDwVKi3hDQVosuIihMhONyfdNexQdj6IwHt2NBsb0tTU09DEHXS+0A==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "24.1.0",
+          "NetTopologySuite.Features": "2.2.0"
         }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Edit": {
