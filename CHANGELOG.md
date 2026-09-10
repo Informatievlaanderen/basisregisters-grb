@@ -1,3 +1,15 @@
+# [4.2.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.1.1...v4.2.0) (2026-09-10)
+
+
+### Bug Fixes
+
+* job status update should happen even when notification fails ([71ef8ed](https://github.com/informatievlaanderen/basisregisters-grb/commit/71ef8ed26df9cc06e91b3082da7f06784300921f))
+
+
+### Features
+
+* add lambert2008 support ([556beba](https://github.com/informatievlaanderen/basisregisters-grb/commit/556beba64f033e691cc55d2ed73c1a3cceec3124))
+
 ## [4.1.1](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.1.0...v4.1.1) (2026-08-13)
 
 
