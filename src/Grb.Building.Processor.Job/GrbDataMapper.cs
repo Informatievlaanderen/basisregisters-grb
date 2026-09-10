@@ -3,6 +3,7 @@
     using System.Text;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using BuildingRegistry.Api.BackOffice.Abstractions.Building;
     using NetTopologySuite.Geometries;
@@ -34,6 +35,25 @@
             };
         }
 
+        private const string SrsNamePrefix = "https://www.opengis.net/def/crs/EPSG/0/";
+
+        /// <summary>
+        /// The srsName the geometry is actually in, rather than a fixed one.
+        /// </summary>
+        /// <remarks>
+        /// building-registry converts an incoming GML geometry from the reference system its srsName
+        /// declares to the one its event store holds, so this attribute is the only thing telling it what
+        /// the coordinates mean. Getting it wrong is silent: the GML stays well-formed, the numbers stay
+        /// plausible, and the building is persisted ~500 km from where it is.
+        ///
+        /// A geometry that carries no SRID is Lambert 72 - that is what every job record written before
+        /// the upload started stamping one holds. See ADR 0003.
+        /// </remarks>
+        private static string GetSrsName(Geometry geometry)
+            => geometry.SRID == SystemReferenceId.SridLambert2008
+                ? $"{SrsNamePrefix}{SystemReferenceId.SridLambert2008}"
+                : $"{SrsNamePrefix}{SystemReferenceId.SridLambert72}";
+
         private static string GetGml(Geometry geometry)
         {
             var builder = new StringBuilder();
@@ -44,7 +64,7 @@
             using (var xmlwriter = XmlWriter.Create(builder, settings))
             {
                 xmlwriter.WriteStartElement("gml", "Polygon", "http://www.opengis.net/gml/3.2");
-                xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
+                xmlwriter.WriteAttributeString("srsName", GetSrsName(geometry));
                 WriteRing((polygon!.ExteriorRing as LinearRing)!, xmlwriter);
                 WriteInteriorRings(polygon.InteriorRings, polygon.NumInteriorRings, xmlwriter);
                 xmlwriter.WriteEndElement();

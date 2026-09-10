@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Content Include="UploadProcessor\gebouw_ALL.zip" CopyToOutputDirectory="Always" />
+    <Content Include="UploadProcessor\gebouw_ALL_LB08.zip" CopyToOutputDirectory="Always" />
     <Content Include="UploadProcessor\gebouw_dbf_missing.zip" CopyToOutputDirectory="Always" />
     <Content Include="UploadProcessor\gebouw_shape_missing.zip" CopyToOutputDirectory="Always" />
     <Content Include="UploadProcessor\gebouw_grid_invalid.zip" CopyToOutputDirectory="Always" />

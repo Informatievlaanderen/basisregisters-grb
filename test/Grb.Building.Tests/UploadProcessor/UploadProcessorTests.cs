@@ -9,6 +9,7 @@
     using Amazon.ECS.Model;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.BlobStore;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using FluentAssertions;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging.Abstractions;
@@ -94,6 +95,11 @@
 
             var jobRecords = _buildingGrbContext.JobRecords.Where(x => x.JobId == job.Id).ToList();
             jobRecords.Should().HaveCount(10);
+
+            // The archive declares no reference system, so it is decided from the coordinates and stamped
+            // on the stored geometry - the job is processed later, and by then only the row can say what it
+            // holds. See ADR 0003.
+            jobRecords.Should().OnlyContain(x => x.Geometry.SRID == SystemReferenceId.SridLambert72);
             _buildingGrbContext.Jobs.First().Status.Should().Be(JobStatus.Prepared);
 
             mockAmazonClient.Verify(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()),
