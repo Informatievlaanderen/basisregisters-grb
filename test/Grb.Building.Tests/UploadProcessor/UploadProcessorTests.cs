@@ -11,6 +11,8 @@
     using Be.Vlaanderen.Basisregisters.BlobStore;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
@@ -106,6 +108,82 @@
                 Times.Once);
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Never);
             mockIHostApplicationLifeTime.Verify(x => x.StopApplication(), Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenSavingJobRecordsFails_ThenJobIsInErrorWithoutJobRecords()
+        {
+            var databaseName = Guid.NewGuid().ToString();
+            var buildingGrbContext = new FakeBuildingGrbContext(
+                new DbContextOptionsBuilder<BuildingGrbContext>()
+                    .UseInMemoryDatabase(databaseName)
+                    .AddInterceptors(new FailWhenSavingJobRecordsInterceptor())
+                    .Options,
+                canBeDisposed: false);
+
+            var mockTicketing = new Mock<ITicketing>();
+            var mockIBlobClient = new Mock<IBlobClient>();
+            var mockAmazonClient = new Mock<IAmazonECS>();
+
+            var ticketId = Guid.NewGuid();
+            var job = new Job(DateTimeOffset.Now, JobStatus.Created, ticketId);
+
+            buildingGrbContext.Jobs.Add(job);
+            await buildingGrbContext.SaveChangesAsync(CancellationToken.None);
+
+            var blobName = new BlobName(job.ReceivedBlobName);
+
+            mockIBlobClient
+                .Setup(x => x.BlobExistsAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            mockIBlobClient
+                .Setup(x => x.GetBlobAsync(blobName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new BlobObject(
+                    blobName,
+                    Metadata.None,
+                    ContentType.Parse("X-multipart/abc"),
+                    _ => Task.FromResult((Stream)new FileStream(
+                        $"{AppContext.BaseDirectory}/UploadProcessor/gebouw_ALL.zip", FileMode.Open,
+                        FileAccess.Read))));
+
+            var sut = new UploadProcessor(
+                buildingGrbContext,
+                _duplicateJobRecordValidator,
+                mockTicketing.Object,
+                mockIBlobClient.Object,
+                mockAmazonClient.Object,
+                new NullLoggerFactory(),
+                Mock.Of<IHostApplicationLifetime>(),
+                Mock.Of<INotificationService>(),
+                Options.Create(_fixture.Create<EcsTaskOptions>()));
+
+            // Act
+            await sut.StartAsync(CancellationToken.None);
+            await sut.ExecuteTask!;
+
+            // Assert
+            await using var verifyContext = new FakeBuildingGrbContextFactory(databaseName).CreateDbContext();
+            verifyContext.JobRecords.Should().BeEmpty();
+            verifyContext.Jobs.Single().Status.Should().Be(JobStatus.Error);
+            mockTicketing.Verify(x => x.Error(ticketId, It.IsAny<TicketError>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockAmazonClient.Verify(x => x.RunTaskAsync(It.IsAny<RunTaskRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        private sealed class FailWhenSavingJobRecordsInterceptor : SaveChangesInterceptor
+        {
+            public override System.Threading.Tasks.ValueTask<InterceptionResult<int>> SavingChangesAsync(
+                DbContextEventData eventData,
+                InterceptionResult<int> result,
+                CancellationToken cancellationToken = default)
+            {
+                if (eventData.Context!.ChangeTracker.Entries<JobRecord>().Any(x => x.State == EntityState.Added))
+                {
+                    throw new InvalidOperationException("Simulated failure while saving job records.");
+                }
+
+                return base.SavingChangesAsync(eventData, result, cancellationToken);
+            }
         }
 
         [Fact]
