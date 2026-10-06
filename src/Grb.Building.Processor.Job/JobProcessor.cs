@@ -55,6 +55,8 @@
 
             _logger.LogInformation("JobProcessor started");
 
+            await ArchiveCompletedJobsWithRecords(stoppingToken);
+
             var inactiveJobStatuses = new[] {JobStatus.Completed, JobStatus.Cancelled};
             var jobsToProcess = await _buildingGrbContext.Jobs
                 .Where(x => !inactiveJobStatuses.Contains(x.Status))
@@ -153,7 +155,7 @@
                     x.JobId == job.Id
                     && x.Status == JobRecordStatus.Warning);
 
-            await _jobRecordsArchiver.Archive(job.Id, stoppingToken);
+            await TryArchive(job.Id, stoppingToken);
 
             await _notificationService.PublishToTopicAsync(
                 new NotificationMessage(
@@ -165,6 +167,44 @@
                     NotificationSeverity.Good));
 
             _logger.LogInformation("Processed job '{jobId}'.", job.Id);
+        }
+
+        /// <summary>
+        /// A job is marked completed before its records are archived, so a failed archive leaves records behind that
+        /// nothing else picks up again. Retried on every run.
+        /// </summary>
+        private async Task ArchiveCompletedJobsWithRecords(CancellationToken stoppingToken)
+        {
+            var jobIds = await _buildingGrbContext.JobRecords
+                .Where(record => _buildingGrbContext.Jobs.Any(job => job.Id == record.JobId && job.Status == JobStatus.Completed))
+                .Select(record => record.JobId)
+                .Distinct()
+                .ToListAsync(stoppingToken);
+
+            foreach (var jobId in jobIds)
+            {
+                _logger.LogWarning("Completed job '{jobId}' still has job records, archiving them.", jobId);
+                await TryArchive(jobId, stoppingToken);
+            }
+        }
+
+        private async Task TryArchive(Guid jobId, CancellationToken stoppingToken)
+        {
+            try
+            {
+                await _jobRecordsArchiver.Archive(jobId, stoppingToken);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // The job itself is done; the next run tries archiving again.
+                _logger.LogError(ex, "Archiving job records of job '{jobId}' failed.", jobId);
+
+                await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                    nameof(Job),
+                    $"ArchiveFailed, job records of Job {jobId} could not be archived, will be retried on the next run.",
+                    "Building Import Job Processor",
+                    NotificationSeverity.Danger));
+            }
         }
 
         private async Task CancelJob(Job job, CancellationToken stoppingToken)
