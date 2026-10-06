@@ -66,5 +66,38 @@
             hostApplicationLifetime.Verify(x => x.StopApplication(), Times.Once);
             notificationsService.Verify(x => x.PublishToTopicAsync(It.IsAny<NotificationMessage>()), Times.Once);
         }
+
+        [Fact]
+        public async Task WhenRecentlyPutBackToCreated_ThenJobIsNotCanceled()
+        {
+            var buildingGrbContext = new FakeBuildingGrbContextFactory().CreateDbContext();
+            var ticketing = new Mock<ITicketing>();
+
+            var jobProcessor = new JobProcessor(
+                buildingGrbContext,
+                Mock.Of<IJobRecordsProcessor>(),
+                Mock.Of<IJobRecordsMonitor>(),
+                Mock.Of<IJobResultUploader>(),
+                Mock.Of<IJobRecordsArchiver>(),
+                ticketing.Object,
+                new OptionsWrapper<GrbApiOptions>(new GrbApiOptions { PublicApiUrl = "https://api-vlaanderen.be"}),
+                Mock.Of<IHostApplicationLifetime>(),
+                Mock.Of<INotificationService>(),
+                new NullLoggerFactory());
+
+            // Created long ago, failed, and retried just now.
+            var job = new Job(DateTimeOffset.Now.AddHours(-2), JobStatus.Error) { TicketId = Guid.NewGuid() };
+            job.UpdateStatus(JobStatus.Created);
+            buildingGrbContext.Jobs.Add(job);
+            await buildingGrbContext.SaveChangesAsync();
+
+            //act
+            await jobProcessor.StartAsync(CancellationToken.None);
+            await jobProcessor.ExecuteTask!;
+
+            //assert
+            job.Status.Should().Be(JobStatus.Created);
+            ticketing.Verify(x => x.Complete(It.IsAny<Guid>(), It.IsAny<TicketResult>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
     }
 }

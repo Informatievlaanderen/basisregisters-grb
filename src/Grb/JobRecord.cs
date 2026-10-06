@@ -42,6 +42,20 @@ namespace Grb
             // We're setting the status to resolved, but we are not deleting the ErrorMessage.
             Status = JobRecordStatus.ErrorResolved;
         }
+
+        public void RetryError()
+        {
+            if (Status != JobRecordStatus.Error)
+            {
+                return;
+            }
+
+            // Back to Created so the job processor sends the record to the backoffice again.
+            Status = JobRecordStatus.Created;
+            TicketId = null;
+            ErrorCode = null;
+            ErrorMessage = null;
+        }
     }
 
     public sealed class JobRecordConfiguration : IEntityTypeConfiguration<JobRecord>

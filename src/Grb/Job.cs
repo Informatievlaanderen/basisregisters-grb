@@ -34,7 +34,8 @@
             LastChanged = DateTimeOffset.Now;
         }
 
-        public bool IsExpired(TimeSpan expiration) => Created.Add(expiration) < DateTimeOffset.Now;
+        // Counted from LastChanged rather than Created, so a job that is retried (put back to Created) gets a fresh window.
+        public bool IsExpired(TimeSpan expiration) => LastChanged.Add(expiration) < DateTimeOffset.Now;
 
         public bool IsInError() => Status == JobStatus.Error;
     }

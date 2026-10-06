@@ -82,6 +82,14 @@ namespace Grb.Building.Api
             return NoContent();
         }
 
+        [HttpPost("jobs/{jobId:guid}/retry")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.InterneBijwerker)]
+        public async Task<IActionResult> RetryJob(Guid jobId, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new RetryJobRequest(jobId), cancellationToken);
+            return NoContent();
+        }
+
         [HttpGet("jobs/{jobId:guid}/jobrecords")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.IngemetenGebouw.GrbBijwerker)]
         public async Task<IActionResult> GetJobRecords(Guid jobId, CancellationToken cancellationToken)
