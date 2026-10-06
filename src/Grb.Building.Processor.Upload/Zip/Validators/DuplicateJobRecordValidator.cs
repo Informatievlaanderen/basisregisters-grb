@@ -21,6 +21,15 @@ namespace Grb.Building.Processor.Upload.Zip.Validators
 
         public bool HasDuplicateNewBuilding(int idn, int idnVersion, GrbObject grbObject)
         {
+            var isExempted = _context
+                .DuplicateNewBuildingExemptions
+                .Any(x => x.Idn == idn
+                          && x.IdnVersion == idnVersion
+                          && x.GrbObject == grbObject);
+
+            if (isExempted)
+                return false;
+
             var hasDuplicate = _context
                     .JobRecords
                     .Any(x => x.Idn == idn

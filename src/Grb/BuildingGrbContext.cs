@@ -18,6 +18,7 @@
 
         public DbSet<Job> Jobs => Set<Job>();
         public DbSet<JobRecord> JobRecords => Set<JobRecord>();
+        public DbSet<DuplicateNewBuildingExemption> DuplicateNewBuildingExemptions => Set<DuplicateNewBuildingExemption>();
 
         public BuildingGrbContext()
         {
