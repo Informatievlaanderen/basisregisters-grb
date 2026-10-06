@@ -121,10 +121,11 @@
                     var jobRecords = archiveTranslator.Translate(archive).ToList();
                     jobRecords.ForEach(x => x.JobId = job.Id);
 
+                    // Records and the Prepared status are saved in one SaveChanges, so in one database transaction: if only
+                    // the records were stored, the job would stay in Preparing and the next run would insert them again.
                     await _buildingGrbContext.JobRecords.AddRangeAsync(jobRecords, stoppingToken);
+                    job.UpdateStatus(JobStatus.Prepared);
                     await _buildingGrbContext.SaveChangesAsync(stoppingToken);
-
-                    await UpdateJobStatus(job, JobStatus.Prepared, stoppingToken);
                 }
                 catch (DbRecordsWithMissingShapeException ex)
                 {
@@ -141,6 +142,9 @@
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Unexpected exception for job '{job.Id}'");
+
+                    // Records whose save failed are still tracked; don't let saving the Error status insert them after all.
+                    DetachUnsavedJobRecords();
 
                     await _ticketing.Error(job.TicketId!.Value, new TicketError($"Onverwachte fout bij de verwerking van het zip-bestand.", "OnverwachteFout"), stoppingToken);
                     await UpdateJobStatus(job, JobStatus.Error, stoppingToken);
@@ -159,6 +163,16 @@
             }
 
             _hostApplicationLifetime.StopApplication();
+        }
+
+        private void DetachUnsavedJobRecords()
+        {
+            foreach (var entry in _buildingGrbContext.ChangeTracker.Entries<JobRecord>()
+                         .Where(x => x.State == EntityState.Added)
+                         .ToList())
+            {
+                entry.State = EntityState.Detached;
+            }
         }
 
         private async Task UpdateJobStatus(Job job, JobStatus status, CancellationToken stoppingToken)
