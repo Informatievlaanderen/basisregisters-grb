@@ -1459,7 +1459,7 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Edit": {
         "type": "CentralTransitive",
-        "requested": "[24.1.0, )",
+        "requested": "[24.4.1, )",
         "resolved": "24.1.0",
         "contentHash": "1D45UkCkLtLTmK9GQ44MB3y7j0SpMmdcTtajc/zCrBICVyx0UUrw4InCtrY0dk030jU/WjRrAhjkOY/Zwl3ldQ==",
         "dependencies": {
