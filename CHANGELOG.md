@@ -1,3 +1,16 @@
+# [4.3.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.2.0...v4.3.0) (2026-10-07)
+
+
+### Bug Fixes
+
+* edge case crash processing ([702bfab](https://github.com/informatievlaanderen/basisregisters-grb/commit/702bfab17b14ebca629166bdd22914542a345dfb))
+* retry archive when failed for some reason ([1874dcf](https://github.com/informatievlaanderen/basisregisters-grb/commit/1874dcf891ecd0a59082d8bcda5478dcd920fb82))
+
+
+### Features
+
+* add exemption list for duplicates ([70c721f](https://github.com/informatievlaanderen/basisregisters-grb/commit/70c721fc705b625b67a4a06d34c256b40ccecadd))
+
 # [4.2.0](https://github.com/informatievlaanderen/basisregisters-grb/compare/v4.1.1...v4.2.0) (2026-09-10)
 
 
