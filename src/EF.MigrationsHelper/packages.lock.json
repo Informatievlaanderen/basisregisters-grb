@@ -24,8 +24,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.9.4",
-        "contentHash": "bpxzv4e0WjOVmKiYkjkNWeKvwyzoIVFS+u5zYnsryM2qTyhkfeLGQ4LPqDo+m/7OIJlGWr6V9zkc3V9bb0QmYg=="
+        "resolved": "4.0.102.11",
+        "contentHash": "K9PP9/qHQ7pqSB0lYwStJrpXQ8P1xc7Fbn3CyPg8EX78p4+yz8dhIiwiRc3aVbVrUZxmPAPRvmZm+ey1euIXGg=="
       },
       "Azure.Core": {
         "type": "Transitive",
@@ -461,7 +461,7 @@
       "grb": {
         "type": "Project",
         "dependencies": {
-          "AWSSDK.SimpleNotificationService": "[4.0.3.6, )",
+          "AWSSDK.SimpleNotificationService": "[4.0.100.19, )",
           "Autofac": "[9.2.0, )",
           "Be.Vlaanderen.Basisregisters.Shaperon": "[11.1.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.9, )",
@@ -476,11 +476,11 @@
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
-        "requested": "[4.0.3.6, )",
-        "resolved": "4.0.3.6",
-        "contentHash": "yeyK50d87lII0iTXfdkszDxhC7a3+qeWxsW7FFpY5X5M+3imvw/1EXGomYIUjfKYKSEmFaBglZMW8M+5kwKkRQ==",
+        "requested": "[4.0.100.19, )",
+        "resolved": "4.0.100.19",
+        "contentHash": "O42Ms7bIGJM/DHnkNMh6sb2ToHEZIRDs4fRVtkrTfEx7I6zpX4kCtv9wY8lyVIqVRxM+eStGlwrDfZK752DH+Q==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9.4, 5.0.0)"
+          "AWSSDK.Core": "[4.0.102.11, 5.0.0)"
         }
       },
       "Be.Vlaanderen.Basisregisters.Shaperon": {
